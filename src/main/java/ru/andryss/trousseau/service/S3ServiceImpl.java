@@ -39,6 +39,7 @@ public class S3ServiceImpl implements S3Service, InitializingBean, DisposableBea
             log.error("Error while creating bucket", e);
             throw new RuntimeException(e);
         }
+        log.info("S3 client successfully created with default bucket {}", properties.getBucket());
     }
 
     @Override
