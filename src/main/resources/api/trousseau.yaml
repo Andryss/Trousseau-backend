@@ -1,0 +1,60 @@
+openapi: 3.0.3
+info:
+  title: Trousseau
+  description: Сервис для передачи вещей внутри общежития
+  version: 0.0.2
+servers:
+  - url: https://localhost:8080
+components:
+  schemas:
+    ErrorObject:
+      type: object
+      properties:
+        message:
+          type: string
+    mediaData:
+      type: string
+      format: binary
+    UploadMediaRequest:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/mediaData"
+    mediaId:
+      type: string
+    UploadMediaResponse:
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/mediaId"
+paths:
+  /media:
+    post:
+      summary: Загрузка медиа-файла
+      operationId: uploadMedia
+      tags:
+        - media
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/UploadMediaRequest"
+      responses:
+        200:
+          description: Медиа-файл успешно загружен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UploadMediaResponse"
+        400:
+          description: Неверный формат запроса
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+        500:
+          description: Сервис временно недоступен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
