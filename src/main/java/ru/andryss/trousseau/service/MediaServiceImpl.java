@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import ru.andryss.trousseau.exception.Errors;
 
 @Slf4j
 @Service
@@ -22,7 +23,12 @@ public class MediaServiceImpl implements MediaService {
     public String saveMedia(MultipartFile media) {
         Instant now = timeService.now();
         String id = mediaIdFormatter.format(now);
-        s3Service.put(id, media);
+        try {
+            s3Service.put(id, media);
+        } catch (Exception e) {
+            log.error("Error while saving media to S3", e);
+            throw Errors.mediaSaveError();
+        }
         return id;
     }
 }
