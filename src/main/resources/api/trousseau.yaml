@@ -10,7 +10,12 @@ components:
     ErrorObject:
       type: object
       properties:
+        code:
+          type: integer
+          format: int32
         message:
+          type: string
+        humanMessage:
           type: string
     mediaData:
       type: string
@@ -27,8 +32,27 @@ components:
       properties:
         id:
           $ref: "#/components/schemas/mediaId"
+    itemId:
+      type: string
+    itemTitle:
+      type: string
+    itemMedia:
+      type: array
+      items:
+        $ref: "#/components/schemas/mediaId"
+    itemDescription:
+      type: string
+    ItemInfoRequest:
+      type: object
+      properties:
+        title:
+          $ref: "#/components/schemas/itemTitle"
+        media:
+          $ref: "#/components/schemas/itemMedia"
+        description:
+          $ref: "#/components/schemas/itemDescription"
 paths:
-  /media:
+  /seller/media:
     post:
       summary: Загрузка медиа-файла
       operationId: uploadMedia
@@ -46,6 +70,65 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/UploadMediaResponse"
+        400:
+          description: Неверный формат запроса
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+        500:
+          description: Сервис временно недоступен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+  /seller/items:
+    post:
+      summary: Создание объявления
+      operationId: createItem
+      tags:
+        - item
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ItemInfoRequest"
+      responses:
+        200:
+          description: Объявление успешно создано
+        400:
+          description: Неверный формат запроса
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+        500:
+          description: Сервис временно недоступен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+  /seller/items/{itemId}:
+    put:
+      summary: Обновление объявления
+      operationId: updateItem
+      tags:
+        - item
+      parameters:
+        - in: path
+          name: itemId
+          description: Идентификатор объявления
+          required: true
+          schema:
+            $ref: "#/components/schemas/itemId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ItemInfoRequest"
+      responses:
+        200:
+          description: Объявление успешно создано
         400:
           description: Неверный формат запроса
           content:
