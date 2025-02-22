@@ -17,7 +17,7 @@ public class MediaServiceImpl implements MediaService {
     private final TimeService timeService;
     private final S3Service s3Service;
 
-    private final DateTimeFormatter mediaIdFormatter = DateTimeFormatter.ofPattern("yyyyMM_hhmmssSSS");
+    private final DateTimeFormatter mediaIdFormatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmssSSS");
 
     @Override
     public String saveMedia(MultipartFile media) {

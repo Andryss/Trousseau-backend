@@ -59,7 +59,7 @@ components:
         - PUBLISHED
         - BOOKED
         - ARCHIVED
-    CreateItemResponse:
+    UpdateItemResponse:
       type: object
       properties:
         id:
@@ -114,7 +114,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/CreateItemResponse"
+                $ref: "#/components/schemas/UpdateItemResponse"
         400:
           description: Неверный формат запроса
           content:
@@ -147,7 +147,11 @@ paths:
               $ref: "#/components/schemas/ItemInfoRequest"
       responses:
         200:
-          description: Объявление успешно создано
+          description: Объявление успешно обновлено
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpdateItemResponse"
         400:
           description: Неверный формат запроса
           content:

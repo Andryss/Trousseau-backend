@@ -1,8 +1,10 @@
 package ru.andryss.trousseau.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,5 +20,12 @@ public class ObjectMapperWrapperImpl implements ObjectMapperWrapper {
         } catch (JsonProcessingException e) {
             return String.valueOf(obj);
         }
+    }
+
+    @Override
+    @SneakyThrows
+    public <T> T readValue(String data) {
+        return mapper.readValue(data, new TypeReference<>() {
+        });
     }
 }

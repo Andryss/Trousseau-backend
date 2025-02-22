@@ -14,6 +14,15 @@ public enum ItemStatus {
 
     private final String value;
 
+    public static ItemStatus fromValue(String value) {
+        for (ItemStatus status : values()) {
+            if (status.value.equals(value)) {
+                return status;
+            }
+        }
+        throw new IllegalArgumentException("Unknown item status value: " + value);
+    }
+
     public ru.andryss.trousseau.generated.model.ItemStatus toOpenApi() {
         return switch (this) {
             case DRAFT -> ru.andryss.trousseau.generated.model.ItemStatus.DRAFT;
