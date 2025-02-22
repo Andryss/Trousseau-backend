@@ -1,6 +1,6 @@
 package ru.andryss.trousseau.service;
 
-import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,7 @@ public class MediaServiceImpl implements MediaService {
 
     @Override
     public String saveMedia(MultipartFile media) {
-        Instant now = timeService.now();
+        ZonedDateTime now = timeService.now();
         String id = mediaIdFormatter.format(now);
         try {
             s3Service.put(id, media);

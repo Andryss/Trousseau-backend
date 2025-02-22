@@ -13,12 +13,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.andryss.trousseau.config.S3Properties;
 
 @Slf4j
 @Service
+@Profile("!functionalTest")
 @RequiredArgsConstructor
 public class S3ServiceImpl implements S3Service, InitializingBean, DisposableBean {
 

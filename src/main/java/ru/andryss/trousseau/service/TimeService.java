@@ -1,7 +1,7 @@
 package ru.andryss.trousseau.service;
 
-import java.time.Instant;
+import java.time.ZonedDateTime;
 
 public interface TimeService {
-    Instant now();
+    ZonedDateTime now();
 }

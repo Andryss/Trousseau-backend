@@ -32,8 +32,6 @@ components:
       properties:
         id:
           $ref: "#/components/schemas/mediaId"
-    itemId:
-      type: string
     itemTitle:
       type: string
     itemMedia:
@@ -51,6 +49,23 @@ components:
           $ref: "#/components/schemas/itemMedia"
         description:
           $ref: "#/components/schemas/itemDescription"
+    itemId:
+      type: string
+    itemStatus:
+      type: string
+      enum:
+        - DRAFT
+        - READY
+        - PUBLISHED
+        - BOOKED
+        - ARCHIVED
+    CreateItemResponse:
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/itemId"
+        status:
+          $ref: "#/components/schemas/itemStatus"
 paths:
   /seller/media:
     post:
@@ -96,6 +111,10 @@ paths:
       responses:
         200:
           description: Объявление успешно создано
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateItemResponse"
         400:
           description: Неверный формат запроса
           content:
