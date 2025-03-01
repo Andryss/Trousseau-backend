@@ -66,6 +66,26 @@ components:
           $ref: "#/components/schemas/itemId"
         status:
           $ref: "#/components/schemas/itemStatus"
+    ItemDto:
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/itemId"
+        title:
+          $ref: "#/components/schemas/itemTitle"
+        media:
+          $ref: "#/components/schemas/itemMedia"
+        description:
+          $ref: "#/components/schemas/itemDescription"
+        status:
+          $ref: "#/components/schemas/itemStatus"
+    GetItemsResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/ItemDto"
 paths:
   /seller/media:
     post:
@@ -121,6 +141,24 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorObject"
+        500:
+          description: Сервис временно недоступен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+    get:
+      summary: Получение списка объявлений
+      operationId: getItems
+      tags:
+        - item
+      responses:
+        200:
+          description: Успещное получение объявлений
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetItemsResponse"
         500:
           description: Сервис временно недоступен
           content:

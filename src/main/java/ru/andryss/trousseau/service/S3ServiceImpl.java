@@ -1,14 +1,17 @@
 package ru.andryss.trousseau.service;
 
 import java.io.InputStream;
+import java.util.concurrent.TimeUnit;
 
 import io.minio.BucketExistsArgs;
 import io.minio.GetObjectArgs;
+import io.minio.GetPresignedObjectUrlArgs;
 import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
 import io.minio.StatObjectArgs;
 import io.minio.errors.ErrorResponseException;
+import io.minio.http.Method;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.DisposableBean;
@@ -26,6 +29,9 @@ public class S3ServiceImpl implements S3Service, InitializingBean, DisposableBea
 
     private final S3Properties properties;
     private MinioClient client;
+
+    private static final int DEFAULT_URL_EXPIRATION_MINUTES = 300;
+
 
     @Override
     public void afterPropertiesSet() {
@@ -66,6 +72,23 @@ public class S3ServiceImpl implements S3Service, InitializingBean, DisposableBea
         }
     }
 
+    @Override
+    public String presignedUrl(String path) {
+        try {
+            return client.getPresignedObjectUrl(
+                    GetPresignedObjectUrlArgs.builder()
+                            .bucket(properties.getBucket())
+                            .object(path)
+                            .method(Method.GET)
+                            .expiry(DEFAULT_URL_EXPIRATION_MINUTES, TimeUnit.MINUTES)
+                            .build()
+            );
+        } catch (Exception e) {
+            log.error("Error while generating presigned url", e);
+            throw new RuntimeException(e);
+        }
+    }
+
     public boolean exists(String path) {
         try {
             client.statObject(
@@ -84,7 +107,6 @@ public class S3ServiceImpl implements S3Service, InitializingBean, DisposableBea
         }
     }
 
-    @Override
     public byte[] get(String path) {
         try (InputStream stream = client.getObject(
                 GetObjectArgs.builder()

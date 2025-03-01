@@ -1,5 +1,7 @@
 package ru.andryss.trousseau.repository;
 
+import java.util.List;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.jdbc.core.RowMapper;
@@ -66,6 +68,13 @@ public class ItemRepositoryImpl implements ItemRepository, InitializingBean {
         return jdbcTemplate.queryForObject("""
                 select * from items where id = :id
         """, param, rowMapper);
+    }
+
+    @Override
+    public List<ItemEntity> findAll() {
+        return jdbcTemplate.query("""
+                select * from items
+        """, rowMapper);
     }
 
     private MapSqlParameterSource getParameterSource(ItemEntity item) {

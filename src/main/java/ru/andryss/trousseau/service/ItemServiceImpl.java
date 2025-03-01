@@ -1,6 +1,7 @@
 package ru.andryss.trousseau.service;
 
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -48,6 +49,13 @@ public class ItemServiceImpl implements ItemService {
 
             return itemRepository.update(item);
         });
+    }
+
+    @Override
+    public List<ItemEntity> getItems() {
+        log.info("Getting items");
+
+        return itemRepository.findAll();
     }
 
     private static void patchItem(ItemEntity item, ItemInfoRequest info) {

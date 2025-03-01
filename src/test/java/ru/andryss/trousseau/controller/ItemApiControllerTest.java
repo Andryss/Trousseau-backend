@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -12,12 +13,13 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
 import ru.andryss.trousseau.generated.model.UpdateItemResponse;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-class ItemApiControllerTest extends BaseApiTest {
+public class ItemApiControllerTest extends BaseApiTest {
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -42,16 +44,7 @@ class ItemApiControllerTest extends BaseApiTest {
     @MethodSource("updateItemData")
     @SneakyThrows
     public void updateItemTest(String content, String expectedStatus) {
-        MvcResult mvcResult = mockMvc.perform(
-                        post("/seller/items")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content("{}")
-                )
-                .andExpect(status().isOk())
-                .andReturn();
-
-        UpdateItemResponse response =
-                objectMapper.readValue(mvcResult.getResponse().getContentAsByteArray(), UpdateItemResponse.class);
+        UpdateItemResponse response = createEmptyItem();
 
         String itemId = response.getId();
 
@@ -65,6 +58,40 @@ class ItemApiControllerTest extends BaseApiTest {
                         jsonPath("$.id").isNotEmpty(),
                         jsonPath("$.status").value(expectedStatus)
                 );
+    }
+
+    @Test
+    @SneakyThrows
+    public void getItemsTest() {
+        UpdateItemResponse response0 = createEmptyItem();
+        UpdateItemResponse response1 = createEmptyItem();
+
+        mockMvc.perform(
+                        get("/seller/items")
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpectAll(
+                        status().isOk(),
+                        jsonPath("$.items").isArray(),
+                        jsonPath("$.items.size()").value(2),
+                        jsonPath("$.items[0].id").value(response0.getId()),
+                        jsonPath("$.items[0].status").value(response0.getStatus().getValue()),
+                        jsonPath("$.items[1].id").value(response1.getId()),
+                        jsonPath("$.items[1].status").value(response1.getStatus().getValue())
+                );
+    }
+
+    @SneakyThrows
+    private UpdateItemResponse createEmptyItem() {
+        MvcResult mvcResult = mockMvc.perform(
+                        post("/seller/items")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("{}")
+                )
+                .andExpect(status().isOk())
+                .andReturn();
+
+        return objectMapper.readValue(mvcResult.getResponse().getContentAsByteArray(), UpdateItemResponse.class);
     }
 
     public static List<Arguments> createItemData() {
