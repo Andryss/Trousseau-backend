@@ -38,6 +38,10 @@ public class MediaServiceImpl implements MediaService {
 
     @Override
     public List<String> toUrls(List<String> ids) {
+        if (ids.isEmpty()) {
+            return List.of();
+        }
+
         ArrayList<String> urls = new ArrayList<>(ids.size());
         for (String id : ids) {
             try {

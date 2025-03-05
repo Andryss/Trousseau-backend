@@ -59,13 +59,6 @@ components:
         - PUBLISHED
         - BOOKED
         - ARCHIVED
-    UpdateItemResponse:
-      type: object
-      properties:
-        id:
-          $ref: "#/components/schemas/itemId"
-        status:
-          $ref: "#/components/schemas/itemStatus"
     ItemDto:
       type: object
       properties:
@@ -134,7 +127,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/UpdateItemResponse"
+                $ref: "#/components/schemas/ItemDto"
         400:
           description: Неверный формат запроса
           content:
@@ -189,7 +182,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/UpdateItemResponse"
+                $ref: "#/components/schemas/ItemDto"
         400:
           description: Неверный формат запроса
           content:
