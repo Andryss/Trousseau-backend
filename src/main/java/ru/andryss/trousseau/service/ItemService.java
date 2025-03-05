@@ -9,4 +9,5 @@ public interface ItemService {
     ItemEntity createItem(ItemInfoRequest info);
     ItemEntity updateItem(String id, ItemInfoRequest info);
     List<ItemEntity> getItems();
+    ItemEntity getItem(String id);
 }

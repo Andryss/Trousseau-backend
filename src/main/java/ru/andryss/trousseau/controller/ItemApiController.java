@@ -27,6 +27,13 @@ public class ItemApiController implements ItemApi {
     }
 
     @Override
+    public ItemDto getItem(String itemId) {
+        ItemEntity item = itemService.getItem(itemId);
+
+        return mapToDto(item);
+    }
+
+    @Override
     public GetItemsResponse getItems() {
         List<ItemEntity> items = itemService.getItems();
 

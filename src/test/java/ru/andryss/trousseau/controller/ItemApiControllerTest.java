@@ -11,7 +11,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
-import ru.andryss.trousseau.generated.model.UpdateItemResponse;
+import ru.andryss.trousseau.generated.model.ItemDto;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -44,7 +44,7 @@ public class ItemApiControllerTest extends BaseApiTest {
     @MethodSource("updateItemData")
     @SneakyThrows
     public void updateItemTest(String content, String expectedStatus) {
-        UpdateItemResponse response = createEmptyItem();
+        ItemDto response = createEmptyItem();
 
         String itemId = response.getId();
 
@@ -63,8 +63,8 @@ public class ItemApiControllerTest extends BaseApiTest {
     @Test
     @SneakyThrows
     public void getItemsTest() {
-        UpdateItemResponse response0 = createEmptyItem();
-        UpdateItemResponse response1 = createEmptyItem();
+        ItemDto response0 = createEmptyItem();
+        ItemDto response1 = createEmptyItem();
 
         mockMvc.perform(
                         get("/seller/items")
@@ -81,8 +81,29 @@ public class ItemApiControllerTest extends BaseApiTest {
                 );
     }
 
+    @Test
     @SneakyThrows
-    private UpdateItemResponse createEmptyItem() {
+    public void getItemTest() {
+        ItemDto response = createEmptyItem();
+
+        String id = response.getId();
+
+        mockMvc.perform(
+                        get("/seller/items/{itemId}", id)
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpectAll(
+                        status().isOk(),
+                        jsonPath("$.id").isNotEmpty(),
+                        jsonPath("$.title").isEmpty(),
+                        jsonPath("$.media").isEmpty(),
+                        jsonPath("$.description").isEmpty(),
+                        jsonPath("$.status").value("DRAFT")
+                );
+    }
+
+    @SneakyThrows
+    private ItemDto createEmptyItem() {
         MvcResult mvcResult = mockMvc.perform(
                         post("/seller/items")
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -91,7 +112,7 @@ public class ItemApiControllerTest extends BaseApiTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        return objectMapper.readValue(mvcResult.getResponse().getContentAsByteArray(), UpdateItemResponse.class);
+        return objectMapper.readValue(mvcResult.getResponse().getContentAsByteArray(), ItemDto.class);
     }
 
     public static List<Arguments> createItemData() {

@@ -58,6 +58,13 @@ public class ItemServiceImpl implements ItemService {
         return itemRepository.findAll();
     }
 
+    @Override
+    public ItemEntity getItem(String id) {
+        log.info("Getting item {}", id);
+
+        return itemRepository.findById(id);
+    }
+
     private static void patchItem(ItemEntity item, ItemInfoRequest info) {
         item.setTitle(info.getTitle());
         item.setMediaIds(info.getMedia());
