@@ -1,5 +1,6 @@
 package ru.andryss.trousseau.service;
 
+import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -34,6 +35,7 @@ public class ItemServiceImpl implements ItemService {
         patchItem(item, info);
 
         item.setId(itemIdFormatter.format(timeService.now()));
+        item.setCreatedAt(Instant.now());
 
         return itemRepository.save(item);
     }

@@ -1,5 +1,6 @@
 package ru.andryss.trousseau.model;
 
+import java.time.Instant;
 import java.util.List;
 
 import lombok.Getter;
@@ -15,4 +16,5 @@ public class ItemEntity {
     private List<String> mediaIds;
     private String description;
     private ItemStatus status;
+    private Instant createdAt;
 }

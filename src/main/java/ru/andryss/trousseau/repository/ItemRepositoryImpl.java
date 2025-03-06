@@ -1,5 +1,6 @@
 package ru.andryss.trousseau.repository;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,7 @@ public class ItemRepositoryImpl implements ItemRepository, InitializingBean {
             item.setMediaIds(objectMapper.readValue(rs.getString("media_ids")));
             item.setDescription(rs.getString("description"));
             item.setStatus(ItemStatus.fromValue(rs.getString("status")));
+            item.setCreatedAt(rs.getTimestamp("created_at").toInstant());
             return item;
         };
     }
@@ -41,8 +43,8 @@ public class ItemRepositoryImpl implements ItemRepository, InitializingBean {
         MapSqlParameterSource param = getParameterSource(item);
 
         jdbcTemplate.update("""
-            insert into items(id, title, media_ids, description, status)
-                values(:id, :title, :mediaIds::jsonb, :description, :status)
+            insert into items(id, title, media_ids, description, status, created_at)
+                values(:id, :title, :mediaIds::jsonb, :description, :status, :createdAt)
         """, param);
 
         return item;
@@ -73,7 +75,7 @@ public class ItemRepositoryImpl implements ItemRepository, InitializingBean {
     @Override
     public List<ItemEntity> findAll() {
         return jdbcTemplate.query("""
-                select * from items
+                select * from items order by created_at desc
         """, rowMapper);
     }
 
@@ -84,6 +86,7 @@ public class ItemRepositoryImpl implements ItemRepository, InitializingBean {
         param.addValue("mediaIds", objectMapper.writeValueAsString(item.getMediaIds()));
         param.addValue("description", item.getDescription());
         param.addValue("status", item.getStatus().getValue());
+        param.addValue("createdAt", Timestamp.from(item.getCreatedAt()));
         return param;
     }
 }
