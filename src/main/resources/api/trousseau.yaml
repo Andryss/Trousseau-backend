@@ -49,6 +49,19 @@ components:
           $ref: "#/components/schemas/itemMedia"
         description:
           $ref: "#/components/schemas/itemDescription"
+    url:
+      type: string
+    ItemMediaDto:
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/mediaId"
+        href:
+          $ref: "#/components/schemas/url"
+    mediaDtos:
+      type: array
+      items:
+        $ref: "#/components/schemas/ItemMediaDto"
     itemId:
       type: string
     itemStatus:
@@ -67,7 +80,7 @@ components:
         title:
           $ref: "#/components/schemas/itemTitle"
         media:
-          $ref: "#/components/schemas/itemMedia"
+          $ref: "#/components/schemas/mediaDtos"
         description:
           $ref: "#/components/schemas/itemDescription"
         status:
