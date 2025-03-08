@@ -25,6 +25,8 @@ public class MediaServiceImpl implements MediaService {
 
     @Override
     public String saveMedia(MultipartFile media) {
+        log.info("Saving media {} name {} bytes {}", media.getContentType(), media.getName(), media.getSize());
+
         ZonedDateTime now = timeService.now();
         String id = mediaIdFormatter.format(now);
         try {
