@@ -29,7 +29,8 @@ public class ItemServiceImpl implements ItemService {
     private final DateTimeFormatter itemIdFormatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmssSSS");
 
     private static final Map<ItemStatus, List<ItemStatus>> allowedTransitions = Map.of(
-            ItemStatus.READY, List.of(ItemStatus.PUBLISHED)
+            ItemStatus.READY, List.of(ItemStatus.PUBLISHED),
+            ItemStatus.PUBLISHED, List.of(ItemStatus.READY)
     );
 
     @Override

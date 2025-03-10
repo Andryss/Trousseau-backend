@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
 import ru.andryss.trousseau.generated.model.ItemDto;
-import ru.andryss.trousseau.generated.model.ItemInfoRequest;
 import ru.andryss.trousseau.generated.model.ItemStatus;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -111,10 +110,11 @@ public class ItemApiControllerTest extends BaseApiTest {
         ItemDto response = createEmptyItem();
         String id = response.getId();
 
-        ItemDto updated = updateItem(id, new ItemInfoRequest()
-                .title("some-title")
-                .media(List.of("media-1"))
-                .description("some-description"));
+        ItemDto updated = updateItem(id, new UpdateItemRequest(
+                "some-title",
+                List.of("media-1"),
+                "some-description"
+        ));
 
         Assertions.assertEquals(ItemStatus.READY, updated.getStatus());
 
@@ -122,6 +122,13 @@ public class ItemApiControllerTest extends BaseApiTest {
                         put("/seller/items/{itemId}/status", id)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content("{ \"status\": \"PUBLISHED\" }")
+                )
+                .andExpect(status().isOk());
+
+        mockMvc.perform(
+                        put("/seller/items/{itemId}/status", id)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("{ \"status\": \"READY\" }")
                 )
                 .andExpect(status().isOk());
     }
@@ -140,11 +147,11 @@ public class ItemApiControllerTest extends BaseApiTest {
     }
 
     @SneakyThrows
-    private ItemDto updateItem(String id, ItemInfoRequest info) {
+    private ItemDto updateItem(String id, UpdateItemRequest request) {
         MvcResult mvcResult = mockMvc.perform(
                         put("/seller/items/" + id)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(info))
+                                .content(objectMapper.writeValueAsString(request))
                 )
                 .andExpect(status().isOk())
                 .andReturn();
@@ -186,5 +193,8 @@ public class ItemApiControllerTest extends BaseApiTest {
                 }
                 """, "READY")
         );
+    }
+
+    private record UpdateItemRequest(String title, List<String> media, String description) {
     }
 }
