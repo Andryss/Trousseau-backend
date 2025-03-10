@@ -23,6 +23,16 @@ public enum ItemStatus {
         throw new IllegalArgumentException("Unknown item status value: " + value);
     }
 
+    public static ItemStatus fromOpenApi(ru.andryss.trousseau.generated.model.ItemStatus status) {
+        return switch (status) {
+            case DRAFT -> DRAFT;
+            case READY -> READY;
+            case PUBLISHED -> PUBLISHED;
+            case BOOKED -> BOOKED;
+            case ARCHIVED -> ARCHIVED;
+        };
+    }
+
     public ru.andryss.trousseau.generated.model.ItemStatus toOpenApi() {
         return switch (this) {
             case DRAFT -> ru.andryss.trousseau.generated.model.ItemStatus.DRAFT;

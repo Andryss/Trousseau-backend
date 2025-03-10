@@ -3,6 +3,7 @@ package ru.andryss.trousseau.service;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.CollectionUtils;
+import ru.andryss.trousseau.exception.Errors;
 import ru.andryss.trousseau.generated.model.ItemInfoRequest;
 import ru.andryss.trousseau.model.ItemEntity;
 import ru.andryss.trousseau.model.ItemStatus;
@@ -25,6 +27,10 @@ public class ItemServiceImpl implements ItemService {
     private final TransactionTemplate transactionTemplate;
 
     private final DateTimeFormatter itemIdFormatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmssSSS");
+
+    private static final Map<ItemStatus, List<ItemStatus>> allowedTransitions = Map.of(
+            ItemStatus.READY, List.of(ItemStatus.PUBLISHED)
+    );
 
     @Override
     public ItemEntity createItem(ItemInfoRequest info) {
@@ -65,6 +71,23 @@ public class ItemServiceImpl implements ItemService {
         log.info("Getting item {}", id);
 
         return itemRepository.findById(id);
+    }
+
+    @Override
+    public void changeItemStatus(String id, ItemStatus status) {
+        log.info("Changing item {} status to {}", id, status);
+
+        transactionTemplate.executeWithoutResult((transactionStatus -> {
+            ItemEntity item = itemRepository.findById(id);
+            ItemStatus currentStatus = item.getStatus();
+
+            if (!allowedTransitions.get(currentStatus).contains(status)) {
+                throw Errors.illegalItemStatusTransition(currentStatus, status);
+            }
+
+            item.setStatus(status);
+            itemRepository.update(item);
+        }));
     }
 
     private static void patchItem(ItemEntity item, ItemInfoRequest info) {

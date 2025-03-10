@@ -92,6 +92,11 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/ItemDto"
+    ChangeStatusRequest:
+      type: object
+      properties:
+        status:
+          $ref: "#/components/schemas/itemStatus"
 paths:
   /seller/media:
     post:
@@ -227,6 +232,39 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ItemDto"
+        400:
+          description: Неверный формат запроса
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+        500:
+          description: Сервис временно недоступен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+  /seller/items/{itemId}/status:
+    put:
+      summary: Смена состояния объявления
+      operationId: changeItemStatus
+      tags:
+        - item
+      parameters:
+        - in: path
+          name: itemId
+          description: Идентификатор объявления
+          required: true
+          schema:
+            $ref: "#/components/schemas/itemId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChangeStatusRequest"
+      responses:
+        200:
+          description: Статус успешно изменен
         400:
           description: Неверный формат запроса
           content:
