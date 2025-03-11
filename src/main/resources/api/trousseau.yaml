@@ -97,6 +97,29 @@ components:
       properties:
         status:
           $ref: "#/components/schemas/itemStatus"
+    SearchInfo:
+      type: object
+      properties:
+        text:
+          type: string
+    PublicItemDto:
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/itemId"
+        title:
+          $ref: "#/components/schemas/itemTitle"
+        media:
+          $ref: "#/components/schemas/mediaDtos"
+        description:
+          $ref: "#/components/schemas/itemDescription"
+    SearchItemsResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/PublicItemDto"
 paths:
   /seller/media:
     post:
@@ -265,6 +288,36 @@ paths:
       responses:
         200:
           description: Статус успешно изменен
+        400:
+          description: Неверный формат запроса
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+        500:
+          description: Сервис временно недоступен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+  /public/items:search:
+    post:
+      summary: Поиск объявлений
+      operationId: searchItems
+      tags:
+        - public
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SearchInfo"
+      responses:
+        200:
+          description: Успешный поиск объявлений
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SearchItemsResponse"
         400:
           description: Неверный формат запроса
           content:

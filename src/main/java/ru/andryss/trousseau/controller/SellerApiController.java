@@ -1,27 +1,27 @@
 package ru.andryss.trousseau.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.RestController;
 import ru.andryss.trousseau.generated.api.SellerApi;
 import ru.andryss.trousseau.generated.model.ChangeStatusRequest;
 import ru.andryss.trousseau.generated.model.GetItemsResponse;
 import ru.andryss.trousseau.generated.model.ItemDto;
 import ru.andryss.trousseau.generated.model.ItemInfoRequest;
-import ru.andryss.trousseau.generated.model.ItemMediaDto;
 import ru.andryss.trousseau.model.ItemEntity;
 import ru.andryss.trousseau.model.ItemStatus;
 import ru.andryss.trousseau.service.ItemService;
 import ru.andryss.trousseau.service.MediaService;
 
 @RestController
-@AllArgsConstructor
-public class SellerApiController implements SellerApi {
+public class SellerApiController extends CommonApiController implements SellerApi {
 
     private final ItemService itemService;
-    private final MediaService mediaService;
+
+    public SellerApiController(ItemService itemService, MediaService mediaService) {
+        super(mediaService);
+        this.itemService = itemService;
+    }
 
     @Override
     public void changeSellerItemStatus(String itemId, ChangeStatusRequest request) {
@@ -68,16 +68,5 @@ public class SellerApiController implements SellerApi {
                 .media(mapToDtos(entity.getMediaIds()))
                 .description(entity.getDescription())
                 .status(entity.getStatus().toOpenApi());
-    }
-
-    private List<ItemMediaDto> mapToDtos(List<String> ids) {
-        List<String> urls = mediaService.toUrls(ids);
-        List<ItemMediaDto> dtos = new ArrayList<>(ids.size());
-        for (int i = 0; i < ids.size(); i++) {
-            dtos.add(new ItemMediaDto()
-                    .id(ids.get(i))
-                    .href(urls.get(i)));
-        }
-        return dtos;
     }
 }

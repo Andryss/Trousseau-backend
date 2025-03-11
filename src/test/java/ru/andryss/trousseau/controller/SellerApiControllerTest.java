@@ -2,16 +2,13 @@ package ru.andryss.trousseau.controller;
 
 import java.util.List;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MvcResult;
 import ru.andryss.trousseau.generated.model.ItemDto;
 import ru.andryss.trousseau.generated.model.ItemStatus;
 
@@ -22,9 +19,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class SellerApiControllerTest extends BaseApiTest {
-
-    @Autowired
-    private ObjectMapper objectMapper;
 
     @ParameterizedTest
     @MethodSource("createItemData")
@@ -110,7 +104,7 @@ public class SellerApiControllerTest extends BaseApiTest {
         ItemDto response = createEmptyItem();
         String id = response.getId();
 
-        ItemDto updated = updateItem(id, new UpdateItemRequest(
+        ItemDto updated = updateItem(id, new ItemInfo(
                 "some-title",
                 List.of("media-1"),
                 "some-description"
@@ -131,32 +125,6 @@ public class SellerApiControllerTest extends BaseApiTest {
                                 .content("{ \"status\": \"READY\" }")
                 )
                 .andExpect(status().isOk());
-    }
-
-    @SneakyThrows
-    private ItemDto createEmptyItem() {
-        MvcResult mvcResult = mockMvc.perform(
-                        post("/seller/items")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content("{}")
-                )
-                .andExpect(status().isOk())
-                .andReturn();
-
-        return objectMapper.readValue(mvcResult.getResponse().getContentAsByteArray(), ItemDto.class);
-    }
-
-    @SneakyThrows
-    private ItemDto updateItem(String id, UpdateItemRequest request) {
-        MvcResult mvcResult = mockMvc.perform(
-                        put("/seller/items/" + id)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(request))
-                )
-                .andExpect(status().isOk())
-                .andReturn();
-
-        return objectMapper.readValue(mvcResult.getResponse().getContentAsByteArray(), ItemDto.class);
     }
 
     public static List<Arguments> createItemData() {
@@ -193,8 +161,5 @@ public class SellerApiControllerTest extends BaseApiTest {
                 }
                 """, "READY")
         );
-    }
-
-    private record UpdateItemRequest(String title, List<String> media, String description) {
     }
 }

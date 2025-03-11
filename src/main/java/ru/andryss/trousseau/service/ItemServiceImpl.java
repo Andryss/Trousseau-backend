@@ -13,6 +13,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.CollectionUtils;
 import ru.andryss.trousseau.exception.Errors;
 import ru.andryss.trousseau.generated.model.ItemInfoRequest;
+import ru.andryss.trousseau.generated.model.SearchInfo;
 import ru.andryss.trousseau.model.ItemEntity;
 import ru.andryss.trousseau.model.ItemStatus;
 import ru.andryss.trousseau.repository.ItemRepository;
@@ -89,6 +90,13 @@ public class ItemServiceImpl implements ItemService {
             item.setStatus(status);
             itemRepository.update(item);
         }));
+    }
+
+    @Override
+    public List<ItemEntity> searchItems(SearchInfo search) {
+        log.info("Searching items with info by {}", search);
+
+        return itemRepository.findByStatus(ItemStatus.PUBLISHED);
     }
 
     private static void patchItem(ItemEntity item, ItemInfoRequest info) {
