@@ -5,7 +5,7 @@ import java.util.List;
 
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.RestController;
-import ru.andryss.trousseau.generated.api.ItemApi;
+import ru.andryss.trousseau.generated.api.SellerApi;
 import ru.andryss.trousseau.generated.model.ChangeStatusRequest;
 import ru.andryss.trousseau.generated.model.GetItemsResponse;
 import ru.andryss.trousseau.generated.model.ItemDto;
@@ -18,32 +18,32 @@ import ru.andryss.trousseau.service.MediaService;
 
 @RestController
 @AllArgsConstructor
-public class ItemApiController implements ItemApi {
+public class SellerApiController implements SellerApi {
 
     private final ItemService itemService;
     private final MediaService mediaService;
 
     @Override
-    public void changeItemStatus(String itemId, ChangeStatusRequest request) {
+    public void changeSellerItemStatus(String itemId, ChangeStatusRequest request) {
         itemService.changeItemStatus(itemId, ItemStatus.fromOpenApi(request.getStatus()));
     }
 
     @Override
-    public ItemDto createItem(ItemInfoRequest request) {
+    public ItemDto createSellerItem(ItemInfoRequest request) {
         ItemEntity item = itemService.createItem(request);
 
         return mapToDto(item);
     }
 
     @Override
-    public ItemDto getItem(String itemId) {
+    public ItemDto getSellerItem(String itemId) {
         ItemEntity item = itemService.getItem(itemId);
 
         return mapToDto(item);
     }
 
     @Override
-    public GetItemsResponse getItems() {
+    public GetItemsResponse getSellerItems() {
         List<ItemEntity> items = itemService.getItems();
 
         List<ItemDto> dtos = items.stream()
@@ -55,7 +55,7 @@ public class ItemApiController implements ItemApi {
     }
 
     @Override
-    public ItemDto updateItem(String itemId, ItemInfoRequest request) {
+    public ItemDto updateSellerItem(String itemId, ItemInfoRequest request) {
         ItemEntity item = itemService.updateItem(itemId, request);
 
         return mapToDto(item);

@@ -21,7 +21,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class ItemApiControllerTest extends BaseApiTest {
+public class SellerApiControllerTest extends BaseApiTest {
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -76,10 +76,10 @@ public class ItemApiControllerTest extends BaseApiTest {
                         status().isOk(),
                         jsonPath("$.items").isArray(),
                         jsonPath("$.items.size()").value(2),
-                        jsonPath("$.items[0].id").value(response0.getId()),
-                        jsonPath("$.items[0].status").value(response0.getStatus().getValue()),
-                        jsonPath("$.items[1].id").value(response1.getId()),
-                        jsonPath("$.items[1].status").value(response1.getStatus().getValue())
+                        jsonPath("$.items[0].id").value(response1.getId()),
+                        jsonPath("$.items[0].status").value(response1.getStatus().getValue()),
+                        jsonPath("$.items[1].id").value(response0.getId()),
+                        jsonPath("$.items[1].status").value(response0.getStatus().getValue())
                 );
     }
 

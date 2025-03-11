@@ -131,9 +131,9 @@ paths:
   /seller/items:
     post:
       summary: Создание объявления
-      operationId: createItem
+      operationId: createSellerItem
       tags:
-        - item
+        - seller
       requestBody:
         content:
           application/json:
@@ -160,9 +160,9 @@ paths:
                 $ref: "#/components/schemas/ErrorObject"
     get:
       summary: Получение списка объявлений
-      operationId: getItems
+      operationId: getSellerItems
       tags:
-        - item
+        - seller
       responses:
         200:
           description: Успещное получение объявлений
@@ -179,9 +179,9 @@ paths:
   /seller/items/{itemId}:
     put:
       summary: Обновление объявления
-      operationId: updateItem
+      operationId: updateSellerItem
       tags:
-        - item
+        - seller
       parameters:
         - in: path
           name: itemId
@@ -215,9 +215,9 @@ paths:
                 $ref: "#/components/schemas/ErrorObject"
     get:
       summary: Получение объявления
-      operationId: getItem
+      operationId: getSellerItem
       tags:
-        - item
+        - seller
       parameters:
         - in: path
           name: itemId
@@ -247,9 +247,9 @@ paths:
   /seller/items/{itemId}/status:
     put:
       summary: Смена состояния объявления
-      operationId: changeItemStatus
+      operationId: changeSellerItemStatus
       tags:
-        - item
+        - seller
       parameters:
         - in: path
           name: itemId
