@@ -14,4 +14,5 @@ public interface ItemService {
     ItemEntity getItem(String id);
     void changeItemStatus(String id, ItemStatus status);
     List<ItemEntity> searchItems(SearchInfo search);
+    ItemEntity getPublicItem(String itemId);
 }

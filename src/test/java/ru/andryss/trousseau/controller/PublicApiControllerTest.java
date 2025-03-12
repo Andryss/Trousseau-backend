@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import ru.andryss.trousseau.generated.model.ItemDto;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -41,6 +42,27 @@ class PublicApiControllerTest extends BaseApiTest {
                         jsonPath("$.items[1].media.size()").value(1),
                         jsonPath("$.items[1].media[0].id").value("media-00"),
                         jsonPath("$.items[1].description").value("description-0")
+                );
+    }
+
+    @Test
+    @SneakyThrows
+    public void getItemTest() {
+        ItemDto item = createPublicItem(new ItemInfo("title", List.of("media-0", "media-1"), "description"));
+
+        mockMvc.perform(
+                        get("/public/items/{itemId}", item.getId())
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpectAll(
+                        status().isOk(),
+                        jsonPath("$.id").value(item.getId()),
+                        jsonPath("$.title").value("title"),
+                        jsonPath("$.media").isArray(),
+                        jsonPath("$.media.size()").value(2),
+                        jsonPath("$.media[0].id").value("media-0"),
+                        jsonPath("$.media[1].id").value("media-1"),
+                        jsonPath("$.description").value("description")
                 );
     }
 

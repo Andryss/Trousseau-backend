@@ -330,3 +330,35 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorObject"
+  /public/items/{itemId}:
+    get:
+      summary: Получение объявления
+      operationId: getItem
+      tags:
+        - public
+      parameters:
+        - in: path
+          name: itemId
+          description: Идентификатор объявления
+          required: true
+          schema:
+            $ref: "#/components/schemas/itemId"
+      responses:
+        200:
+          description: Объявление успешно найдено
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PublicItemDto"
+        400:
+          description: Неверный формат запроса
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+        500:
+          description: Сервис временно недоступен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"

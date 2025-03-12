@@ -99,6 +99,13 @@ public class ItemServiceImpl implements ItemService {
         return itemRepository.findByStatus(ItemStatus.PUBLISHED);
     }
 
+    @Override
+    public ItemEntity getPublicItem(String itemId) {
+        log.info("Getting public item {}", itemId);
+
+        return itemRepository.findByIdAndStatus(itemId, ItemStatus.PUBLISHED);
+    }
+
     private static void patchItem(ItemEntity item, ItemInfoRequest info) {
         item.setTitle(info.getTitle());
         item.setMediaIds(info.getMedia());

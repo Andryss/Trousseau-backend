@@ -88,6 +88,17 @@ public class ItemRepositoryImpl implements ItemRepository, InitializingBean {
         """, param, rowMapper);
     }
 
+    @Override
+    public ItemEntity findByIdAndStatus(String id, ItemStatus status) {
+        MapSqlParameterSource param = new MapSqlParameterSource();
+        param.addValue("id", id);
+        param.addValue("status", status.getValue());
+
+        return jdbcTemplate.queryForObject("""
+                select * from items where id = :id and status = :status order by created_at desc
+        """, param, rowMapper);
+    }
+
     private MapSqlParameterSource getParameterSource(ItemEntity item) {
         MapSqlParameterSource param = new MapSqlParameterSource();
         param.addValue("id", item.getId());

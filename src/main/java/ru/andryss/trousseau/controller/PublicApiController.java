@@ -22,6 +22,13 @@ public class PublicApiController extends CommonApiController implements PublicAp
     }
 
     @Override
+    public PublicItemDto getItem(String itemId) {
+        ItemEntity item = itemService.getPublicItem(itemId);
+
+        return mapToDto(item);
+    }
+
+    @Override
     public SearchItemsResponse searchItems(SearchInfo searchInfo) {
         List<ItemEntity> items = itemService.searchItems(searchInfo);
 
