@@ -9,6 +9,7 @@ import ru.andryss.trousseau.generated.model.ItemDto;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -63,6 +64,36 @@ class PublicApiControllerTest extends BaseApiTest {
                         jsonPath("$.media[0].id").value("media-0"),
                         jsonPath("$.media[1].id").value("media-1"),
                         jsonPath("$.description").value("description")
+                );
+    }
+
+    @Test
+    @SneakyThrows
+    public void bookItemTest() {
+        ItemDto item = createPublicItem(new ItemInfo("title", List.of("media-0", "media-1"), "description"));
+
+        mockMvc.perform(
+                        put("/public/items/{itemId}/status", item.getId())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("{ \"status\": \"BOOKED\" }")
+                )
+                .andExpect(status().isOk());
+
+        mockMvc.perform(
+                        get("/public/items/bookings")
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpectAll(
+                        status().isOk(),
+                        jsonPath("$.items").isArray(),
+                        jsonPath("$.items.size()").value(1),
+                        jsonPath("$.items[0].id").value(item.getId()),
+                        jsonPath("$.items[0].title").value("title"),
+                        jsonPath("$.items[0].media").isArray(),
+                        jsonPath("$.items[0].media.size()").value(2),
+                        jsonPath("$.items[0].media[0].id").value("media-0"),
+                        jsonPath("$.items[0].media[1].id").value("media-1"),
+                        jsonPath("$.items[0].description").value("description")
                 );
     }
 

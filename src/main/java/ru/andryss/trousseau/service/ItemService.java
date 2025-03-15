@@ -15,4 +15,5 @@ public interface ItemService {
     void changeItemStatus(String id, ItemStatus status);
     List<ItemEntity> searchItems(SearchInfo search);
     ItemEntity getPublicItem(String itemId);
+    List<ItemEntity> getBooked();
 }

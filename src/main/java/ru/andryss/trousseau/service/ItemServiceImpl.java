@@ -31,7 +31,8 @@ public class ItemServiceImpl implements ItemService {
 
     private static final Map<ItemStatus, List<ItemStatus>> allowedTransitions = Map.of(
             ItemStatus.READY, List.of(ItemStatus.PUBLISHED),
-            ItemStatus.PUBLISHED, List.of(ItemStatus.READY)
+            ItemStatus.PUBLISHED, List.of(ItemStatus.READY, ItemStatus.BOOKED),
+            ItemStatus.BOOKED, List.of(ItemStatus.PUBLISHED, ItemStatus.ARCHIVED)
     );
 
     @Override
@@ -96,7 +97,7 @@ public class ItemServiceImpl implements ItemService {
     public List<ItemEntity> searchItems(SearchInfo search) {
         log.info("Searching items with info by {}", search);
 
-        return itemRepository.findByStatus(ItemStatus.PUBLISHED);
+        return itemRepository.findByAllStatus(ItemStatus.PUBLISHED);
     }
 
     @Override
@@ -104,6 +105,13 @@ public class ItemServiceImpl implements ItemService {
         log.info("Getting public item {}", itemId);
 
         return itemRepository.findByIdAndStatus(itemId, ItemStatus.PUBLISHED);
+    }
+
+    @Override
+    public List<ItemEntity> getBooked() {
+        log.info("Getting booked items");
+
+        return itemRepository.findByAllStatus(ItemStatus.BOOKED);
     }
 
     private static void patchItem(ItemEntity item, ItemInfoRequest info) {

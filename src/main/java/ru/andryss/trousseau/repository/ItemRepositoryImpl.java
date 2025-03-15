@@ -80,7 +80,7 @@ public class ItemRepositoryImpl implements ItemRepository, InitializingBean {
     }
 
     @Override
-    public List<ItemEntity> findByStatus(ItemStatus status) {
+    public List<ItemEntity> findByAllStatus(ItemStatus status) {
         MapSqlParameterSource param = new MapSqlParameterSource("status", status.getValue());
 
         return jdbcTemplate.query("""

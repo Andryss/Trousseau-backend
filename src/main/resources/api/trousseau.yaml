@@ -113,7 +113,7 @@ components:
           $ref: "#/components/schemas/mediaDtos"
         description:
           $ref: "#/components/schemas/itemDescription"
-    SearchItemsResponse:
+    ItemListResponse:
       type: object
       properties:
         items:
@@ -188,7 +188,7 @@ paths:
         - seller
       responses:
         200:
-          description: Успещное получение объявлений
+          description: Успешное получение объявлений
           content:
             application/json:
               schema:
@@ -317,7 +317,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SearchItemsResponse"
+                $ref: "#/components/schemas/ItemListResponse"
         400:
           description: Неверный формат запроса
           content:
@@ -350,6 +350,64 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PublicItemDto"
+        400:
+          description: Неверный формат запроса
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+        500:
+          description: Сервис временно недоступен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+  /public/items/{itemId}/status:
+    put:
+      summary: Смена состояния объявления
+      operationId: changeItemStatus
+      tags:
+        - public
+      parameters:
+        - in: path
+          name: itemId
+          description: Идентификатор объявления
+          required: true
+          schema:
+            $ref: "#/components/schemas/itemId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChangeStatusRequest"
+      responses:
+        200:
+          description: Статус успешно изменен
+        400:
+          description: Неверный формат запроса
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+        500:
+          description: Сервис временно недоступен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+  /public/items/bookings:
+    get:
+      summary: Получение списка забронированных объявлений
+      operationId: getBookedItems
+      tags:
+        - public
+      responses:
+        200:
+          description: Успешное получение списка бронирований
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ItemListResponse"
         400:
           description: Неверный формат запроса
           content:

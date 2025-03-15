@@ -10,6 +10,6 @@ public interface ItemRepository {
     ItemEntity update(ItemEntity item);
     ItemEntity findById(String id);
     List<ItemEntity> findAll();
-    List<ItemEntity> findByStatus(ItemStatus status);
+    List<ItemEntity> findByAllStatus(ItemStatus status);
     ItemEntity findByIdAndStatus(String id, ItemStatus status);
 }
