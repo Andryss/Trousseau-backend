@@ -11,5 +11,4 @@ public interface ItemRepository {
     ItemEntity findById(String id);
     List<ItemEntity> findAll();
     List<ItemEntity> findByAllStatus(ItemStatus status);
-    ItemEntity findByIdAndStatus(String id, ItemStatus status);
 }

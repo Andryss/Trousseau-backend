@@ -37,12 +37,14 @@ class PublicApiControllerTest extends BaseApiTest {
                         jsonPath("$.items[0].media[0].id").value("media-10"),
                         jsonPath("$.items[0].media[1].id").value("media-11"),
                         jsonPath("$.items[0].description").value("description-1"),
+                        jsonPath("$.items[0].status").value("PUBLISHED"),
                         jsonPath("$.items[1].id").value(item0.getId()),
                         jsonPath("$.items[1].title").value("title-0"),
                         jsonPath("$.items[1].media").isArray(),
                         jsonPath("$.items[1].media.size()").value(1),
                         jsonPath("$.items[1].media[0].id").value("media-00"),
-                        jsonPath("$.items[1].description").value("description-0")
+                        jsonPath("$.items[1].description").value("description-0"),
+                        jsonPath("$.items[1].status").value("PUBLISHED")
                 );
     }
 
@@ -63,7 +65,8 @@ class PublicApiControllerTest extends BaseApiTest {
                         jsonPath("$.media.size()").value(2),
                         jsonPath("$.media[0].id").value("media-0"),
                         jsonPath("$.media[1].id").value("media-1"),
-                        jsonPath("$.description").value("description")
+                        jsonPath("$.description").value("description"),
+                        jsonPath("$.status").value("PUBLISHED")
                 );
     }
 
@@ -93,7 +96,8 @@ class PublicApiControllerTest extends BaseApiTest {
                         jsonPath("$.items[0].media.size()").value(2),
                         jsonPath("$.items[0].media[0].id").value("media-0"),
                         jsonPath("$.items[0].media[1].id").value("media-1"),
-                        jsonPath("$.items[0].description").value("description")
+                        jsonPath("$.items[0].description").value("description"),
+                        jsonPath("$.items[0].status").value("BOOKED")
                 );
     }
 

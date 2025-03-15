@@ -104,7 +104,7 @@ public class ItemServiceImpl implements ItemService {
     public ItemEntity getPublicItem(String itemId) {
         log.info("Getting public item {}", itemId);
 
-        return itemRepository.findByIdAndStatus(itemId, ItemStatus.PUBLISHED);
+        return itemRepository.findById(itemId);
     }
 
     @Override

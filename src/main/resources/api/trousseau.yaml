@@ -85,7 +85,7 @@ components:
           $ref: "#/components/schemas/itemDescription"
         status:
           $ref: "#/components/schemas/itemStatus"
-    GetItemsResponse:
+    ItemListResponse:
       type: object
       properties:
         items:
@@ -102,24 +102,6 @@ components:
       properties:
         text:
           type: string
-    PublicItemDto:
-      type: object
-      properties:
-        id:
-          $ref: "#/components/schemas/itemId"
-        title:
-          $ref: "#/components/schemas/itemTitle"
-        media:
-          $ref: "#/components/schemas/mediaDtos"
-        description:
-          $ref: "#/components/schemas/itemDescription"
-    ItemListResponse:
-      type: object
-      properties:
-        items:
-          type: array
-          items:
-            $ref: "#/components/schemas/PublicItemDto"
 paths:
   /seller/media:
     post:
@@ -192,7 +174,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/GetItemsResponse"
+                $ref: "#/components/schemas/ItemListResponse"
         500:
           description: Сервис временно недоступен
           content:
@@ -349,7 +331,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PublicItemDto"
+                $ref: "#/components/schemas/ItemDto"
         400:
           description: Неверный формат запроса
           content:

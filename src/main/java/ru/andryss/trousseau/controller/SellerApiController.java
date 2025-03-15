@@ -5,9 +5,9 @@ import java.util.List;
 import org.springframework.web.bind.annotation.RestController;
 import ru.andryss.trousseau.generated.api.SellerApi;
 import ru.andryss.trousseau.generated.model.ChangeStatusRequest;
-import ru.andryss.trousseau.generated.model.GetItemsResponse;
 import ru.andryss.trousseau.generated.model.ItemDto;
 import ru.andryss.trousseau.generated.model.ItemInfoRequest;
+import ru.andryss.trousseau.generated.model.ItemListResponse;
 import ru.andryss.trousseau.model.ItemEntity;
 import ru.andryss.trousseau.model.ItemStatus;
 import ru.andryss.trousseau.service.ItemService;
@@ -43,15 +43,13 @@ public class SellerApiController extends CommonApiController implements SellerAp
     }
 
     @Override
-    public GetItemsResponse getSellerItems() {
+    public ItemListResponse getSellerItems() {
         List<ItemEntity> items = itemService.getItems();
 
-        List<ItemDto> dtos = items.stream()
-                .map(this::mapToDto)
-                .toList();
+        List<ItemDto> dtoList = mapToDto(items);
 
-        return new GetItemsResponse()
-                .items(dtos);
+        return new ItemListResponse()
+                .items(dtoList);
     }
 
     @Override
@@ -59,14 +57,5 @@ public class SellerApiController extends CommonApiController implements SellerAp
         ItemEntity item = itemService.updateItem(itemId, request);
 
         return mapToDto(item);
-    }
-
-    private ItemDto mapToDto(ItemEntity entity) {
-        return new ItemDto()
-                .id(entity.getId())
-                .title(entity.getTitle())
-                .media(mapToDtos(entity.getMediaIds()))
-                .description(entity.getDescription())
-                .status(entity.getStatus().toOpenApi());
     }
 }
