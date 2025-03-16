@@ -12,7 +12,8 @@ public interface ItemService {
     ItemEntity updateItem(String id, ItemInfoRequest info);
     List<ItemEntity> getItems();
     ItemEntity getItem(String id);
-    void changeItemStatus(String id, ItemStatus status);
+    void changeSellerItemStatus(String id, ItemStatus status);
+    void changePublicItemStatus(String id, ItemStatus status);
     List<ItemEntity> searchItems(SearchInfo search);
     ItemEntity getPublicItem(String itemId);
     List<ItemEntity> getBooked();

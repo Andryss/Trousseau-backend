@@ -25,7 +25,7 @@ public class PublicApiController extends CommonApiController implements PublicAp
 
     @Override
     public void changeItemStatus(String itemId, ChangeStatusRequest request) {
-        itemService.changeItemStatus(itemId, ItemStatus.fromOpenApi(request.getStatus()));
+        itemService.changePublicItemStatus(itemId, ItemStatus.fromOpenApi(request.getStatus()));
     }
 
     @Override

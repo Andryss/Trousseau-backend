@@ -25,7 +25,7 @@ public class SellerApiController extends CommonApiController implements SellerAp
 
     @Override
     public void changeSellerItemStatus(String itemId, ChangeStatusRequest request) {
-        itemService.changeItemStatus(itemId, ItemStatus.fromOpenApi(request.getStatus()));
+        itemService.changeSellerItemStatus(itemId, ItemStatus.fromOpenApi(request.getStatus()));
     }
 
     @Override

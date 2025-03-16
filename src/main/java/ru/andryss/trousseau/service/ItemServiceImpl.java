@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,10 +30,19 @@ public class ItemServiceImpl implements ItemService {
 
     private final DateTimeFormatter itemIdFormatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmssSSS");
 
-    private static final Map<ItemStatus, List<ItemStatus>> allowedTransitions = Map.of(
+    private final List<ItemStatus> ITEM_EDITABLE_STATUSES = List.of(
+            ItemStatus.DRAFT, ItemStatus.READY
+    );
+
+    private static final Map<ItemStatus, List<ItemStatus>> allowedSellerTransitions = Map.of(
             ItemStatus.READY, List.of(ItemStatus.PUBLISHED),
-            ItemStatus.PUBLISHED, List.of(ItemStatus.READY, ItemStatus.BOOKED),
+            ItemStatus.PUBLISHED, List.of(ItemStatus.READY),
             ItemStatus.BOOKED, List.of(ItemStatus.PUBLISHED, ItemStatus.ARCHIVED)
+    );
+
+    private static final Map<ItemStatus, List<ItemStatus>> allowedPublicTransitions = Map.of(
+            ItemStatus.PUBLISHED, List.of(ItemStatus.BOOKED),
+            ItemStatus.BOOKED, List.of(ItemStatus.PUBLISHED)
     );
 
     @Override
@@ -55,9 +65,13 @@ public class ItemServiceImpl implements ItemService {
                 info.getMedia(), info.getDescription());
 
         return transactionTemplate.execute((status) -> {
-            ItemEntity item = itemRepository.findById(id);
-            patchItem(item, info);
+            ItemEntity item = findByIdOrThrow(id);
 
+            if (!ITEM_EDITABLE_STATUSES.contains(item.getStatus())) {
+                throw Errors.itemNotEditable(item.getStatus());
+            }
+
+            patchItem(item, info);
             return itemRepository.update(item);
         });
     }
@@ -66,52 +80,71 @@ public class ItemServiceImpl implements ItemService {
     public List<ItemEntity> getItems() {
         log.info("Getting items");
 
-        return itemRepository.findAll();
+        return itemRepository.findAllOrderByCreatedAtDesc();
     }
 
     @Override
     public ItemEntity getItem(String id) {
         log.info("Getting item {}", id);
 
-        return itemRepository.findById(id);
+        return findByIdOrThrow(id);
     }
 
     @Override
-    public void changeItemStatus(String id, ItemStatus status) {
-        log.info("Changing item {} status to {}", id, status);
+    public void changeSellerItemStatus(String id, ItemStatus status) {
+        log.info("Changing item {} status to {} as seller", id, status);
 
-        transactionTemplate.executeWithoutResult((transactionStatus -> {
-            ItemEntity item = itemRepository.findById(id);
-            ItemStatus currentStatus = item.getStatus();
+        changeStatusCommon(id, status, allowedSellerTransitions);
+    }
 
-            if (!allowedTransitions.get(currentStatus).contains(status)) {
-                throw Errors.illegalItemStatusTransition(currentStatus, status);
-            }
+    @Override
+    public void changePublicItemStatus(String id, ItemStatus status) {
+        log.info("Changing item {} status to {} as public", id, status);
 
-            item.setStatus(status);
-            itemRepository.update(item);
-        }));
+        changeStatusCommon(id, status, allowedPublicTransitions);
     }
 
     @Override
     public List<ItemEntity> searchItems(SearchInfo search) {
         log.info("Searching items with info by {}", search);
 
-        return itemRepository.findByAllStatus(ItemStatus.PUBLISHED);
+        return itemRepository.findAllByStatusOrderByCreatedAtDesc(ItemStatus.PUBLISHED);
     }
 
     @Override
     public ItemEntity getPublicItem(String itemId) {
         log.info("Getting public item {}", itemId);
 
-        return itemRepository.findById(itemId);
+        return findByIdOrThrow(itemId);
     }
 
     @Override
     public List<ItemEntity> getBooked() {
         log.info("Getting booked items");
 
-        return itemRepository.findByAllStatus(ItemStatus.BOOKED);
+        return itemRepository.findAllByStatusOrderByCreatedAtDesc(ItemStatus.BOOKED);
+    }
+
+    private ItemEntity findByIdOrThrow(String itemId) {
+        Optional<ItemEntity> item = itemRepository.findById(itemId);
+        if (item.isEmpty()) {
+            throw Errors.itemNotFound(itemId);
+        }
+        return item.get();
+    }
+
+    private void changeStatusCommon(String id, ItemStatus status, Map<ItemStatus, List<ItemStatus>> transitions) {
+        transactionTemplate.executeWithoutResult((transactionStatus -> {
+            ItemEntity item = findByIdOrThrow(id);
+            ItemStatus currentStatus = item.getStatus();
+
+            if (!transitions.get(currentStatus).contains(status)) {
+                throw Errors.illegalItemStatusTransition(currentStatus, status);
+            }
+
+            item.setStatus(status);
+            itemRepository.update(item);
+        }));
     }
 
     private static void patchItem(ItemEntity item, ItemInfoRequest info) {

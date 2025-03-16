@@ -2,6 +2,7 @@ package ru.andryss.trousseau.repository;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Optional;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.InitializingBean;
@@ -64,23 +65,29 @@ public class ItemRepositoryImpl implements ItemRepository, InitializingBean {
 
     @Override
     @Transactional
-    public ItemEntity findById(String id) {
+    public Optional<ItemEntity> findById(String id) {
         MapSqlParameterSource param = new MapSqlParameterSource("id", id);
-        
-        return jdbcTemplate.queryForObject("""
+
+        List<ItemEntity> result = jdbcTemplate.query("""
                 select * from items where id = :id
         """, param, rowMapper);
+
+        if (result.isEmpty()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(result.get(0));
     }
 
     @Override
-    public List<ItemEntity> findAll() {
+    public List<ItemEntity> findAllOrderByCreatedAtDesc() {
         return jdbcTemplate.query("""
                 select * from items order by created_at desc
         """, rowMapper);
     }
 
     @Override
-    public List<ItemEntity> findByAllStatus(ItemStatus status) {
+    public List<ItemEntity> findAllByStatusOrderByCreatedAtDesc(ItemStatus status) {
         MapSqlParameterSource param = new MapSqlParameterSource("status", status.getValue());
 
         return jdbcTemplate.query("""
