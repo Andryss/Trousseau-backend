@@ -8,7 +8,6 @@
         <dbms type="postgresql"/>
     </preConditions>
 
-    <include file="type/type-changelog.xml" relativeToChangelogFile="true"/>
-    <include file="table/table-changelog.xml" relativeToChangelogFile="true"/>
+    <include file="row_change_type.sql" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
