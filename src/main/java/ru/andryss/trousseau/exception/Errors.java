@@ -24,4 +24,14 @@ public class Errors {
         return new TrousseauException(409, "item.update.error",
                 String.format("Объявление в статусе %s не редактируется", status.getValue()));
     }
+
+    public static TrousseauException maximumBookingsCountReached(int count) {
+        return new TrousseauException(409, "bookings.count.error",
+                String.format("Достигнуто максимальное количество бронирований (%s)", count));
+    }
+
+    public static TrousseauException bookingNotFound(String itemId) {
+        return new TrousseauException(404, "booking.absent.error",
+                String.format("Бронирования объявления с id=\"%s\" не найдено", itemId));
+    }
 }

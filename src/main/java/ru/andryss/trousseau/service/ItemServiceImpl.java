@@ -1,11 +1,12 @@
 package ru.andryss.trousseau.service;
 
-import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
+import com.google.common.collect.ImmutableTable;
+import com.google.common.collect.Table;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -13,41 +14,55 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.CollectionUtils;
 import ru.andryss.trousseau.exception.Errors;
+import ru.andryss.trousseau.exception.TrousseauException;
 import ru.andryss.trousseau.generated.model.ItemInfoRequest;
 import ru.andryss.trousseau.generated.model.SearchInfo;
+import ru.andryss.trousseau.model.BookingEntity;
 import ru.andryss.trousseau.model.ItemEntity;
 import ru.andryss.trousseau.model.ItemStatus;
+import ru.andryss.trousseau.repository.BookingRepository;
 import ru.andryss.trousseau.repository.ItemRepository;
+
+import static ru.andryss.trousseau.model.ItemStatus.ARCHIVED;
+import static ru.andryss.trousseau.model.ItemStatus.BOOKED;
+import static ru.andryss.trousseau.model.ItemStatus.PUBLISHED;
+import static ru.andryss.trousseau.model.ItemStatus.READY;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
 
+    private static final int MAX_BOOKINGS_PER_USER = 2;
+
     private final ItemRepository itemRepository;
+    private final BookingRepository bookingRepository;
     private final TimeService timeService;
     private final TransactionTemplate transactionTemplate;
 
     private final DateTimeFormatter itemIdFormatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmssSSS");
 
     private final List<ItemStatus> ITEM_EDITABLE_STATUSES = List.of(
-            ItemStatus.DRAFT, ItemStatus.READY
+            ItemStatus.DRAFT, READY
     );
 
     private final List<ItemStatus> ITEM_READABLE_PUBLIC_STATUSES = List.of(
-            ItemStatus.PUBLISHED, ItemStatus.BOOKED, ItemStatus.ARCHIVED
+            PUBLISHED, BOOKED, ARCHIVED
     );
 
-    private static final Map<ItemStatus, List<ItemStatus>> allowedSellerTransitions = Map.of(
-            ItemStatus.READY, List.of(ItemStatus.PUBLISHED),
-            ItemStatus.PUBLISHED, List.of(ItemStatus.READY),
-            ItemStatus.BOOKED, List.of(ItemStatus.PUBLISHED, ItemStatus.ARCHIVED)
-    );
+    private final Table<ItemStatus, ItemStatus, Transit> sellerTransitions =
+            ImmutableTable.<ItemStatus, ItemStatus, Transit>builder()
+                    .put(READY, PUBLISHED, emptyTransit())
+                    .put(PUBLISHED, READY, emptyTransit())
+                    .put(BOOKED, PUBLISHED, emptyTransit())
+                    .put(BOOKED, ARCHIVED, emptyTransit())
+                    .build();
 
-    private static final Map<ItemStatus, List<ItemStatus>> allowedPublicTransitions = Map.of(
-            ItemStatus.PUBLISHED, List.of(ItemStatus.BOOKED),
-            ItemStatus.BOOKED, List.of(ItemStatus.PUBLISHED)
-    );
+    private final Table<ItemStatus, ItemStatus, Transit> publicTransitions =
+            ImmutableTable.<ItemStatus, ItemStatus, Transit>builder()
+                    .put(PUBLISHED, BOOKED, bookTransit())
+                    .put(BOOKED, PUBLISHED, unbookPublicTransit())
+                    .build();
 
     @Override
     public ItemEntity createItem(ItemInfoRequest info) {
@@ -57,8 +72,9 @@ public class ItemServiceImpl implements ItemService {
         ItemEntity item = new ItemEntity();
         patchItem(item, info);
 
-        item.setId(itemIdFormatter.format(timeService.now()));
-        item.setCreatedAt(Instant.now());
+        ZonedDateTime now = timeService.now();
+        item.setId(itemIdFormatter.format(now));
+        item.setCreatedAt(now.toInstant());
 
         return itemRepository.save(item);
     }
@@ -98,21 +114,21 @@ public class ItemServiceImpl implements ItemService {
     public void changeSellerItemStatus(String id, ItemStatus status) {
         log.info("Changing item {} status to {} as seller", id, status);
 
-        changeStatusInternal(id, status, allowedSellerTransitions);
+        changeStatusInternal(id, status, sellerTransitions);
     }
 
     @Override
     public void changePublicItemStatus(String id, ItemStatus status) {
         log.info("Changing item {} status to {} as public", id, status);
 
-        changeStatusInternal(id, status, allowedPublicTransitions);
+        changeStatusInternal(id, status, publicTransitions);
     }
 
     @Override
     public List<ItemEntity> searchItems(SearchInfo search) {
         log.info("Searching items with info by {}", search);
 
-        return itemRepository.findAllByStatusOrderByCreatedAtDesc(ItemStatus.PUBLISHED);
+        return itemRepository.findAllByStatusOrderByCreatedAtDesc(PUBLISHED);
     }
 
     @Override
@@ -134,7 +150,7 @@ public class ItemServiceImpl implements ItemService {
     public List<ItemEntity> getBooked() {
         log.info("Getting booked items");
 
-        return itemRepository.findAllByStatusOrderByCreatedAtDesc(ItemStatus.BOOKED);
+        return itemRepository.findAllByStatusOrderByCreatedAtDesc(BOOKED);
     }
 
     private ItemEntity findByIdOrThrow(String itemId) {
@@ -145,18 +161,63 @@ public class ItemServiceImpl implements ItemService {
         return item.get();
     }
 
-    private void changeStatusInternal(String id, ItemStatus status, Map<ItemStatus, List<ItemStatus>> transitions) {
+    private void changeStatusInternal(
+            String id,
+            ItemStatus status,
+            Table<ItemStatus, ItemStatus, Transit> transitions
+    ) {
         transactionTemplate.executeWithoutResult((transactionStatus -> {
             ItemEntity item = findByIdOrThrow(id);
             ItemStatus currentStatus = item.getStatus();
 
-            if (!transitions.get(currentStatus).contains(status)) {
+            Transit transit = transitions.get(currentStatus, status);
+            if (transit == null) {
                 throw Errors.illegalItemStatusTransition(currentStatus, status);
             }
+            transit.transit(item);
 
             item.setStatus(status);
             itemRepository.update(item);
         }));
+    }
+
+    private interface Transit {
+        void transit(ItemEntity item) throws TrousseauException; // must be called inside transaction
+    }
+
+    private Transit emptyTransit() {
+        return item -> {
+
+        };
+    }
+
+    private Transit bookTransit() {
+        return item -> {
+            List<BookingEntity> bookings = bookingRepository.findAll();
+
+            if (bookings.size() >= MAX_BOOKINGS_PER_USER) {
+                throw Errors.maximumBookingsCountReached(MAX_BOOKINGS_PER_USER);
+            }
+
+            ZonedDateTime now = timeService.now();
+
+            BookingEntity booking = new BookingEntity();
+            booking.setId(itemIdFormatter.format(now));
+            booking.setItemId(item.getId());
+            booking.setBookedAt(now.toInstant());
+
+            bookingRepository.save(booking);
+        };
+    }
+
+    private Transit unbookPublicTransit() {
+        return item -> {
+            int deleted = bookingRepository.deleteByItemId(item.getId());
+
+            if (deleted == 0) {
+                throw Errors.bookingNotFound(item.getId());
+            }
+        };
     }
 
     private static void patchItem(ItemEntity item, ItemInfoRequest info) {
@@ -164,7 +225,7 @@ public class ItemServiceImpl implements ItemService {
         item.setMediaIds(info.getMedia());
         item.setDescription(info.getDescription());
 
-        item.setStatus(isFilledRequiredFields(item) ? ItemStatus.READY : ItemStatus.DRAFT);
+        item.setStatus(isFilledRequiredFields(item) ? READY : ItemStatus.DRAFT);
     }
 
     private static boolean isFilledRequiredFields(ItemEntity item) {
