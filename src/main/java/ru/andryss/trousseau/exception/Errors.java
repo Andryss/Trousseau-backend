@@ -4,6 +4,9 @@ import org.apache.commons.text.StringEscapeUtils;
 import ru.andryss.trousseau.model.ItemStatus;
 
 public class Errors {
+    public static TrousseauException unhandledExceptionError() {
+        return new TrousseauException(500, "internal.error", "Что-то пошло не так...");
+    }
     public static TrousseauException mediaSaveError() {
         return new TrousseauException(503, "media.save.error", "Ошибка при сохранении медиа");
     }
