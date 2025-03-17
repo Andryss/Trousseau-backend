@@ -34,6 +34,10 @@ public class ItemServiceImpl implements ItemService {
             ItemStatus.DRAFT, ItemStatus.READY
     );
 
+    private final List<ItemStatus> ITEM_READABLE_PUBLIC_STATUSES = List.of(
+            ItemStatus.PUBLISHED, ItemStatus.BOOKED, ItemStatus.ARCHIVED
+    );
+
     private static final Map<ItemStatus, List<ItemStatus>> allowedSellerTransitions = Map.of(
             ItemStatus.READY, List.of(ItemStatus.PUBLISHED),
             ItemStatus.PUBLISHED, List.of(ItemStatus.READY),
@@ -94,14 +98,14 @@ public class ItemServiceImpl implements ItemService {
     public void changeSellerItemStatus(String id, ItemStatus status) {
         log.info("Changing item {} status to {} as seller", id, status);
 
-        changeStatusCommon(id, status, allowedSellerTransitions);
+        changeStatusInternal(id, status, allowedSellerTransitions);
     }
 
     @Override
     public void changePublicItemStatus(String id, ItemStatus status) {
         log.info("Changing item {} status to {} as public", id, status);
 
-        changeStatusCommon(id, status, allowedPublicTransitions);
+        changeStatusInternal(id, status, allowedPublicTransitions);
     }
 
     @Override
@@ -115,7 +119,15 @@ public class ItemServiceImpl implements ItemService {
     public ItemEntity getPublicItem(String itemId) {
         log.info("Getting public item {}", itemId);
 
-        return findByIdOrThrow(itemId);
+        return transactionTemplate.execute(status -> {
+            ItemEntity item = findByIdOrThrow(itemId);
+
+            if (!ITEM_READABLE_PUBLIC_STATUSES.contains(item.getStatus())) {
+                throw Errors.itemNotFound(itemId);
+            }
+
+            return item;
+        });
     }
 
     @Override
@@ -133,7 +145,7 @@ public class ItemServiceImpl implements ItemService {
         return item.get();
     }
 
-    private void changeStatusCommon(String id, ItemStatus status, Map<ItemStatus, List<ItemStatus>> transitions) {
+    private void changeStatusInternal(String id, ItemStatus status, Map<ItemStatus, List<ItemStatus>> transitions) {
         transactionTemplate.executeWithoutResult((transactionStatus -> {
             ItemEntity item = findByIdOrThrow(id);
             ItemStatus currentStatus = item.getStatus();
