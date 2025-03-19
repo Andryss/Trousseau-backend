@@ -25,6 +25,7 @@ import ru.andryss.trousseau.repository.ItemRepository;
 
 import static ru.andryss.trousseau.model.ItemStatus.ARCHIVED;
 import static ru.andryss.trousseau.model.ItemStatus.BOOKED;
+import static ru.andryss.trousseau.model.ItemStatus.DRAFT;
 import static ru.andryss.trousseau.model.ItemStatus.PUBLISHED;
 import static ru.andryss.trousseau.model.ItemStatus.READY;
 
@@ -43,7 +44,7 @@ public class ItemServiceImpl implements ItemService {
     private final DateTimeFormatter itemIdFormatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmssSSS");
 
     private final List<ItemStatus> ITEM_EDITABLE_STATUSES = List.of(
-            ItemStatus.DRAFT, READY
+            DRAFT, READY
     );
 
     private final List<ItemStatus> ITEM_READABLE_PUBLIC_STATUSES = List.of(
@@ -54,14 +55,14 @@ public class ItemServiceImpl implements ItemService {
             ImmutableTable.<ItemStatus, ItemStatus, Transit>builder()
                     .put(READY, PUBLISHED, emptyTransit())
                     .put(PUBLISHED, READY, emptyTransit())
-                    .put(BOOKED, PUBLISHED, emptyTransit())
-                    .put(BOOKED, ARCHIVED, emptyTransit())
+                    .put(BOOKED, PUBLISHED, unbookTransit())
+                    .put(BOOKED, ARCHIVED, closeTransit())
                     .build();
 
     private final Table<ItemStatus, ItemStatus, Transit> publicTransitions =
             ImmutableTable.<ItemStatus, ItemStatus, Transit>builder()
                     .put(PUBLISHED, BOOKED, bookTransit())
-                    .put(BOOKED, PUBLISHED, unbookPublicTransit())
+                    .put(BOOKED, PUBLISHED, unbookTransit())
                     .build();
 
     @Override
@@ -210,14 +211,20 @@ public class ItemServiceImpl implements ItemService {
         };
     }
 
-    private Transit unbookPublicTransit() {
-        return item -> {
-            int deleted = bookingRepository.deleteByItemId(item.getId());
+    private Transit unbookTransit() {
+        return this::deleteBookingOrThrow;
+    }
 
-            if (deleted == 0) {
-                throw Errors.bookingNotFound(item.getId());
-            }
-        };
+    private Transit closeTransit() {
+        return this::deleteBookingOrThrow;
+    }
+
+    private void deleteBookingOrThrow(ItemEntity item) {
+        int deleted = bookingRepository.deleteByItemId(item.getId());
+
+        if (deleted == 0) {
+            throw Errors.bookingNotFound(item.getId());
+        }
     }
 
     private static void patchItem(ItemEntity item, ItemInfoRequest info) {
@@ -225,7 +232,7 @@ public class ItemServiceImpl implements ItemService {
         item.setMediaIds(info.getMedia());
         item.setDescription(info.getDescription());
 
-        item.setStatus(isFilledRequiredFields(item) ? READY : ItemStatus.DRAFT);
+        item.setStatus(isFilledRequiredFields(item) ? READY : DRAFT);
     }
 
     private static boolean isFilledRequiredFields(ItemEntity item) {
