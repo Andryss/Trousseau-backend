@@ -3,8 +3,18 @@ info:
   title: Trousseau
   description: Сервис для передачи вещей внутри общежития
   version: 0.0.2
+
 servers:
   - url: https://localhost:8080
+
+tags:
+  - name: media
+    description: API для работы с медиа-данными
+  - name: seller
+    description: API для работы продавца
+  - name: public
+    description: общедоступный API
+
 components:
   schemas:
     ErrorObject:
@@ -102,6 +112,12 @@ components:
       properties:
         text:
           type: string
+    FavouriteInfo:
+      type: object
+      properties:
+        itemId:
+          $ref: "#/components/schemas/itemId"
+
 paths:
   /seller/media:
     post:
@@ -386,6 +402,56 @@ paths:
       responses:
         200:
           description: Успешное получение списка бронирований
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ItemListResponse"
+        400:
+          description: Неверный формат запроса
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+        500:
+          description: Сервис временно недоступен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+  /favourites:
+    post:
+      summary: Добавить в избранное
+      operationId: addFavourite
+      tags:
+        - public
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FavouriteInfo"
+      responses:
+        200:
+          description: Успешное добавление в избранное
+        400:
+          description: Неверный формат запроса
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+        500:
+          description: Сервис временно недоступен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+    get:
+      summary: Получить избранное
+      operationId: getFavourites
+      tags:
+        - public
+      responses:
+        200:
+          description: Успешное получение избранного
           content:
             application/json:
               schema:

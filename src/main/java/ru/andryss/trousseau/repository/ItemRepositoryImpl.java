@@ -95,6 +95,14 @@ public class ItemRepositoryImpl implements ItemRepository, InitializingBean {
         """, param, rowMapper);
     }
 
+    @Override
+    public List<ItemEntity> findAllFavourites() {
+        return jdbcTemplate.query("""
+                select i.id, i.title, i.media_ids, i.description, i.status, i.created_at
+                    from items i join favourites f on i.id = f.item_id
+        """, rowMapper);
+    }
+
     private MapSqlParameterSource getParameterSource(ItemEntity item) {
         MapSqlParameterSource param = new MapSqlParameterSource();
         param.addValue("id", item.getId());

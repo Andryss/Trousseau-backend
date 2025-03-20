@@ -12,4 +12,5 @@ public interface ItemRepository {
     Optional<ItemEntity> findById(String id);
     List<ItemEntity> findAllOrderByCreatedAtDesc();
     List<ItemEntity> findAllByStatusOrderByCreatedAtDesc(ItemStatus status);
+    List<ItemEntity> findAllFavourites();
 }

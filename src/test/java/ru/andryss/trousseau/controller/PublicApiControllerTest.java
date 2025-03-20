@@ -101,4 +101,35 @@ class PublicApiControllerTest extends BaseApiTest {
                 );
     }
 
+    @Test
+    @SneakyThrows
+    public void addFavouriteTest() {
+        ItemDto item = createPublicItem(new ItemInfo("title", List.of("media-0", "media-1"), "description"));
+
+        mockMvc.perform(
+                        post("/favourites")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("{ \"itemId\": \"" + item.getId() + "\" }")
+                )
+                .andExpect(status().isOk());
+
+        mockMvc.perform(
+                        get("/favourites")
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpectAll(
+                        status().isOk(),
+                        jsonPath("$.items").isArray(),
+                        jsonPath("$.items.size()").value(1),
+                        jsonPath("$.items[0].id").value(item.getId()),
+                        jsonPath("$.items[0].title").value("title"),
+                        jsonPath("$.items[0].media").isArray(),
+                        jsonPath("$.items[0].media.size()").value(2),
+                        jsonPath("$.items[0].media[0].id").value("media-0"),
+                        jsonPath("$.items[0].media[1].id").value("media-1"),
+                        jsonPath("$.items[0].description").value("description"),
+                        jsonPath("$.items[0].status").value("PUBLISHED")
+                );
+    }
+
 }

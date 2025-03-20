@@ -11,5 +11,6 @@
     <include file="items.sql" relativeToChangelogFile="true"/>
     <include file="items_history.sql" relativeToChangelogFile="true"/>
     <include file="bookings.sql" relativeToChangelogFile="true"/>
+    <include file="favourites.sql" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
