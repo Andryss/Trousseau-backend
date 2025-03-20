@@ -16,15 +16,13 @@ public class FavouriteItemRepositoryImpl implements FavouriteItemRepository {
 
     @Override
     public void upsert(FavouriteItemEntity favourite) {
-        MapSqlParameterSource param = new MapSqlParameterSource();
-        param.addValue("id", favourite.getId());
-        param.addValue("itemId", favourite.getItemId());
-        param.addValue("createdAt", Timestamp.from(favourite.getCreatedAt()));
-
         jdbcTemplate.update("""
                 insert into favourites(id, item_id, created_at)
                     values(:id, :itemId, :createdAt)
                 on conflict on constraint favourites_unique do nothing
-        """, param);
+        """, new MapSqlParameterSource()
+                .addValue("id", favourite.getId())
+                .addValue("itemId", favourite.getItemId())
+                .addValue("createdAt", Timestamp.from(favourite.getCreatedAt())));
     }
 }

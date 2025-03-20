@@ -41,24 +41,20 @@ public class ItemRepositoryImpl implements ItemRepository, InitializingBean {
     @Override
     @Transactional
     public ItemEntity save(ItemEntity item) {
-        MapSqlParameterSource param = getParameterSource(item);
-
         jdbcTemplate.update("""
             insert into items(id, title, media_ids, description, status, created_at)
                 values(:id, :title, :mediaIds::jsonb, :description, :status, :createdAt)
-        """, param);
+        """, getParameterSource(item));
 
         return item;
     }
 
     @Override
     public ItemEntity update(ItemEntity item) {
-        MapSqlParameterSource param = getParameterSource(item);
-
         jdbcTemplate.update("""
             update items set title = :title, media_ids = :mediaIds::jsonb, description = :description, status = :status
                 where id = :id
-        """, param);
+        """, getParameterSource(item));
 
         return item;
     }
@@ -66,11 +62,10 @@ public class ItemRepositoryImpl implements ItemRepository, InitializingBean {
     @Override
     @Transactional
     public Optional<ItemEntity> findById(String id) {
-        MapSqlParameterSource param = new MapSqlParameterSource("id", id);
-
         List<ItemEntity> result = jdbcTemplate.query("""
                 select * from items where id = :id
-        """, param, rowMapper);
+        """, new MapSqlParameterSource()
+                .addValue("id", id), rowMapper);
 
         if (result.isEmpty()) {
             return Optional.empty();
@@ -88,11 +83,10 @@ public class ItemRepositoryImpl implements ItemRepository, InitializingBean {
 
     @Override
     public List<ItemEntity> findAllByStatusOrderByCreatedAtDesc(ItemStatus status) {
-        MapSqlParameterSource param = new MapSqlParameterSource("status", status.getValue());
-
         return jdbcTemplate.query("""
                 select * from items where status = :status order by created_at desc
-        """, param, rowMapper);
+        """, new MapSqlParameterSource()
+                .addValue("status", status.getValue()), rowMapper);
     }
 
     @Override
@@ -104,13 +98,12 @@ public class ItemRepositoryImpl implements ItemRepository, InitializingBean {
     }
 
     private MapSqlParameterSource getParameterSource(ItemEntity item) {
-        MapSqlParameterSource param = new MapSqlParameterSource();
-        param.addValue("id", item.getId());
-        param.addValue("title", item.getTitle());
-        param.addValue("mediaIds", objectMapper.writeValueAsString(item.getMediaIds()));
-        param.addValue("description", item.getDescription());
-        param.addValue("status", item.getStatus().getValue());
-        param.addValue("createdAt", Timestamp.from(item.getCreatedAt()));
-        return param;
+        return new MapSqlParameterSource()
+                .addValue("id", item.getId())
+                .addValue("title", item.getTitle())
+                .addValue("mediaIds", objectMapper.writeValueAsString(item.getMediaIds()))
+                .addValue("description", item.getDescription())
+                .addValue("status", item.getStatus().getValue())
+                .addValue("createdAt", Timestamp.from(item.getCreatedAt()));
     }
 }

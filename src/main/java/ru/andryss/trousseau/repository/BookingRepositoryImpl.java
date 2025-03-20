@@ -33,23 +33,20 @@ public class BookingRepositoryImpl implements BookingRepository {
 
     @Override
     public void save(BookingEntity booking) {
-        MapSqlParameterSource param = new MapSqlParameterSource();
-        param.addValue("id", booking.getId());
-        param.addValue("itemId", booking.getItemId());
-        param.addValue("bookedAt", Timestamp.from(booking.getBookedAt()));
-
         jdbcTemplate.update("""
                 insert into bookings(id, item_id, booked_at)
                     values(:id, :itemId, :bookedAt)
-        """, param);
+        """, new MapSqlParameterSource()
+                .addValue("id", booking.getId())
+                .addValue("itemId", booking.getItemId())
+                .addValue("bookedAt", Timestamp.from(booking.getBookedAt())));
     }
 
     @Override
     public int deleteByItemId(String itemId) {
-        MapSqlParameterSource param = new MapSqlParameterSource("itemId", itemId);
-
         return jdbcTemplate.update("""
                 delete from bookings where item_id = :itemId
-        """, param);
+        """, new MapSqlParameterSource()
+                .addValue("itemId", itemId));
     }
 }
