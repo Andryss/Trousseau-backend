@@ -22,7 +22,7 @@ public class PublicApiController extends CommonApiController implements PublicAp
     private final FavouriteService favouriteService;
 
     public PublicApiController(ItemService itemService, MediaService mediaService, FavouriteService favouriteService) {
-        super(mediaService);
+        super(mediaService, favouriteService);
         this.itemService = itemService;
         this.favouriteService = favouriteService;
     }

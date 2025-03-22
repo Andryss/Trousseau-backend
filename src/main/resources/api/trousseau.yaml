@@ -97,6 +97,8 @@ components:
           $ref: "#/components/schemas/itemDescription"
         status:
           $ref: "#/components/schemas/itemStatus"
+        isFavourite:
+          $ref: "#/components/schemas/itemIsFavourite"
     ItemListResponse:
       type: object
       properties:

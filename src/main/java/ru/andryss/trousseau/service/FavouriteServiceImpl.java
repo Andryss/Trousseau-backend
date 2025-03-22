@@ -3,6 +3,7 @@ package ru.andryss.trousseau.service;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +12,8 @@ import ru.andryss.trousseau.model.FavouriteItemEntity;
 import ru.andryss.trousseau.model.ItemEntity;
 import ru.andryss.trousseau.repository.FavouriteItemRepository;
 import ru.andryss.trousseau.repository.ItemRepository;
+
+import static java.util.stream.Collectors.toMap;
 
 @Slf4j
 @Service
@@ -46,5 +49,26 @@ public class FavouriteServiceImpl implements FavouriteService {
         log.info("Getting favourite items");
 
         return itemRepository.findAllFavourites();
+    }
+
+    @Override
+    public boolean checkFavourite(ItemEntity item) {
+        log.info("Checking favourite item {}", item.getId());
+
+        return favouriteItemRepository.existsByItemId(List.of(item.getId())).size() == 1;
+    }
+
+    @Override
+    public Map<String, Boolean> checkFavourite(List<ItemEntity> items) {
+        log.info("Checking favourite items {}", items.size());
+
+        List<String> itemIds = items.stream()
+                .map(ItemEntity::getId)
+                .toList();
+
+        List<String> existent = favouriteItemRepository.existsByItemId(itemIds);
+
+        return items.stream()
+                .collect(toMap(ItemEntity::getId, i -> existent.contains(i.getId())));
     }
 }

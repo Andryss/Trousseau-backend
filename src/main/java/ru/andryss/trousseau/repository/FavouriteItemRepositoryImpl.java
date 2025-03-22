@@ -1,6 +1,7 @@
 package ru.andryss.trousseau.repository;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -32,5 +33,16 @@ public class FavouriteItemRepositoryImpl implements FavouriteItemRepository {
                 delete from favourites where item_id = :itemId
         """, new MapSqlParameterSource()
                 .addValue("itemId", itemId));
+    }
+
+    @Override
+    public List<String> existsByItemId(List<String> itemIds) {
+        if (itemIds.isEmpty()) {
+            return List.of();
+        }
+        return jdbcTemplate.queryForList("""
+                select item_id from favourites where item_id in (:itemIds)
+        """, new MapSqlParameterSource()
+                .addValue("itemIds", itemIds), String.class);
     }
 }
