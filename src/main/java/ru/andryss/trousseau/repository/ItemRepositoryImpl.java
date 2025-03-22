@@ -94,6 +94,7 @@ public class ItemRepositoryImpl implements ItemRepository, InitializingBean {
         return jdbcTemplate.query("""
                 select i.id, i.title, i.media_ids, i.description, i.status, i.created_at
                     from items i join favourites f on i.id = f.item_id
+                order by f.created_at desc
         """, rowMapper);
     }
 
