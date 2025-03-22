@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.springframework.web.bind.annotation.RestController;
 import ru.andryss.trousseau.generated.api.PublicApi;
+import ru.andryss.trousseau.generated.model.ChangeFavouriteRequest;
 import ru.andryss.trousseau.generated.model.ChangeStatusRequest;
-import ru.andryss.trousseau.generated.model.FavouriteInfo;
 import ru.andryss.trousseau.generated.model.ItemDto;
 import ru.andryss.trousseau.generated.model.ItemListResponse;
 import ru.andryss.trousseau.generated.model.SearchInfo;
@@ -28,8 +28,8 @@ public class PublicApiController extends CommonApiController implements PublicAp
     }
 
     @Override
-    public void addFavourite(FavouriteInfo favouriteInfo) {
-        favouriteService.addFavourite(favouriteInfo.getItemId());
+    public void changeFavourite(String itemId, ChangeFavouriteRequest request) {
+        favouriteService.changeIsFavourite(itemId, request.getIsFavourite());
     }
 
     @Override

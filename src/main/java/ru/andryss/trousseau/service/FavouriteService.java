@@ -5,6 +5,6 @@ import java.util.List;
 import ru.andryss.trousseau.model.ItemEntity;
 
 public interface FavouriteService {
-    void addFavourite(String itemId);
+    void changeIsFavourite(String itemId, boolean isFavourite);
     List<ItemEntity> getAll();
 }

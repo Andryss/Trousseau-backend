@@ -25,4 +25,12 @@ public class FavouriteItemRepositoryImpl implements FavouriteItemRepository {
                 .addValue("itemId", favourite.getItemId())
                 .addValue("createdAt", Timestamp.from(favourite.getCreatedAt())));
     }
+
+    @Override
+    public void deleteByItemId(String itemId) {
+        jdbcTemplate.update("""
+                delete from favourites where item_id = :itemId
+        """, new MapSqlParameterSource()
+                .addValue("itemId", itemId));
+    }
 }

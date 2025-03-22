@@ -107,14 +107,14 @@ class PublicApiControllerTest extends BaseApiTest {
         ItemDto item = createPublicItem(new ItemInfo("title", List.of("media-0", "media-1"), "description"));
 
         mockMvc.perform(
-                        post("/favourites")
+                        post("/public/items/" + item.getId() + "/favourite")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content("{ \"itemId\": \"" + item.getId() + "\" }")
+                                .content("{ \"isFavourite\": \"true\" }")
                 )
                 .andExpect(status().isOk());
 
         mockMvc.perform(
-                        get("/favourites")
+                        get("/public/favourites")
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andExpectAll(
@@ -129,6 +129,23 @@ class PublicApiControllerTest extends BaseApiTest {
                         jsonPath("$.items[0].media[1].id").value("media-1"),
                         jsonPath("$.items[0].description").value("description"),
                         jsonPath("$.items[0].status").value("PUBLISHED")
+                );
+
+        mockMvc.perform(
+                        post("/public/items/" + item.getId() + "/favourite")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("{ \"isFavourite\": \"false\" }")
+                )
+                .andExpect(status().isOk());
+
+        mockMvc.perform(
+                        get("/public/favourites")
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpectAll(
+                        status().isOk(),
+                        jsonPath("$.items").isArray(),
+                        jsonPath("$.items.size()").value(0)
                 );
     }
 

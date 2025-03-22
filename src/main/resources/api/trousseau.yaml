@@ -82,6 +82,8 @@ components:
         - PUBLISHED
         - BOOKED
         - ARCHIVED
+    itemIsFavourite:
+      type: boolean
     ItemDto:
       type: object
       properties:
@@ -112,11 +114,11 @@ components:
       properties:
         text:
           type: string
-    FavouriteInfo:
+    ChangeFavouriteRequest:
       type: object
       properties:
-        itemId:
-          $ref: "#/components/schemas/itemId"
+        isFavourite:
+          $ref: "#/components/schemas/itemIsFavourite"
 
 paths:
   /seller/media:
@@ -418,20 +420,27 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorObject"
-  /favourites:
+  /public/items/{itemId}/favourite:
     post:
-      summary: Добавить в избранное
-      operationId: addFavourite
+      summary: Добавить или удалить из избранного
+      operationId: changeFavourite
       tags:
         - public
+      parameters:
+        - in: path
+          name: itemId
+          description: Идентификатор объявления
+          required: true
+          schema:
+            $ref: "#/components/schemas/itemId"
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/FavouriteInfo"
+              $ref: "#/components/schemas/ChangeFavouriteRequest"
       responses:
         200:
-          description: Успешное добавление в избранное
+          description: Успешное добавление или удаление из избранного
         400:
           description: Неверный формат запроса
           content:
@@ -444,14 +453,15 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorObject"
+  /public/favourites:
     get:
-      summary: Получить избранное
+      summary: Получить избранные объявления
       operationId: getFavourites
       tags:
         - public
       responses:
         200:
-          description: Успешное получение избранного
+          description: Успешное добавление или удаление из избранного
           content:
             application/json:
               schema:

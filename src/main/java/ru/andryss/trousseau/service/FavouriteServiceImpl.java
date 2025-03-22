@@ -24,17 +24,21 @@ public class FavouriteServiceImpl implements FavouriteService {
     private final DateTimeFormatter favouriteIdFormatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmssSSS");
 
     @Override
-    public void addFavourite(String itemId) {
-        log.info("Adding item {} to favourites", itemId);
+    public void changeIsFavourite(String itemId, boolean isFavourite) {
+        log.info("Changing isFavourite of item {} to {}", itemId, isFavourite);
 
-        ZonedDateTime now = timeService.now();
+        if (isFavourite) {
+            ZonedDateTime now = timeService.now();
 
-        FavouriteItemEntity favourite = new FavouriteItemEntity();
-        favourite.setId(favouriteIdFormatter.format(now));
-        favourite.setItemId(itemId);
-        favourite.setCreatedAt(now.toInstant());
+            FavouriteItemEntity favourite = new FavouriteItemEntity();
+            favourite.setId(favouriteIdFormatter.format(now));
+            favourite.setItemId(itemId);
+            favourite.setCreatedAt(now.toInstant());
 
-        favouriteItemRepository.upsert(favourite);
+            favouriteItemRepository.upsert(favourite);
+        } else {
+            favouriteItemRepository.deleteByItemId(itemId);
+        }
     }
 
     @Override
