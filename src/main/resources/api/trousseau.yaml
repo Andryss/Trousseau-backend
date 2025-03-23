@@ -455,7 +455,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorObject"
-  /public/favourites:
+  /public/items/favourites:
     get:
       summary: Получить избранные объявления
       operationId: getFavourites
