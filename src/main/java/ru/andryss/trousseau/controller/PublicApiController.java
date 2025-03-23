@@ -58,6 +58,16 @@ public class PublicApiController extends CommonApiController implements PublicAp
     }
 
     @Override
+    public ItemListResponse getFeedItems() {
+        List<ItemEntity> items = itemService.getFeed();
+
+        List<ItemDto> dtoList = mapToDto(items);
+
+        return new ItemListResponse()
+                .items(dtoList);
+    }
+
+    @Override
     public ItemDto getItem(String itemId) {
         ItemEntity item = itemService.getPublicItem(itemId);
 

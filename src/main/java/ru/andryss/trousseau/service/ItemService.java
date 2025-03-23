@@ -17,4 +17,5 @@ public interface ItemService {
     List<ItemEntity> searchItems(SearchInfo search);
     ItemEntity getPublicItem(String itemId);
     List<ItemEntity> getBooked();
+    List<ItemEntity> getFeed();
 }
