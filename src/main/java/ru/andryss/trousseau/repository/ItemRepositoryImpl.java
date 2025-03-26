@@ -14,6 +14,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import ru.andryss.trousseau.generated.model.FilterInfo;
+import ru.andryss.trousseau.generated.model.PageInfo;
 import ru.andryss.trousseau.generated.model.SearchInfo;
 import ru.andryss.trousseau.generated.model.SortInfo;
 import ru.andryss.trousseau.model.ItemEntity;
@@ -115,11 +116,15 @@ public class ItemRepositoryImpl implements ItemRepository, InitializingBean {
 
     @Override
     public List<ItemEntity> findAll(SearchInfo info) {
+        SortInfo sort = info.getSort();
+        PageInfo page = info.getPage();
         String filterQuery = getFilterQuery(info.getFilter());
-        String orderByQuery = getOrderByQuery(info.getSort());
+        String orderByQuery = String.format("%s %s", sort.getField(), sort.getOrder().getValue());
+        String pageCondition = (page.getToken() == null ? "true" : String.format("id > %s", page.getToken()));
+        String limitQuery = page.getSize().toString();
         String query = String.format("""
-                select * from items where (%s) order by %s
-        """, filterQuery, orderByQuery);
+                select * from items where (%s) and (%s) order by %s limit %s
+        """, filterQuery, pageCondition, orderByQuery, limitQuery);
         return jdbcTemplate.query(query, rowMapper);
     }
 
@@ -139,10 +144,6 @@ public class ItemRepositoryImpl implements ItemRepository, InitializingBean {
             return "true";
         }
         return String.join(" AND ", conditions);
-    }
-
-    private static String getOrderByQuery(SortInfo info) {
-        return String.format("%s %s", info.getField(), info.getOrder().getValue());
     }
 
     private MapSqlParameterSource getParameterSource(ItemEntity item) {

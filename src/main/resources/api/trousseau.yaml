@@ -134,6 +134,18 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/filterCondition"
+    pageSize:
+      type: integer
+      minimum: 1
+    pageToken:
+      type: string
+    PageInfo:
+      type: object
+      properties:
+        size:
+          $ref: "#/components/schemas/pageSize"
+        token:
+          $ref: "#/components/schemas/pageToken"
     SearchInfo:
       type: object
       properties:
@@ -143,6 +155,8 @@ components:
           $ref: "#/components/schemas/SortInfo"
         filter:
           $ref: "#/components/schemas/FilterInfo"
+        page:
+          $ref: "#/components/schemas/PageInfo"
     ChangeFavouriteRequest:
       type: object
       properties:
