@@ -111,11 +111,38 @@ components:
       properties:
         status:
           $ref: "#/components/schemas/itemStatus"
+    sortField:
+      type: string
+    sortOrder:
+      type: string
+      enum:
+        - asc
+        - desc
+    SortInfo:
+      type: object
+      properties:
+        field:
+          $ref: "#/components/schemas/sortField"
+        order:
+          $ref: "#/components/schemas/sortOrder"
+    filterCondition:
+      type: string
+    FilterInfo:
+      type: object
+      properties:
+        conditions:
+          type: array
+          items:
+            $ref: "#/components/schemas/filterCondition"
     SearchInfo:
       type: object
       properties:
         text:
           type: string
+        sort:
+          $ref: "#/components/schemas/SortInfo"
+        filter:
+          $ref: "#/components/schemas/FilterInfo"
     ChangeFavouriteRequest:
       type: object
       properties:

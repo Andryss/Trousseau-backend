@@ -36,6 +36,7 @@ public class ItemServiceImpl implements ItemService {
 
     private static final int MAX_BOOKINGS_PER_USER = 2;
     private static final int MAX_ITEMS_IN_FEED = 5;
+    private static final String PUBLISHED_ITEMS_FILTER = "status=PUBLISHED";
 
     private final ItemRepository itemRepository;
     private final BookingRepository bookingRepository;
@@ -130,7 +131,9 @@ public class ItemServiceImpl implements ItemService {
     public List<ItemEntity> searchItems(SearchInfo search) {
         log.info("Searching items with info by {}", search);
 
-        return itemRepository.findAllByStatusOrderByCreatedAtDesc(PUBLISHED);
+        search.getFilter().addConditionsItem(PUBLISHED_ITEMS_FILTER);
+
+        return itemRepository.findAll(search);
     }
 
     @Override

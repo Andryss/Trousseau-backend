@@ -24,7 +24,17 @@ class PublicApiControllerTest extends BaseApiTest {
         mockMvc.perform(
                         post("/public/items:search")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content("{}")
+                                .content("""
+                                {
+                                    "sort": {
+                                        "field": "created_at",
+                                        "order": "desc"
+                                    },
+                                    "filter": {
+                                        "conditions": []
+                                    }
+                                }
+                                """)
                 )
                 .andExpectAll(
                         status().isOk(),

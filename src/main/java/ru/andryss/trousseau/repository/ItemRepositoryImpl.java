@@ -1,20 +1,26 @@
 package ru.andryss.trousseau.repository;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import ru.andryss.trousseau.generated.model.FilterInfo;
+import ru.andryss.trousseau.generated.model.SearchInfo;
+import ru.andryss.trousseau.generated.model.SortInfo;
 import ru.andryss.trousseau.model.ItemEntity;
 import ru.andryss.trousseau.model.ItemStatus;
 import ru.andryss.trousseau.service.ObjectMapperWrapper;
 
+@Slf4j
 @Repository
 @RequiredArgsConstructor
 public class ItemRepositoryImpl implements ItemRepository, InitializingBean {
@@ -105,6 +111,38 @@ public class ItemRepositoryImpl implements ItemRepository, InitializingBean {
                     from items i join favourites f on i.id = f.item_id
                 order by f.created_at desc
         """, rowMapper);
+    }
+
+    @Override
+    public List<ItemEntity> findAll(SearchInfo info) {
+        String filterQuery = getFilterQuery(info.getFilter());
+        String orderByQuery = getOrderByQuery(info.getSort());
+        String query = String.format("""
+                select * from items where (%s) order by %s
+        """, filterQuery, orderByQuery);
+        return jdbcTemplate.query(query, rowMapper);
+    }
+
+    private static String getFilterQuery(FilterInfo info) {
+        List<String> conditions = new ArrayList<>();
+        for (String filter : info.getConditions()) {
+            int equalSignIndex = filter.indexOf("=");
+            if (equalSignIndex != -1) {
+                String field = filter.substring(0, equalSignIndex);
+                String value = filter.substring(equalSignIndex + 1);
+                conditions.add(String.format("(%s = '%s')", field, value));
+                continue;
+            }
+            log.warn("Unknown condition {}", filter);
+        }
+        if (conditions.isEmpty()) {
+            return "true";
+        }
+        return String.join(" AND ", conditions);
+    }
+
+    private static String getOrderByQuery(SortInfo info) {
+        return String.format("%s %s", info.getField(), info.getOrder().getValue());
     }
 
     private MapSqlParameterSource getParameterSource(ItemEntity item) {
