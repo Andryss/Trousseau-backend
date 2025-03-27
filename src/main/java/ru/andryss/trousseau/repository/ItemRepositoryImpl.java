@@ -152,7 +152,7 @@ public class ItemRepositoryImpl implements ItemRepository, InitializingBean {
         if (pageToken == null) {
             return "true";
         }
-        String sortField = info.getSort().getField();
+        String sortField = info.getSort().getField().getValue();
         String compareSign = (info.getSort().getOrder() == SortOrder.ASC ? ">" : "<");
         return String.format("%s %s (select %s from items where id = '%s')",
                 sortField, compareSign, sortField, pageToken);

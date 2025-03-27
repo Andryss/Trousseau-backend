@@ -15,6 +15,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.CollectionUtils;
 import ru.andryss.trousseau.exception.Errors;
 import ru.andryss.trousseau.exception.TrousseauException;
+import ru.andryss.trousseau.generated.model.FilterInfo;
 import ru.andryss.trousseau.generated.model.ItemInfoRequest;
 import ru.andryss.trousseau.generated.model.SearchInfo;
 import ru.andryss.trousseau.model.BookingEntity;
@@ -131,6 +132,9 @@ public class ItemServiceImpl implements ItemService {
     public List<ItemEntity> searchItems(SearchInfo search) {
         log.info("Searching items with info by {}", search);
 
+        if (search.getFilter() == null) {
+            search.setFilter(new FilterInfo());
+        }
         search.getFilter().addConditionsItem(PUBLISHED_ITEMS_FILTER);
 
         return itemRepository.findAll(search);

@@ -33,11 +33,6 @@ public class SearchInfoValidator implements Validator {
             errors.rejectValue("text", "", regexpErr(textRegexp));
         }
 
-        String sortField = info.getSort().getField();
-        if (!wordRegexp.matcher(sortField).matches()) {
-            errors.rejectValue("sort.field", "", regexpErr(wordRegexp));
-        }
-
         String pageToken = info.getPage().getToken();
         if (pageToken != null && !wordRegexp.matcher(pageToken).matches()) {
             errors.rejectValue("page.token", "", regexpErr(wordRegexp));

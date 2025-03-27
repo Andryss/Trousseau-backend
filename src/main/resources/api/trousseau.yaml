@@ -113,6 +113,8 @@ components:
           $ref: "#/components/schemas/itemStatus"
     sortField:
       type: string
+      enum:
+        - created_at
     sortOrder:
       type: string
       enum:
