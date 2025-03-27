@@ -2,7 +2,11 @@ package ru.andryss.trousseau.controller;
 
 import java.util.List;
 
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RestController;
+import ru.andryss.trousseau.controller.validator.SearchInfoValidator;
+import ru.andryss.trousseau.exception.Errors;
 import ru.andryss.trousseau.generated.api.PublicApi;
 import ru.andryss.trousseau.generated.model.ChangeFavouriteRequest;
 import ru.andryss.trousseau.generated.model.ChangeStatusRequest;
@@ -20,11 +24,14 @@ public class PublicApiController extends CommonApiController implements PublicAp
 
     private final ItemService itemService;
     private final FavouriteService favouriteService;
+    private final SearchInfoValidator searchInfoValidator;
 
-    public PublicApiController(ItemService itemService, MediaService mediaService, FavouriteService favouriteService) {
+    public PublicApiController(ItemService itemService, MediaService mediaService, FavouriteService favouriteService,
+                               SearchInfoValidator searchInfoValidator) {
         super(mediaService, favouriteService);
         this.itemService = itemService;
         this.favouriteService = favouriteService;
+        this.searchInfoValidator = searchInfoValidator;
     }
 
     @Override
@@ -76,6 +83,12 @@ public class PublicApiController extends CommonApiController implements PublicAp
 
     @Override
     public ItemListResponse searchItems(SearchInfo searchInfo) {
+        BindingResult bindingResult = new BeanPropertyBindingResult(searchInfo, SearchInfo.class.getSimpleName());
+        searchInfoValidator.validate(searchInfo, bindingResult);
+        if (bindingResult.hasErrors()) {
+            throw Errors.validationErrors(bindingResult);
+        }
+
         List<ItemEntity> items = itemService.searchItems(searchInfo);
 
         List<ItemDto> dtoList = mapToDto(items);

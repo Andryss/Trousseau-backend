@@ -1,6 +1,8 @@
 package ru.andryss.trousseau.exception;
 
 import org.apache.commons.text.StringEscapeUtils;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import ru.andryss.trousseau.model.ItemStatus;
 
 public class Errors {
@@ -33,5 +35,14 @@ public class Errors {
     public static TrousseauException bookingNotFound(String itemId) {
         return new TrousseauException(404, "booking.absent.error",
                 String.format("Бронирования объявления с id=\"%s\" не найдено", itemId));
+    }
+
+    public static TrousseauException validationErrors(BindingResult errors) {
+        StringBuilder builder = new StringBuilder();
+        for (FieldError error : errors.getFieldErrors()) {
+            builder.append(error.getField()).append(": ").append(error.getDefaultMessage()).append(", ");
+        }
+        builder.setLength(builder.length() - 2);
+        return new TrousseauException(400, "validation.errors", builder.toString());
     }
 }

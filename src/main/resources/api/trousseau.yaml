@@ -120,6 +120,7 @@ components:
         - desc
     SortInfo:
       type: object
+      required: [ field, order ]
       properties:
         field:
           $ref: "#/components/schemas/sortField"
@@ -129,6 +130,7 @@ components:
       type: string
     FilterInfo:
       type: object
+      required: [ conditions ]
       properties:
         conditions:
           type: array
@@ -141,6 +143,7 @@ components:
       type: string
     PageInfo:
       type: object
+      required: [ size ]
       properties:
         size:
           $ref: "#/components/schemas/pageSize"
@@ -148,6 +151,7 @@ components:
           $ref: "#/components/schemas/pageToken"
     SearchInfo:
       type: object
+      required: [ sort, page ]
       properties:
         text:
           type: string

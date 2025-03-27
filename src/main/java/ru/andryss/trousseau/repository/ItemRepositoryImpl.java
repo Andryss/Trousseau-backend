@@ -17,6 +17,7 @@ import ru.andryss.trousseau.generated.model.FilterInfo;
 import ru.andryss.trousseau.generated.model.PageInfo;
 import ru.andryss.trousseau.generated.model.SearchInfo;
 import ru.andryss.trousseau.generated.model.SortInfo;
+import ru.andryss.trousseau.generated.model.SortOrder;
 import ru.andryss.trousseau.model.ItemEntity;
 import ru.andryss.trousseau.model.ItemStatus;
 import ru.andryss.trousseau.service.ObjectMapperWrapper;
@@ -119,8 +120,8 @@ public class ItemRepositoryImpl implements ItemRepository, InitializingBean {
         SortInfo sort = info.getSort();
         PageInfo page = info.getPage();
         String filterQuery = getFilterQuery(info.getFilter());
-        String orderByQuery = String.format("%s %s", sort.getField(), sort.getOrder().getValue());
-        String pageCondition = (page.getToken() == null ? "true" : String.format("id > %s", page.getToken()));
+        String orderByQuery = String.format("%s %s, id asc", sort.getField(), sort.getOrder().getValue());
+        String pageCondition = getPageCondition(info);
         String limitQuery = page.getSize().toString();
         String query = String.format("""
                 select * from items where (%s) and (%s) order by %s limit %s
@@ -144,6 +145,17 @@ public class ItemRepositoryImpl implements ItemRepository, InitializingBean {
             return "true";
         }
         return String.join(" AND ", conditions);
+    }
+
+    private static String getPageCondition(SearchInfo info) {
+        String pageToken = info.getPage().getToken();
+        if (pageToken == null) {
+            return "true";
+        }
+        String sortField = info.getSort().getField();
+        String compareSign = (info.getSort().getOrder() == SortOrder.ASC ? ">" : "<");
+        return String.format("%s %s (select %s from items where id = '%s')",
+                sortField, compareSign, sortField, pageToken);
     }
 
     private MapSqlParameterSource getParameterSource(ItemEntity item) {
