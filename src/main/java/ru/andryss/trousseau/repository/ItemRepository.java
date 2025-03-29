@@ -15,5 +15,5 @@ public interface ItemRepository {
     List<ItemEntity> findAllByStatusOrderByCreatedAtDesc(ItemStatus status);
     List<ItemEntity> findAllByStatusOrderByCreatedAtDesc(ItemStatus status, int limit);
     List<ItemEntity> findAllFavourites();
-    List<ItemEntity> findAll(SearchInfo info);
+    List<ItemEntity> executeQuery(String query);
 }

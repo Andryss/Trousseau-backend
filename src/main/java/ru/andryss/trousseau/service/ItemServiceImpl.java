@@ -43,6 +43,7 @@ public class ItemServiceImpl implements ItemService {
     private final BookingRepository bookingRepository;
     private final TimeService timeService;
     private final TransactionTemplate transactionTemplate;
+    private final SearchHelper searchHelper;
 
     private final DateTimeFormatter itemIdFormatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmssSSS");
 
@@ -137,7 +138,9 @@ public class ItemServiceImpl implements ItemService {
         }
         search.getFilter().addConditionsItem(PUBLISHED_ITEMS_FILTER);
 
-        return itemRepository.findAll(search);
+        String query = searchHelper.formQuery(search);
+
+        return itemRepository.executeQuery(query);
     }
 
     @Override
