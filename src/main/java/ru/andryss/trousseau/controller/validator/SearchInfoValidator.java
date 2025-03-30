@@ -13,7 +13,7 @@ import ru.andryss.trousseau.generated.model.SearchInfo;
 @Component
 public class SearchInfoValidator implements Validator {
 
-    private final Pattern textRegexp = Pattern.compile("[\\p{L} ]+");
+    private final Pattern textRegexp = Pattern.compile("[\\p{L}\\w ]+");
     private final Pattern wordRegexp = Pattern.compile("\\w+");
     private final Pattern conditionRegexp = Pattern.compile(
             wordRegexp.pattern() + "=" + wordRegexp.pattern()
@@ -29,7 +29,7 @@ public class SearchInfoValidator implements Validator {
         SearchInfo info = (SearchInfo) target;
 
         String text = info.getText();
-        if (text != null && !textRegexp.matcher(text).matches()) {
+        if (text != null && !text.isBlank() && !textRegexp.matcher(text).matches()) {
             errors.rejectValue("text", "", regexpErr(textRegexp));
         }
 

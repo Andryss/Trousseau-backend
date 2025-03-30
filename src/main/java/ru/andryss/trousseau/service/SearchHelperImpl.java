@@ -31,10 +31,10 @@ public class SearchHelperImpl implements SearchHelper {
                 .replace("""
                         select *
                         from items
-                        where (:where)
-                            and (:pageCondition)
-                        order by :orderBy
-                        limit :limit
+                        where (${where})
+                            and (${pageCondition})
+                        order by ${orderBy}
+                        limit ${limit}
                         """);
     }
 
@@ -73,17 +73,25 @@ public class SearchHelperImpl implements SearchHelper {
     }
 
     private static void enrichConditionsWithTextSearch(List<String> conditions, String text) {
+        List<String> subconditions = new ArrayList<>();
+
         for (String field : List.of("title", "description")) {
             Map<String, String> params = Map.of(
                     "field", field,
                     "text", text
             );
 
-            conditions.add(new StringSubstitutor(params)
+            subconditions.add(new StringSubstitutor(params)
                     .replace("""
-                            :field like '%:text%'
+                            ${field} like '%${text}%'
                             """));
         }
+
+        StringJoiner joiner = new StringJoiner(") or (", "(", ")");
+        for (String condition : subconditions) {
+            joiner.add(condition);
+        }
+        conditions.add(joiner.toString());
     }
 
     private static String getOrderQuery(SearchInfo info) {
@@ -96,7 +104,7 @@ public class SearchHelperImpl implements SearchHelper {
 
         return new StringSubstitutor(params)
                 .replace("""
-                        :field :order, id asc
+                        ${field} ${order}, id asc
                         """);
     }
 
@@ -116,7 +124,7 @@ public class SearchHelperImpl implements SearchHelper {
 
         return new StringSubstitutor(params)
                 .replace("""
-                        :field :sign (select :field from items where id = ':id')
+                        ${field} ${sign} (select ${field} from items where id = '${id}')
                         """);
     }
 
