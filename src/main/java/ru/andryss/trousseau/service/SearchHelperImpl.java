@@ -2,9 +2,9 @@ package ru.andryss.trousseau.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.StringJoiner;
 
-import com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.text.StringSubstitutor;
 import org.springframework.stereotype.Service;
@@ -20,12 +20,12 @@ public class SearchHelperImpl implements SearchHelper {
 
     @Override
     public String formQuery(SearchInfo info) {
-        ImmutableMap<String, String> params = ImmutableMap.<String, String>builder()
-                .put("where", getFilterQuery(info))
-                .put("orderBy", getOrderQuery(info))
-                .put("pageCondition", getPageCondition(info))
-                .put("limit", getLimitQuery(info))
-                .build();
+        Map<String, String> params = Map.of(
+                "where", getFilterQuery(info),
+                "orderBy", getOrderQuery(info),
+                "pageCondition", getPageCondition(info),
+                "limit", getLimitQuery(info)
+        );
 
         return new StringSubstitutor(params)
                 .replace("""
@@ -73,16 +73,26 @@ public class SearchHelperImpl implements SearchHelper {
     }
 
     private static void enrichConditionsWithTextSearch(List<String> conditions, String text) {
-        // TODO
+        for (String field : List.of("title", "description")) {
+            Map<String, String> params = Map.of(
+                    "field", field,
+                    "text", text
+            );
+
+            conditions.add(new StringSubstitutor(params)
+                    .replace("""
+                            :field like '%:text%'
+                            """));
+        }
     }
 
     private static String getOrderQuery(SearchInfo info) {
         SortInfo sort = info.getSort();
 
-        ImmutableMap<String, String> params = ImmutableMap.<String, String>builder()
-                .put("field", sort.getField().getValue())
-                .put("order", sort.getOrder().getValue())
-                .build();
+        Map<String, String> params = Map.of(
+                "field", sort.getField().getValue(),
+                "order", sort.getOrder().getValue()
+        );
 
         return new StringSubstitutor(params)
                 .replace("""
@@ -98,11 +108,11 @@ public class SearchHelperImpl implements SearchHelper {
 
         SortInfo sort = info.getSort();
 
-        ImmutableMap<String, String> params = ImmutableMap.<String, String>builder()
-                .put("field", sort.getField().getValue())
-                .put("sign", (sort.getOrder() == SortOrder.ASC ? ">" : "<"))
-                .put("id", pageToken)
-                .build();
+        Map<String, String> params = Map.of(
+                "field", sort.getField().getValue(),
+                "sign", (sort.getOrder() == SortOrder.ASC ? ">" : "<"),
+                "id", pageToken
+        );
 
         return new StringSubstitutor(params)
                 .replace("""

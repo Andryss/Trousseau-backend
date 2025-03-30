@@ -151,12 +151,15 @@ components:
           $ref: "#/components/schemas/pageSize"
         token:
           $ref: "#/components/schemas/pageToken"
+    searchText:
+      type: string
+      maxLength: 50
     SearchInfo:
       type: object
       required: [ sort, page ]
       properties:
         text:
-          type: string
+          $ref: "#/components/schemas/searchText"
         sort:
           $ref: "#/components/schemas/SortInfo"
         filter:

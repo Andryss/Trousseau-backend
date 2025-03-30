@@ -3,7 +3,6 @@ package ru.andryss.trousseau.repository;
 import java.util.List;
 import java.util.Optional;
 
-import ru.andryss.trousseau.generated.model.SearchInfo;
 import ru.andryss.trousseau.model.ItemEntity;
 import ru.andryss.trousseau.model.ItemStatus;
 
