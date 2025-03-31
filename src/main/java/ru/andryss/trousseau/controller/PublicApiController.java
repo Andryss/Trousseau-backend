@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.andryss.trousseau.controller.validator.SearchInfoValidator;
 import ru.andryss.trousseau.exception.Errors;
 import ru.andryss.trousseau.generated.api.PublicApi;
+import ru.andryss.trousseau.generated.model.CategoryDto;
+import ru.andryss.trousseau.generated.model.CategoryTree;
 import ru.andryss.trousseau.generated.model.ChangeFavouriteRequest;
 import ru.andryss.trousseau.generated.model.ChangeStatusRequest;
 import ru.andryss.trousseau.generated.model.ItemDto;
@@ -15,6 +17,7 @@ import ru.andryss.trousseau.generated.model.ItemListResponse;
 import ru.andryss.trousseau.generated.model.SearchInfo;
 import ru.andryss.trousseau.model.ItemEntity;
 import ru.andryss.trousseau.model.ItemStatus;
+import ru.andryss.trousseau.service.CategoryService;
 import ru.andryss.trousseau.service.FavouriteService;
 import ru.andryss.trousseau.service.ItemService;
 import ru.andryss.trousseau.service.MediaService;
@@ -24,13 +27,15 @@ public class PublicApiController extends CommonApiController implements PublicAp
 
     private final ItemService itemService;
     private final FavouriteService favouriteService;
+    private final CategoryService categoryService;
     private final SearchInfoValidator searchInfoValidator;
 
     public PublicApiController(ItemService itemService, MediaService mediaService, FavouriteService favouriteService,
-                               SearchInfoValidator searchInfoValidator) {
+                               CategoryService categoryService, SearchInfoValidator searchInfoValidator) {
         super(mediaService, favouriteService);
         this.itemService = itemService;
         this.favouriteService = favouriteService;
+        this.categoryService = categoryService;
         this.searchInfoValidator = searchInfoValidator;
     }
 
@@ -52,6 +57,13 @@ public class PublicApiController extends CommonApiController implements PublicAp
 
         return new ItemListResponse()
                 .items(dtoList);
+    }
+
+    @Override
+    public CategoryTree getCategoryTree() {
+        CategoryDto root = categoryService.getCategoryTree();
+
+        return new CategoryTree().root(root);
     }
 
     @Override

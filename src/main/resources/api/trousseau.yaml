@@ -171,6 +171,26 @@ components:
       properties:
         isFavourite:
           $ref: "#/components/schemas/itemIsFavourite"
+    categoryId:
+      type: string
+    categoryName:
+      type: string
+    CategoryDto:
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/categoryId"
+        name:
+          $ref: "#/components/schemas/categoryName"
+        children:
+          type: array
+          items:
+            $ref: "#/components/schemas/CategoryDto"
+    CategoryTree:
+      type: object
+      properties:
+        root:
+          $ref: "#/components/schemas/CategoryDto"
 
 paths:
   /seller/media:
@@ -555,3 +575,16 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorObject"
+  /public/categories/tree:
+    get:
+      summary: Получить дерево категорий
+      operationId: getCategoryTree
+      tags:
+        - public
+      responses:
+        200:
+          description: Успешное получение дерева категорий
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CategoryTree"

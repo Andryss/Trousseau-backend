@@ -198,4 +198,20 @@ class PublicApiControllerTest extends BaseApiTest {
                 );
     }
 
+    @Test
+    @SneakyThrows
+    public void getCategoryTreeTest() {
+        mockMvc.perform(
+                        get("/public/categories/tree")
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpectAll(
+                        status().isOk(),
+                        jsonPath("$.root.id").value("all"),
+                        jsonPath("$.root.name").value("Все категории"),
+                        jsonPath("$.root.children").isArray(),
+                        jsonPath("$.root.children.size()").value(9)
+                );
+    }
+
 }
