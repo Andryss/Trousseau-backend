@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.andryss.trousseau.controller.validator.SearchInfoValidator;
 import ru.andryss.trousseau.exception.Errors;
 import ru.andryss.trousseau.generated.api.PublicApi;
-import ru.andryss.trousseau.generated.model.CategoryDto;
+import ru.andryss.trousseau.generated.model.CategoryNode;
 import ru.andryss.trousseau.generated.model.CategoryTree;
 import ru.andryss.trousseau.generated.model.ChangeFavouriteRequest;
 import ru.andryss.trousseau.generated.model.ChangeStatusRequest;
@@ -32,7 +32,7 @@ public class PublicApiController extends CommonApiController implements PublicAp
 
     public PublicApiController(ItemService itemService, MediaService mediaService, FavouriteService favouriteService,
                                CategoryService categoryService, SearchInfoValidator searchInfoValidator) {
-        super(mediaService, favouriteService);
+        super(mediaService, favouriteService, categoryService);
         this.itemService = itemService;
         this.favouriteService = favouriteService;
         this.categoryService = categoryService;
@@ -61,7 +61,7 @@ public class PublicApiController extends CommonApiController implements PublicAp
 
     @Override
     public CategoryTree getCategoryTree() {
-        CategoryDto root = categoryService.getCategoryTree();
+        CategoryNode root = categoryService.getCategoryTree();
 
         return new CategoryTree().root(root);
     }

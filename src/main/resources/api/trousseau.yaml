@@ -50,6 +50,8 @@ components:
         $ref: "#/components/schemas/mediaId"
     itemDescription:
       type: string
+    categoryId:
+      type: string
     ItemInfoRequest:
       type: object
       properties:
@@ -59,6 +61,8 @@ components:
           $ref: "#/components/schemas/itemMedia"
         description:
           $ref: "#/components/schemas/itemDescription"
+        category:
+          $ref: "#/components/schemas/categoryId"
     url:
       type: string
     ItemMediaDto:
@@ -84,6 +88,15 @@ components:
         - ARCHIVED
     itemIsFavourite:
       type: boolean
+    categoryName:
+      type: string
+    CategoryDto:
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/categoryId"
+        name:
+          $ref: "#/components/schemas/categoryName"
     ItemDto:
       type: object
       properties:
@@ -95,6 +108,8 @@ components:
           $ref: "#/components/schemas/mediaDtos"
         description:
           $ref: "#/components/schemas/itemDescription"
+        category:
+          $ref: "#/components/schemas/CategoryDto"
         status:
           $ref: "#/components/schemas/itemStatus"
         isFavourite:
@@ -171,11 +186,7 @@ components:
       properties:
         isFavourite:
           $ref: "#/components/schemas/itemIsFavourite"
-    categoryId:
-      type: string
-    categoryName:
-      type: string
-    CategoryDto:
+    CategoryNode:
       type: object
       properties:
         id:
@@ -185,12 +196,12 @@ components:
         children:
           type: array
           items:
-            $ref: "#/components/schemas/CategoryDto"
+            $ref: "#/components/schemas/CategoryNode"
     CategoryTree:
       type: object
       properties:
         root:
-          $ref: "#/components/schemas/CategoryDto"
+          $ref: "#/components/schemas/CategoryNode"
 
 paths:
   /seller/media:

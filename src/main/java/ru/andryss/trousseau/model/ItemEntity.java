@@ -15,6 +15,7 @@ public class ItemEntity {
     private String title;
     private List<String> mediaIds;
     private String description;
+    private String categoryId;
     private ItemStatus status;
     private Instant createdAt;
 }

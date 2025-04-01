@@ -1,9 +1,11 @@
 package ru.andryss.trousseau.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.andryss.trousseau.model.CategoryEntity;
@@ -27,5 +29,19 @@ public class CategoryRepositoryImpl implements CategoryRepository {
         return jdbcTemplate.query("""
                 select * from categories
         """, rowMapper);
+    }
+
+    @Override
+    public Optional<CategoryEntity> findById(String id) {
+        List<CategoryEntity> result = jdbcTemplate.query("""
+                        select * from categories where id = :id
+                """, new MapSqlParameterSource()
+                .addValue("id", id), rowMapper);
+
+        if (result.isEmpty()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(result.get(0));
     }
 }

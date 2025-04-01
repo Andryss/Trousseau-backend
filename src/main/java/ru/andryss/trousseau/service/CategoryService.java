@@ -1,7 +1,8 @@
 package ru.andryss.trousseau.service;
 
-import ru.andryss.trousseau.generated.model.CategoryDto;
+import ru.andryss.trousseau.generated.model.CategoryNode;
 
 public interface CategoryService {
-    CategoryDto getCategoryTree();
+    CategoryNode getCategoryTree();
+    String getCategoryName(String id);
 }

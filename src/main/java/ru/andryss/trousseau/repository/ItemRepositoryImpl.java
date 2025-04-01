@@ -34,6 +34,7 @@ public class ItemRepositoryImpl implements ItemRepository, InitializingBean {
             item.setTitle(rs.getString("title"));
             item.setMediaIds(objectMapper.readValue(rs.getString("media_ids")));
             item.setDescription(rs.getString("description"));
+            item.setCategoryId(rs.getString("category_id"));
             item.setStatus(ItemStatus.fromValue(rs.getString("status")));
             item.setCreatedAt(rs.getTimestamp("created_at").toInstant());
             return item;
@@ -44,8 +45,8 @@ public class ItemRepositoryImpl implements ItemRepository, InitializingBean {
     @Transactional
     public ItemEntity save(ItemEntity item) {
         jdbcTemplate.update("""
-            insert into items(id, title, media_ids, description, status, created_at)
-                values(:id, :title, :mediaIds::jsonb, :description, :status, :createdAt)
+            insert into items(id, title, media_ids, description, category_id, status, created_at)
+                values(:id, :title, :mediaIds::jsonb, :description, :categoryId, :status, :createdAt)
         """, getParameterSource(item));
 
         return item;
@@ -54,7 +55,9 @@ public class ItemRepositoryImpl implements ItemRepository, InitializingBean {
     @Override
     public ItemEntity update(ItemEntity item) {
         jdbcTemplate.update("""
-            update items set title = :title, media_ids = :mediaIds::jsonb, description = :description, status = :status
+            update items
+                set title = :title, media_ids = :mediaIds::jsonb, description = :description,
+                    category_id = :categoryId, status = :status
                 where id = :id
         """, getParameterSource(item));
 
@@ -103,7 +106,7 @@ public class ItemRepositoryImpl implements ItemRepository, InitializingBean {
     @Override
     public List<ItemEntity> findAllFavourites() {
         return jdbcTemplate.query("""
-                select i.id, i.title, i.media_ids, i.description, i.status, i.created_at
+                select i.id, i.title, i.media_ids, i.description, i.category_id, i.status, i.created_at
                     from items i join favourites f on i.id = f.item_id
                 order by f.created_at desc
         """, rowMapper);
@@ -120,6 +123,7 @@ public class ItemRepositoryImpl implements ItemRepository, InitializingBean {
                 .addValue("title", item.getTitle())
                 .addValue("mediaIds", objectMapper.writeValueAsString(item.getMediaIds()))
                 .addValue("description", item.getDescription())
+                .addValue("categoryId", item.getCategoryId())
                 .addValue("status", item.getStatus().getValue())
                 .addValue("createdAt", Timestamp.from(item.getCreatedAt()));
     }

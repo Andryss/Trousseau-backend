@@ -71,8 +71,8 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemEntity createItem(ItemInfoRequest info) {
-        log.info("Creating item title={}, mediaIds={}, description={}", info.getTitle(), info.getMedia(),
-                info.getDescription());
+        log.info("Creating item title={}, mediaIds={}, description={}, category={}", info.getTitle(), info.getMedia(),
+                info.getDescription(), info.getCategory());
 
         ItemEntity item = new ItemEntity();
         patchItem(item, info);
@@ -86,8 +86,8 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemEntity updateItem(String id, ItemInfoRequest info) {
-        log.info("Updating item with id={}, title={}, mediaIds={}, description={}", id, info.getTitle(),
-                info.getMedia(), info.getDescription());
+        log.info("Updating item with id={}, title={}, mediaIds={}, description={}, category={}", id, info.getTitle(),
+                info.getMedia(), info.getDescription(), info.getCategory());
 
         return transactionTemplate.execute((status) -> {
             ItemEntity item = findByIdOrThrow(id);
@@ -249,6 +249,7 @@ public class ItemServiceImpl implements ItemService {
         item.setTitle(info.getTitle());
         item.setMediaIds(info.getMedia());
         item.setDescription(info.getDescription());
+        item.setCategoryId(info.getCategory());
 
         item.setStatus(isFilledRequiredFields(item) ? READY : DRAFT);
     }
@@ -256,6 +257,7 @@ public class ItemServiceImpl implements ItemService {
     private static boolean isFilledRequiredFields(ItemEntity item) {
         return !StringUtils.isBlank(item.getTitle())
                 && !CollectionUtils.isEmpty(item.getMediaIds())
-                && !StringUtils.isBlank(item.getDescription());
+                && !StringUtils.isBlank(item.getDescription())
+                && !StringUtils.isBlank(item.getCategoryId());
     }
 }

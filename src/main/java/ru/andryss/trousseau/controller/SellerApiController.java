@@ -10,6 +10,7 @@ import ru.andryss.trousseau.generated.model.ItemInfoRequest;
 import ru.andryss.trousseau.generated.model.ItemListResponse;
 import ru.andryss.trousseau.model.ItemEntity;
 import ru.andryss.trousseau.model.ItemStatus;
+import ru.andryss.trousseau.service.CategoryService;
 import ru.andryss.trousseau.service.FavouriteService;
 import ru.andryss.trousseau.service.ItemService;
 import ru.andryss.trousseau.service.MediaService;
@@ -19,8 +20,9 @@ public class SellerApiController extends CommonApiController implements SellerAp
 
     private final ItemService itemService;
 
-    public SellerApiController(ItemService itemService, MediaService mediaService, FavouriteService favouriteService) {
-        super(mediaService, favouriteService);
+    public SellerApiController(ItemService itemService, MediaService mediaService, FavouriteService favouriteService,
+                               CategoryService categoryService) {
+        super(mediaService, favouriteService, categoryService);
         this.itemService = itemService;
     }
 

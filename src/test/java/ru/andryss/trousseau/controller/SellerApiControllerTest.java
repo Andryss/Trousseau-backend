@@ -107,7 +107,8 @@ public class SellerApiControllerTest extends BaseApiTest {
         ItemDto updated = updateItem(id, new ItemInfo(
                 "some-title",
                 List.of("media-1"),
-                "some-description"
+                "some-description",
+                "clothes"
         ));
 
         Assertions.assertEquals(ItemStatus.READY, updated.getStatus());
@@ -139,7 +140,8 @@ public class SellerApiControllerTest extends BaseApiTest {
                 {
                     "title": "some title",
                     "media": ["some media id"],
-                    "description": "some description"
+                    "description": "some description",
+                    "category": "clothes"
                 }
                 """, "READY")
         );
@@ -157,7 +159,8 @@ public class SellerApiControllerTest extends BaseApiTest {
                 {
                     "title": "some title",
                     "media": ["some media id"],
-                    "description": "some description"
+                    "description": "some description",
+                    "category": "clothes"
                 }
                 """, "READY")
         );

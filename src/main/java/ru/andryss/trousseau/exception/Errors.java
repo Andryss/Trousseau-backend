@@ -22,6 +22,11 @@ public class Errors {
                 String.format("Объявление с id=\"%s\" не найдено", StringEscapeUtils.escapeJava(itemId)));
     }
 
+    public static TrousseauException categoryNotFound(String categoryId) {
+        return new TrousseauException(404, "category.absent.error",
+                String.format("Категория с id=\"%s\" не найдена", StringEscapeUtils.escapeJava(categoryId)));
+    }
+
     public static TrousseauException itemNotEditable(ItemStatus status) {
         return new TrousseauException(409, "item.update.error",
                 String.format("Объявление в статусе %s не редактируется", status.getValue()));

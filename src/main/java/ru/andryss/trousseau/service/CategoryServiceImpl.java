@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.andryss.trousseau.generated.model.CategoryDto;
+import ru.andryss.trousseau.exception.Errors;
+import ru.andryss.trousseau.generated.model.CategoryNode;
 import ru.andryss.trousseau.model.CategoryEntity;
 import ru.andryss.trousseau.repository.CategoryRepository;
 
@@ -20,7 +22,9 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
 
     @Override
-    public CategoryDto getCategoryTree() {
+    public CategoryNode getCategoryTree() {
+        log.info("Getting category tree");
+
         List<CategoryEntity> categories = categoryRepository.findAll();
 
         HashMap<String, List<CategoryEntity>> categoriesByParentId = new HashMap<>();
@@ -38,8 +42,19 @@ public class CategoryServiceImpl implements CategoryService {
         return formCategory(rootArray.get(0), categoriesByParentId);
     }
 
-    private CategoryDto formCategory(CategoryEntity category, Map<String, List<CategoryEntity>> categoriesByParentId) {
-        CategoryDto dto = new CategoryDto()
+    @Override
+    public String getCategoryName(String id) {
+        log.info("Getting category {} name", id);
+
+        Optional<CategoryEntity> category = categoryRepository.findById(id);
+        if (category.isEmpty()) {
+            throw Errors.categoryNotFound(id);
+        }
+        return category.get().getName();
+    }
+
+    private CategoryNode formCategory(CategoryEntity category, Map<String, List<CategoryEntity>> categoriesByParentId) {
+        CategoryNode dto = new CategoryNode()
                 .id(category.getId())
                 .name(category.getName());
 

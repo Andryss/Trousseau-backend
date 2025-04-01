@@ -18,8 +18,8 @@ class PublicApiControllerTest extends BaseApiTest {
     @Test
     @SneakyThrows
     public void searchItemsTest() {
-        ItemDto item0 = createPublicItem(new ItemInfo("title-0", List.of("media-00"), "description-0"));
-        ItemDto item1 = createPublicItem(new ItemInfo("title-1", List.of("media-10", "media-11"), "description-1"));
+        ItemDto item0 = createPublicItem(new ItemInfo("title-0", List.of("media-00"), "description-0", "clothes"));
+        ItemDto item1 = createPublicItem(new ItemInfo("title-1", List.of("media-10", "media-11"), "description-1", "clothes"));
 
         mockMvc.perform(
                         post("/public/items:search")
@@ -32,6 +32,9 @@ class PublicApiControllerTest extends BaseApiTest {
                                     },
                                     "filter": {
                                         "conditions": []
+                                    },
+                                    "page": {
+                                        "size": 2
                                     }
                                 }
                                 """)
@@ -47,6 +50,8 @@ class PublicApiControllerTest extends BaseApiTest {
                         jsonPath("$.items[0].media[0].id").value("media-10"),
                         jsonPath("$.items[0].media[1].id").value("media-11"),
                         jsonPath("$.items[0].description").value("description-1"),
+                        jsonPath("$.items[0].category.id").value("clothes"),
+                        jsonPath("$.items[0].category.name").value("Одежда и обувь"),
                         jsonPath("$.items[0].status").value("PUBLISHED"),
                         jsonPath("$.items[0].isFavourite").value("false"),
                         jsonPath("$.items[1].id").value(item0.getId()),
@@ -55,6 +60,8 @@ class PublicApiControllerTest extends BaseApiTest {
                         jsonPath("$.items[1].media.size()").value(1),
                         jsonPath("$.items[1].media[0].id").value("media-00"),
                         jsonPath("$.items[1].description").value("description-0"),
+                        jsonPath("$.items[1].category.id").value("clothes"),
+                        jsonPath("$.items[1].category.name").value("Одежда и обувь"),
                         jsonPath("$.items[1].status").value("PUBLISHED"),
                         jsonPath("$.items[1].isFavourite").value("false")
                 );
@@ -63,7 +70,7 @@ class PublicApiControllerTest extends BaseApiTest {
     @Test
     @SneakyThrows
     public void getItemTest() {
-        ItemDto item = createPublicItem(new ItemInfo("title", List.of("media-0", "media-1"), "description"));
+        ItemDto item = createPublicItem(new ItemInfo("title", List.of("media-0", "media-1"), "description", "clothes"));
 
         mockMvc.perform(
                         get("/public/items/{itemId}", item.getId())
@@ -78,6 +85,8 @@ class PublicApiControllerTest extends BaseApiTest {
                         jsonPath("$.media[0].id").value("media-0"),
                         jsonPath("$.media[1].id").value("media-1"),
                         jsonPath("$.description").value("description"),
+                        jsonPath("$.category.id").value("clothes"),
+                        jsonPath("$.category.name").value("Одежда и обувь"),
                         jsonPath("$.status").value("PUBLISHED"),
                         jsonPath("$.isFavourite").value("false")
                 );
@@ -86,7 +95,7 @@ class PublicApiControllerTest extends BaseApiTest {
     @Test
     @SneakyThrows
     public void bookItemTest() {
-        ItemDto item = createPublicItem(new ItemInfo("title", List.of("media-0", "media-1"), "description"));
+        ItemDto item = createPublicItem(new ItemInfo("title", List.of("media-0", "media-1"), "description", "clothes"));
 
         mockMvc.perform(
                         put("/public/items/{itemId}/status", item.getId())
@@ -110,6 +119,8 @@ class PublicApiControllerTest extends BaseApiTest {
                         jsonPath("$.items[0].media[0].id").value("media-0"),
                         jsonPath("$.items[0].media[1].id").value("media-1"),
                         jsonPath("$.items[0].description").value("description"),
+                        jsonPath("$.items[0].category.id").value("clothes"),
+                        jsonPath("$.items[0].category.name").value("Одежда и обувь"),
                         jsonPath("$.items[0].status").value("BOOKED"),
                         jsonPath("$.items[0].isFavourite").value("false")
                 );
@@ -118,7 +129,7 @@ class PublicApiControllerTest extends BaseApiTest {
     @Test
     @SneakyThrows
     public void addFavouriteTest() {
-        ItemDto item = createPublicItem(new ItemInfo("title", List.of("media-0", "media-1"), "description"));
+        ItemDto item = createPublicItem(new ItemInfo("title", List.of("media-0", "media-1"), "description", "clothes"));
 
         mockMvc.perform(
                         post("/public/items/" + item.getId() + "/favourite")
@@ -142,6 +153,8 @@ class PublicApiControllerTest extends BaseApiTest {
                         jsonPath("$.items[0].media[0].id").value("media-0"),
                         jsonPath("$.items[0].media[1].id").value("media-1"),
                         jsonPath("$.items[0].description").value("description"),
+                        jsonPath("$.items[0].category.id").value("clothes"),
+                        jsonPath("$.items[0].category.name").value("Одежда и обувь"),
                         jsonPath("$.items[0].status").value("PUBLISHED"),
                         jsonPath("$.items[0].isFavourite").value("true")
                 );
@@ -167,8 +180,8 @@ class PublicApiControllerTest extends BaseApiTest {
     @Test
     @SneakyThrows
     public void getFeedTest() {
-        ItemDto item0 = createPublicItem(new ItemInfo("title-0", List.of("media-00"), "description-0"));
-        ItemDto item1 = createPublicItem(new ItemInfo("title-1", List.of("media-10", "media-11"), "description-1"));
+        ItemDto item0 = createPublicItem(new ItemInfo("title-0", List.of("media-00"), "description-0", "clothes"));
+        ItemDto item1 = createPublicItem(new ItemInfo("title-1", List.of("media-10", "media-11"), "description-1", "clothes"));
 
         mockMvc.perform(
                         get("/public/items/feed")
@@ -185,6 +198,8 @@ class PublicApiControllerTest extends BaseApiTest {
                         jsonPath("$.items[0].media[0].id").value("media-10"),
                         jsonPath("$.items[0].media[1].id").value("media-11"),
                         jsonPath("$.items[0].description").value("description-1"),
+                        jsonPath("$.items[0].category.id").value("clothes"),
+                        jsonPath("$.items[0].category.name").value("Одежда и обувь"),
                         jsonPath("$.items[0].status").value("PUBLISHED"),
                         jsonPath("$.items[0].isFavourite").value("false"),
                         jsonPath("$.items[1].id").value(item0.getId()),
@@ -193,6 +208,8 @@ class PublicApiControllerTest extends BaseApiTest {
                         jsonPath("$.items[1].media.size()").value(1),
                         jsonPath("$.items[1].media[0].id").value("media-00"),
                         jsonPath("$.items[1].description").value("description-0"),
+                        jsonPath("$.items[1].category.id").value("clothes"),
+                        jsonPath("$.items[1].category.name").value("Одежда и обувь"),
                         jsonPath("$.items[1].status").value("PUBLISHED"),
                         jsonPath("$.items[1].isFavourite").value("false")
                 );

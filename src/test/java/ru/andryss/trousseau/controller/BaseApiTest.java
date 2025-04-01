@@ -80,6 +80,6 @@ public abstract class BaseApiTest {
         return item;
     }
 
-    protected record ItemInfo(String title, List<String> media, String description) {
+    protected record ItemInfo(String title, List<String> media, String description, String category) {
     }
 }
