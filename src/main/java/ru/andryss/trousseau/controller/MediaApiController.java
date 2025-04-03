@@ -1,6 +1,6 @@
 package ru.andryss.trousseau.controller;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import ru.andryss.trousseau.generated.api.MediaApi;
@@ -8,7 +8,7 @@ import ru.andryss.trousseau.generated.model.UploadMediaResponse;
 import ru.andryss.trousseau.service.MediaService;
 
 @RestController
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class MediaApiController implements MediaApi {
 
     private final MediaService mediaService;

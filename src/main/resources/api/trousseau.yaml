@@ -14,6 +14,8 @@ tags:
     description: API для работы продавца
   - name: public
     description: общедоступный API
+  - name: subscription
+    description: API для работы с подписками
 
 components:
   schemas:
@@ -202,6 +204,40 @@ components:
       properties:
         root:
           $ref: "#/components/schemas/CategoryNode"
+    subscriptionName:
+      type: string
+    subscriptionData:
+      type: object
+      properties:
+        categoryIds:
+          type: array
+          items:
+            $ref: "#/components/schemas/categoryId"
+    SubscriptionInfoRequest:
+      type: object
+      properties:
+        name:
+          $ref: "#/components/schemas/subscriptionName"
+        data:
+          $ref: "#/components/schemas/subscriptionData"
+    subscriptionId:
+      type: string
+    SubscriptionDto:
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/subscriptionId"
+        name:
+          $ref: "#/components/schemas/subscriptionName"
+        data:
+          $ref: "#/components/schemas/subscriptionData"
+    SubscriptionListResponse:
+      type: object
+      properties:
+        subscriptions:
+          type: array
+          items:
+            $ref: "#/components/schemas/SubscriptionDto"
 
 paths:
   /seller/media:
@@ -599,3 +635,119 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/CategoryTree"
+  /public/subscriptions:
+    post:
+      summary: Создание подписки
+      operationId: createSubscription
+      tags:
+        - subscription
+        - public
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SubscriptionInfoRequest"
+      responses:
+        200:
+          description: Подписка успешно создана
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SubscriptionDto"
+        400:
+          description: Неверный формат запроса
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+        500:
+          description: Сервис временно недоступен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+    get:
+      summary: Получение списка подписок
+      operationId: getSubscriptions
+      tags:
+        - subscription
+        - public
+      responses:
+        200:
+          description: Успешное получение подписок
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SubscriptionListResponse"
+        500:
+          description: Сервис временно недоступен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+  /public/subscriptions/{subscriptionId}:
+    put:
+      summary: Обновление подписки
+      operationId: updateSubscription
+      tags:
+        - subscription
+        - public
+      parameters:
+        - in: path
+          name: subscriptionId
+          description: Идентификатор подписки
+          required: true
+          schema:
+            $ref: "#/components/schemas/subscriptionId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SubscriptionInfoRequest"
+      responses:
+        200:
+          description: Подписка успешно обновлена
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SubscriptionDto"
+        400:
+          description: Неверный формат запроса
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+        500:
+          description: Сервис временно недоступен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+    delete:
+      summary: Удаление подписки
+      operationId: deleteSubscription
+      tags:
+        - subscription
+        - public
+      parameters:
+        - in: path
+          name: subscriptionId
+          description: Идентификатор подписки
+          required: true
+          schema:
+            $ref: "#/components/schemas/subscriptionId"
+      responses:
+        200:
+          description: Подписка успешно удалена
+        400:
+          description: Неверный формат запроса
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+        500:
+          description: Сервис временно недоступен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"

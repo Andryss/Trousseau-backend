@@ -28,4 +28,10 @@ public class ObjectMapperWrapperImpl implements ObjectMapperWrapper {
         return mapper.readValue(data, new TypeReference<>() {
         });
     }
+
+    @Override
+    @SneakyThrows
+    public <T> T readValue(String data, Class<T> clazz) {
+        return mapper.readValue(data, clazz);
+    }
 }

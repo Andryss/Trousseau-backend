@@ -42,6 +42,11 @@ public class Errors {
                 String.format("Бронирования объявления с id=\"%s\" не найдено", itemId));
     }
 
+    public static TrousseauException subscriptionNotFound(String subscriptionId) {
+        return new TrousseauException(404, "subscription.absent.error",
+                String.format("Подписка с id=\"%s\" не найдена", subscriptionId));
+    }
+
     public static TrousseauException validationErrors(BindingResult errors) {
         StringBuilder builder = new StringBuilder();
         for (FieldError error : errors.getFieldErrors()) {
