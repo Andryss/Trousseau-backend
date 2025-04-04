@@ -36,7 +36,6 @@ import static ru.andryss.trousseau.model.ItemStatus.READY;
 public class ItemServiceImpl implements ItemService {
 
     private static final int MAX_BOOKINGS_PER_USER = 2;
-    private static final int MAX_ITEMS_IN_FEED = 5;
     private static final String PUBLISHED_ITEMS_FILTER = "status=PUBLISHED";
 
     private final ItemRepository itemRepository;
@@ -163,13 +162,6 @@ public class ItemServiceImpl implements ItemService {
         log.info("Getting booked items");
 
         return itemRepository.findAllByStatusOrderByCreatedAtDesc(BOOKED);
-    }
-
-    @Override
-    public List<ItemEntity> getFeed() {
-        log.info("Getting feed items");
-
-        return itemRepository.findAllByStatusOrderByCreatedAtDesc(PUBLISHED, MAX_ITEMS_IN_FEED);
     }
 
     private ItemEntity findByIdOrThrow(String itemId) {

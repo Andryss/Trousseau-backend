@@ -93,15 +93,6 @@ public class ItemRepositoryImpl implements ItemRepository, InitializingBean {
     }
 
     @Override
-    public List<ItemEntity> findAllByStatusOrderByCreatedAtDesc(ItemStatus status, int limit) {
-        return jdbcTemplate.query("""
-                select * from items where status = :status order by created_at desc limit :limit
-        """, new MapSqlParameterSource()
-                .addValue("status", status.getValue())
-                .addValue("limit", limit), rowMapper);
-    }
-
-    @Override
     public List<ItemEntity> findAllFavourites() {
         return jdbcTemplate.query("""
                 select i.id, i.title, i.media_ids, i.description, i.category_id, i.status, i.created_at

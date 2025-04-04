@@ -641,31 +641,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorObject"
-  /public/items/feed:
-    get:
-      summary: Получить объявления на главную страницу
-      operationId: getFeedItems
-      tags:
-        - public
-      responses:
-        200:
-          description: Успешное получение списка объявлений
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ItemListResponse"
-        400:
-          description: Неверный формат запроса
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        500:
-          description: Сервис временно недоступен
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
   /public/categories/tree:
     get:
       summary: Получить дерево категорий
