@@ -16,6 +16,8 @@ tags:
     description: общедоступный API
   - name: subscription
     description: API для работы с подписками
+  - name: notifications
+    description: API для работы с уведомлениями
 
 components:
   schemas:
@@ -238,6 +240,48 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/SubscriptionDto"
+    notificationId:
+      type: string
+    notificationTitle:
+      type: string
+    notificationContent:
+      type: string
+    notificationLinks:
+      type: array
+      items:
+        type: string
+    notificationTimestamp:
+      type: string
+      format: date-time
+    notificationIsRead:
+      type: boolean
+    NotificationDto:
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/notificationId"
+        title:
+          $ref: "#/components/schemas/notificationTitle"
+        content:
+          $ref: "#/components/schemas/notificationContent"
+        links:
+          $ref: "#/components/schemas/notificationLinks"
+        timestamp:
+          $ref: "#/components/schemas/notificationTimestamp"
+        isRead:
+          $ref: "#/components/schemas/notificationIsRead"
+    NotificationListResponse:
+      type: object
+      properties:
+        notifications:
+          type: array
+          items:
+            $ref: "#/components/schemas/NotificationDto"
+    NotificationCountResponse:
+      type: object
+      properties:
+        count:
+          type: integer
 
 paths:
   /seller/media:
@@ -745,6 +789,69 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorObject"
+        500:
+          description: Сервис временно недоступен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+  /public/notifications:
+    get:
+      summary: Получение списка уведомлений
+      operationId: getNotifications
+      tags:
+        - notifications
+        - public
+      responses:
+        200:
+          description: Успешное получение уведомлений
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotificationListResponse"
+        500:
+          description: Сервис временно недоступен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+  /public/notifications/unread/count:
+    get:
+      summary: Получение количества непрочитанных уведомлений
+      operationId: getUnreadNotificationsCount
+      tags:
+        - notifications
+        - public
+      responses:
+        200:
+          description: Успешное получение количества непрочитанных уведомлений
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotificationCountResponse"
+        500:
+          description: Сервис временно недоступен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+  /public/notifications/{notificationId}/read:
+    post:
+      summary: Пометить уведомление прочитанным
+      operationId: markNotificationRead
+      tags:
+        - notifications
+        - public
+      parameters:
+        - in: path
+          name: notificationId
+          description: Идентификатор уведомления
+          required: true
+          schema:
+            $ref: "#/components/schemas/notificationId"
+      responses:
+        200:
+          description: Успешная отметка уведомления прочитанным
         500:
           description: Сервис временно недоступен
           content:

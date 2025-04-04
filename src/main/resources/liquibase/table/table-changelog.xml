@@ -14,5 +14,6 @@
     <include file="bookings.sql" relativeToChangelogFile="true"/>
     <include file="favourites.sql" relativeToChangelogFile="true"/>
     <include file="subscriptions.sql" relativeToChangelogFile="true"/>
+    <include file="notifications.sql" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

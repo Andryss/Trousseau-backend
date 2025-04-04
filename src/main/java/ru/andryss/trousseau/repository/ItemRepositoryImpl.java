@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Optional;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -16,7 +15,6 @@ import ru.andryss.trousseau.model.ItemEntity;
 import ru.andryss.trousseau.model.ItemStatus;
 import ru.andryss.trousseau.service.ObjectMapperWrapper;
 
-@Slf4j
 @Repository
 @RequiredArgsConstructor
 public class ItemRepositoryImpl implements ItemRepository, InitializingBean {
