@@ -36,9 +36,10 @@ class SubscriptionApiControllerTest extends BaseApiTest {
                         status().isOk(),
                         jsonPath("$.id").isNotEmpty(),
                         jsonPath("$.name").value("some-name"),
-                        jsonPath("$.data.categoryIds").isArray(),
-                        jsonPath("$.data.categoryIds.size()").value(1),
-                        jsonPath("$.data.categoryIds[0]").value("all")
+                        jsonPath("$.data.categories").isArray(),
+                        jsonPath("$.data.categories.size()").value(1),
+                        jsonPath("$.data.categories[0].id").value("all"),
+                        jsonPath("$.data.categories[0].name").value("Все категории")
                 );
 
         mockMvc.perform(
@@ -51,9 +52,10 @@ class SubscriptionApiControllerTest extends BaseApiTest {
                         jsonPath("$.subscriptions.size()").value(1),
                         jsonPath("$.subscriptions[0].id").isNotEmpty(),
                         jsonPath("$.subscriptions[0].name").value("some-name"),
-                        jsonPath("$.subscriptions[0].data.categoryIds").isArray(),
-                        jsonPath("$.subscriptions[0].data.categoryIds.size()").value(1),
-                        jsonPath("$.subscriptions[0].data.categoryIds[0]").value("all")
+                        jsonPath("$.subscriptions[0].data.categories").isArray(),
+                        jsonPath("$.subscriptions[0].data.categories.size()").value(1),
+                        jsonPath("$.subscriptions[0].data.categories[0].id").value("all"),
+                        jsonPath("$.subscriptions[0].data.categories[0].name").value("Все категории")
                 );
     }
 
@@ -80,11 +82,14 @@ class SubscriptionApiControllerTest extends BaseApiTest {
                         status().isOk(),
                         jsonPath("$.id").value(subscription.getId()),
                         jsonPath("$.name").value("another-name"),
-                        jsonPath("$.data.categoryIds").isArray(),
-                        jsonPath("$.data.categoryIds.size()").value(3),
-                        jsonPath("$.data.categoryIds[0]").value("all"),
-                        jsonPath("$.data.categoryIds[1]").value("all"),
-                        jsonPath("$.data.categoryIds[2]").value("all")
+                        jsonPath("$.data.categories").isArray(),
+                        jsonPath("$.data.categories.size()").value(3),
+                        jsonPath("$.data.categories[0].id").value("all"),
+                        jsonPath("$.data.categories[0].name").value("Все категории"),
+                        jsonPath("$.data.categories[1].id").value("all"),
+                        jsonPath("$.data.categories[1].name").value("Все категории"),
+                        jsonPath("$.data.categories[2].id").value("all"),
+                        jsonPath("$.data.categories[2].name").value("Все категории")
                 );
     }
 
@@ -108,15 +113,18 @@ class SubscriptionApiControllerTest extends BaseApiTest {
                         jsonPath("$.subscriptions.size()").value(2),
                         jsonPath("$.subscriptions[0].id").value(subscription0.getId()),
                         jsonPath("$.subscriptions[0].name").value("test-name-0"),
-                        jsonPath("$.subscriptions[0].data.categoryIds").isArray(),
-                        jsonPath("$.subscriptions[0].data.categoryIds.size()").value(1),
-                        jsonPath("$.subscriptions[0].data.categoryIds[0]").value("all"),
+                        jsonPath("$.subscriptions[0].data.categories").isArray(),
+                        jsonPath("$.subscriptions[0].data.categories.size()").value(1),
+                        jsonPath("$.subscriptions[0].data.categories[0].id").value("all"),
+                        jsonPath("$.subscriptions[0].data.categories[0].name").value("Все категории"),
                         jsonPath("$.subscriptions[1].id").value(subscription1.getId()),
                         jsonPath("$.subscriptions[1].name").value("test-name-1"),
-                        jsonPath("$.subscriptions[1].data.categoryIds").isArray(),
-                        jsonPath("$.subscriptions[1].data.categoryIds.size()").value(2),
-                        jsonPath("$.subscriptions[1].data.categoryIds[0]").value("all"),
-                        jsonPath("$.subscriptions[1].data.categoryIds[1]").value("all")
+                        jsonPath("$.subscriptions[1].data.categories").isArray(),
+                        jsonPath("$.subscriptions[1].data.categories.size()").value(2),
+                        jsonPath("$.subscriptions[1].data.categories[0].id").value("all"),
+                        jsonPath("$.subscriptions[1].data.categories[0].name").value("Все категории"),
+                        jsonPath("$.subscriptions[1].data.categories[1].id").value("all"),
+                        jsonPath("$.subscriptions[1].data.categories[1].name").value("Все категории")
                 );
     }
 

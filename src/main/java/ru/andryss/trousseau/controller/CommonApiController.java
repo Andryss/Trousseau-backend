@@ -63,7 +63,7 @@ public abstract class CommonApiController {
         return dtos;
     }
 
-    private CategoryDto mapCategoryDto(String categoryId) {
+    protected CategoryDto mapCategoryDto(String categoryId) {
         if (categoryId == null) {
             return null;
         }

@@ -208,7 +208,7 @@ components:
           $ref: "#/components/schemas/CategoryNode"
     subscriptionName:
       type: string
-    subscriptionData:
+    SubscriptionData:
       type: object
       properties:
         categoryIds:
@@ -221,9 +221,16 @@ components:
         name:
           $ref: "#/components/schemas/subscriptionName"
         data:
-          $ref: "#/components/schemas/subscriptionData"
+          $ref: "#/components/schemas/SubscriptionData"
     subscriptionId:
       type: string
+    SubscriptionDataDto:
+      type: object
+      properties:
+        categories:
+          type: array
+          items:
+            $ref: "#/components/schemas/CategoryDto"
     SubscriptionDto:
       type: object
       properties:
@@ -232,7 +239,7 @@ components:
         name:
           $ref: "#/components/schemas/subscriptionName"
         data:
-          $ref: "#/components/schemas/subscriptionData"
+          $ref: "#/components/schemas/SubscriptionDataDto"
     SubscriptionListResponse:
       type: object
       properties:

@@ -2,21 +2,29 @@ package ru.andryss.trousseau.controller;
 
 import java.util.List;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RestController;
 import ru.andryss.trousseau.generated.api.SubscriptionApi;
-import ru.andryss.trousseau.generated.model.SubscriptionData;
+import ru.andryss.trousseau.generated.model.CategoryDto;
+import ru.andryss.trousseau.generated.model.SubscriptionDataDto;
 import ru.andryss.trousseau.generated.model.SubscriptionDto;
 import ru.andryss.trousseau.generated.model.SubscriptionInfoRequest;
 import ru.andryss.trousseau.generated.model.SubscriptionListResponse;
 import ru.andryss.trousseau.model.SubscriptionEntity;
+import ru.andryss.trousseau.service.CategoryService;
+import ru.andryss.trousseau.service.FavouriteService;
+import ru.andryss.trousseau.service.MediaService;
 import ru.andryss.trousseau.service.SubscriptionService;
 
 @RestController
-@RequiredArgsConstructor
-public class SubscriptionApiController implements SubscriptionApi {
+public class SubscriptionApiController extends CommonApiController implements SubscriptionApi {
 
     private final SubscriptionService subscriptionService;
+
+    public SubscriptionApiController(MediaService mediaService, FavouriteService favouriteService,
+                                     CategoryService categoryService, SubscriptionService subscriptionService) {
+        super(mediaService, favouriteService, categoryService);
+        this.subscriptionService = subscriptionService;
+    }
 
     @Override
     public SubscriptionDto createSubscription(SubscriptionInfoRequest request) {
@@ -53,7 +61,13 @@ public class SubscriptionApiController implements SubscriptionApi {
         return new SubscriptionDto()
                 .id(entity.getId())
                 .name(entity.getName())
-                .data(new SubscriptionData()
-                        .categoryIds(entity.getData().getCategoryIds()));
+                .data(new SubscriptionDataDto()
+                        .categories(mapCategoryDto(entity.getData().getCategoryIds())));
+    }
+
+    private List<CategoryDto> mapCategoryDto(List<String> categoryIds) {
+        return categoryIds.stream()
+                .map(this::mapCategoryDto)
+                .toList();
     }
 }
