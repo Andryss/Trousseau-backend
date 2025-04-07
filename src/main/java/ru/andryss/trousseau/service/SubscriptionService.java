@@ -10,4 +10,5 @@ public interface SubscriptionService {
     void delete(String id);
     List<SubscriptionEntity> getAll();
     SubscriptionEntity update(String id, SubscriptionInfoRequest request);
+    List<SubscriptionEntity> getSubscribedOnCategories(List<String> categoryIds);
 }

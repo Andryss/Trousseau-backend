@@ -3,6 +3,7 @@ package ru.andryss.trousseau.service;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import com.google.common.collect.ImmutableTable;
@@ -19,6 +20,7 @@ import ru.andryss.trousseau.generated.model.FilterInfo;
 import ru.andryss.trousseau.generated.model.ItemInfoRequest;
 import ru.andryss.trousseau.generated.model.SearchInfo;
 import ru.andryss.trousseau.model.BookingEntity;
+import ru.andryss.trousseau.model.EventEntity.EventType;
 import ru.andryss.trousseau.model.ItemEntity;
 import ru.andryss.trousseau.model.ItemStatus;
 import ru.andryss.trousseau.repository.BookingRepository;
@@ -43,6 +45,7 @@ public class ItemServiceImpl implements ItemService {
     private final TimeService timeService;
     private final TransactionTemplate transactionTemplate;
     private final SearchHelper searchHelper;
+    private final EventService eventService;
 
     private final DateTimeFormatter itemIdFormatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmssSSS");
 
@@ -56,7 +59,7 @@ public class ItemServiceImpl implements ItemService {
 
     private final Table<ItemStatus, ItemStatus, Transit> sellerTransitions =
             ImmutableTable.<ItemStatus, ItemStatus, Transit>builder()
-                    .put(READY, PUBLISHED, emptyTransit())
+                    .put(READY, PUBLISHED, publishTransit())
                     .put(PUBLISHED, READY, emptyTransit())
                     .put(BOOKED, PUBLISHED, unbookTransit())
                     .put(BOOKED, ARCHIVED, closeTransit())
@@ -194,6 +197,10 @@ public class ItemServiceImpl implements ItemService {
 
     private interface Transit {
         void transit(ItemEntity item) throws TrousseauException; // must be called inside transaction
+    }
+
+    private Transit publishTransit() {
+        return item -> eventService.push(EventType.ITEM_PUBLISHED, Map.of("itemId", item.getId()));
     }
 
     private Transit emptyTransit() {

@@ -47,17 +47,22 @@ public class EventRepositoryImpl implements EventRepository, InitializingBean {
     }
 
     @Override
-    public List<EventEntity> findAllOrderByCreatedAt(int limit) {
+    public List<EventEntity> findAllByTypeOrderByCreatedAt(EventType type, int limit) {
         return jdbcTemplate.query("""
                 select * from events
+                where type = :type
                 order by created_at
                 limit :limit
         """, new MapSqlParameterSource()
+                .addValue("type", type.getValue())
                 .addValue("limit", limit), rowMapper);
     }
 
     @Override
     public void deleteByIds(List<String> ids) {
+        if (ids.isEmpty()) {
+            return;
+        }
         jdbcTemplate.update("""
                 delete from events
                 where id in (:ids)

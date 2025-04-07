@@ -8,6 +8,6 @@ import ru.andryss.trousseau.model.EventEntity.EventType;
 
 public interface EventService {
     void push(EventType type, Map<String, Object> payload);
-    List<EventEntity> readBatch(int limit);
-    void delete(List<String> ids);
+    List<EventEntity> readBatch(EventType type, int limit);
+    void delete(List<EventEntity> events);
 }

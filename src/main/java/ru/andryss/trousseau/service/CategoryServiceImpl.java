@@ -53,6 +53,11 @@ public class CategoryServiceImpl implements CategoryService {
         return category.get().getName();
     }
 
+    @Override
+    public List<String> getAllParents(String id) {
+        return categoryRepository.findPathToRoot(id);
+    }
+
     private CategoryNode formCategory(CategoryEntity category, Map<String, List<CategoryEntity>> categoriesByParentId) {
         CategoryNode dto = new CategoryNode()
                 .id(category.getId())

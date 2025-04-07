@@ -86,6 +86,21 @@ public class SubscriptionRepositoryImpl implements SubscriptionRepository, Initi
                 .addValue("id", id));
     }
 
+    @Override
+    public List<SubscriptionEntity> findAllByCategoryIdsHas(List<String> categoryIds) {
+        return jdbcTemplate.query("""
+                select *
+                from subscriptions s
+                where exists(
+                    select 1
+                    from jsonb_array_elements_text(s.data::jsonb -> 'categoryIds') AS elem1,
+                         jsonb_array_elements_text(:categoryIds::jsonb) AS elem2
+                    where elem1.value = elem2.value
+                )
+        """, new MapSqlParameterSource()
+                .addValue("categoryIds", objectMapper.writeValueAsString(categoryIds)), rowMapper);
+    }
+
     private MapSqlParameterSource getParameterSource(SubscriptionEntity subscription) {
         return new MapSqlParameterSource()
                 .addValue("id", subscription.getId())

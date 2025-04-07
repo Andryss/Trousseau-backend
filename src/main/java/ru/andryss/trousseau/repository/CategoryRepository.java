@@ -8,4 +8,5 @@ import ru.andryss.trousseau.model.CategoryEntity;
 public interface CategoryRepository {
     List<CategoryEntity> findAll();
     Optional<CategoryEntity> findById(String id);
+    List<String> findPathToRoot(String id);
 }

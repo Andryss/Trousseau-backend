@@ -10,5 +10,5 @@ public interface NotificationService {
     void markRead(String id);
     void sendNotification(NotificationInfo info);
 
-    record NotificationInfo(String title, String content, List<String> links) { }
+    record NotificationInfo(String title, String content, List<Object> links) { }
 }

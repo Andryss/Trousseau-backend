@@ -15,10 +15,12 @@ import org.quartz.TriggerBuilder;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import ru.andryss.trousseau.tms.BaseExecutor;
 
 @Configuration
+@Profile("!functionalTest")
 public class QuartzConfig {
 
     @Bean

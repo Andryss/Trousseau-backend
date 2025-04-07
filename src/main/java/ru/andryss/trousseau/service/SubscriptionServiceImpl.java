@@ -74,6 +74,11 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         });
     }
 
+    @Override
+    public List<SubscriptionEntity> getSubscribedOnCategories(List<String> categoryIds) {
+        return subscriptionRepository.findAllByCategoryIdsHas(categoryIds);
+    }
+
     private void patch(SubscriptionEntity subscription, SubscriptionInfoRequest request) {
         SubscriptionInfo info = new SubscriptionInfo();
         info.setCategoryIds(request.getData().getCategoryIds());

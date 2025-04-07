@@ -34,12 +34,15 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<EventEntity> readBatch(int limit) {
-        return eventRepository.findAllOrderByCreatedAt(limit);
+    public List<EventEntity> readBatch(EventType type, int limit) {
+        return eventRepository.findAllByTypeOrderByCreatedAt(type, limit);
     }
 
     @Override
-    public void delete(List<String> ids) {
+    public void delete(List<EventEntity> events) {
+        List<String> ids = events.stream()
+                .map(EventEntity::getId)
+                .toList();
         eventRepository.deleteByIds(ids);
     }
 }

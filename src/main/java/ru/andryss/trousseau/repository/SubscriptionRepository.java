@@ -11,4 +11,5 @@ public interface SubscriptionRepository {
     SubscriptionEntity update(SubscriptionEntity subscription);
     List<SubscriptionEntity> findAllOrderByCreatedAt();
     void deleteById(String id);
+    List<SubscriptionEntity> findAllByCategoryIdsHas(List<String> categoryIds);
 }
