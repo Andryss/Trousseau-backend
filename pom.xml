@@ -21,7 +21,7 @@
         <zonky.embedded-database.version>2.6.0</zonky.embedded-database.version>
         <zonky.embedded-postgres.version>2.1.0</zonky.embedded-postgres.version>
         <json-smart.version>2.5.2</json-smart.version>
-        <tomcat-embed-core.version>11.0.3</tomcat-embed-core.version>
+        <tomcat-embed-core.version>10.1.39</tomcat-embed-core.version>
     </properties>
 
     <dependencies>

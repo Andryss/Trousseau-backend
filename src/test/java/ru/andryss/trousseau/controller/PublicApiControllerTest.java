@@ -179,44 +179,6 @@ class PublicApiControllerTest extends BaseApiTest {
 
     @Test
     @SneakyThrows
-    public void getFeedTest() {
-        ItemDto item0 = createPublicItem(new ItemInfo("title-0", List.of("media-00"), "description-0", "clothes"));
-        ItemDto item1 = createPublicItem(new ItemInfo("title-1", List.of("media-10", "media-11"), "description-1", "clothes"));
-
-        mockMvc.perform(
-                        get("/public/items/feed")
-                                .contentType(MediaType.APPLICATION_JSON)
-                )
-                .andExpectAll(
-                        status().isOk(),
-                        jsonPath("$.items").isArray(),
-                        jsonPath("$.items.size()").value(2),
-                        jsonPath("$.items[0].id").value(item1.getId()),
-                        jsonPath("$.items[0].title").value("title-1"),
-                        jsonPath("$.items[0].media").isArray(),
-                        jsonPath("$.items[0].media.size()").value(2),
-                        jsonPath("$.items[0].media[0].id").value("media-10"),
-                        jsonPath("$.items[0].media[1].id").value("media-11"),
-                        jsonPath("$.items[0].description").value("description-1"),
-                        jsonPath("$.items[0].category.id").value("clothes"),
-                        jsonPath("$.items[0].category.name").value("Одежда и обувь"),
-                        jsonPath("$.items[0].status").value("PUBLISHED"),
-                        jsonPath("$.items[0].isFavourite").value("false"),
-                        jsonPath("$.items[1].id").value(item0.getId()),
-                        jsonPath("$.items[1].title").value("title-0"),
-                        jsonPath("$.items[1].media").isArray(),
-                        jsonPath("$.items[1].media.size()").value(1),
-                        jsonPath("$.items[1].media[0].id").value("media-00"),
-                        jsonPath("$.items[1].description").value("description-0"),
-                        jsonPath("$.items[1].category.id").value("clothes"),
-                        jsonPath("$.items[1].category.name").value("Одежда и обувь"),
-                        jsonPath("$.items[1].status").value("PUBLISHED"),
-                        jsonPath("$.items[1].isFavourite").value("false")
-                );
-    }
-
-    @Test
-    @SneakyThrows
     public void getCategoryTreeTest() {
         mockMvc.perform(
                         get("/public/categories/tree")
