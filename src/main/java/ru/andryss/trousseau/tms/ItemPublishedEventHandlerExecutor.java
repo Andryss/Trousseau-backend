@@ -36,7 +36,7 @@ public class ItemPublishedEventHandlerExecutor extends BaseExecutor {
 
     @Override
     public String cronExpression() {
-        return "0 */1 * * * ?";
+        return "0 */5 * * * ?"; // each 5 minutes
     }
 
     @Override
