@@ -18,4 +18,10 @@
     <include file="key_storage.sql" relativeToChangelogFile="true"/>
     <include file="events.sql" relativeToChangelogFile="true"/>
 
+    <include file="users.sql" relativeToChangelogFile="true"/>
+    <include file="roles.sql" relativeToChangelogFile="true"/>
+    <include file="privileges.sql" relativeToChangelogFile="true"/>
+    <include file="user_roles.sql" relativeToChangelogFile="true"/>
+    <include file="role_privileges.sql" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>
