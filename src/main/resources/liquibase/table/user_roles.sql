@@ -2,7 +2,7 @@
 
 --changeset andryss:create-users-table
 create table user_roles (
-    user_id bigint references users(id) not null,
+    user_id text references users(id) not null,
     role_id text references roles(id) not null,
     primary key (user_id, role_id)
 );

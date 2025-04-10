@@ -18,10 +18,13 @@
     <properties>
         <java.version>17</java.version>
         <minio.version>8.5.14</minio.version>
-        <zonky.embedded-database.version>2.6.0</zonky.embedded-database.version>
-        <zonky.embedded-postgres.version>2.1.0</zonky.embedded-postgres.version>
+        <swagger-annotations.version>2.2.23</swagger-annotations.version>
         <json-smart.version>2.5.2</json-smart.version>
         <tomcat-embed-core.version>10.1.39</tomcat-embed-core.version>
+        <spring-security.version>6.4.4</spring-security.version>
+        <zonky.embedded-database.version>2.6.0</zonky.embedded-database.version>
+        <zonky.embedded-postgres.version>2.1.0</zonky.embedded-postgres.version>
+        <jjwt.version>0.11.5</jjwt.version>
     </properties>
 
     <dependencies>
@@ -51,6 +54,11 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-quartz</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
 
         <!-- PROCESSOR DEPENDENCIES -->
@@ -89,7 +97,7 @@
         <dependency>
             <groupId>io.swagger.core.v3</groupId>
             <artifactId>swagger-annotations</artifactId>
-            <version>2.2.23</version>
+            <version>${swagger-annotations.version}</version>
         </dependency>
 
         <dependency>
@@ -102,6 +110,38 @@
             <groupId>org.apache.tomcat.embed</groupId>
             <artifactId>tomcat-embed-core</artifactId>
             <version>${tomcat-embed-core.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-core</artifactId>
+            <version>${spring-security.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-crypto</artifactId>
+            <version>${spring-security.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-api</artifactId>
+            <version>${jjwt.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <version>${jjwt.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-jackson</artifactId>
+            <version>${jjwt.version}</version>
+            <scope>runtime</scope>
         </dependency>
 
         <!-- TEST DEPENDENCIES -->
