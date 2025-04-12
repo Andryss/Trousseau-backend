@@ -16,7 +16,7 @@ public class AuthApiController implements AuthApi {
 
     @Override
     public AuthResponse signIn(SignInRequest request) {
-        String token = authService.signIn(request.getUsername(), request.getPassword());
+        String token = authService.signIn(request);
 
         return new AuthResponse()
                 .token(token);

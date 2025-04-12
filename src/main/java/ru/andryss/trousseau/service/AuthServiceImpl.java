@@ -4,6 +4,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import lombok.RequiredArgsConstructor;
@@ -16,7 +17,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.CollectionUtils;
 import ru.andryss.trousseau.exception.Errors;
+import ru.andryss.trousseau.generated.model.SignInRequest;
 import ru.andryss.trousseau.generated.model.SignUpRequest;
+import ru.andryss.trousseau.model.SessionEntity;
 import ru.andryss.trousseau.model.UserEntity;
 import ru.andryss.trousseau.model.UserRole;
 import ru.andryss.trousseau.repository.UserRepository;
@@ -32,15 +35,16 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenUtil jwtTokenUtil;
     private final TimeService timeService;
+    private final SessionService sessionService;
     private final TransactionTemplate transactionTemplate;
 
     private final DateTimeFormatter idFormatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmssSSS");
 
     @Override
     public String signUp(SignUpRequest request) {
-        String username = request.getUsername();
-        log.info("Signing up user {}", username);
+        log.info("Signing up user {}", request.getUsername());
 
+        String username = request.getUsername();
         Optional<UserEntity> optionalUser = userRepository.findByUsername(username);
         if (optionalUser.isPresent()) {
             throw Errors.usernameForbidden(username);
@@ -81,16 +85,16 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public String signIn(String username, String password) {
-        log.info("Signing in user {}", username);
+    public String signIn(SignInRequest request) {
+        log.info("Signing in user {}", request.getUsername());
 
-        Optional<UserEntity> optionalUser = userRepository.findByUsername(username);
+        Optional<UserEntity> optionalUser = userRepository.findByUsername(request.getUsername());
         if (optionalUser.isEmpty()) {
             throw Errors.unauthorized();
         }
 
         UserEntity user = optionalUser.get();
-        String encodedPassword = passwordEncoder.encode(password);
+        String encodedPassword = passwordEncoder.encode(request.getPassword());
         if (!encodedPassword.equals(user.getPasswordHash())) {
             throw Errors.unauthorized();
         }
@@ -115,6 +119,16 @@ public class AuthServiceImpl implements AuthService {
         userData.setUsername(user.getUsername());
         userData.setAuthorities(authorities);
 
-        return jwtTokenUtil.generateAccessToken(userData);
+        String accessToken = jwtTokenUtil.generateAccessToken(userData);
+
+        SessionEntity session = new SessionEntity();
+        session.setId(accessToken);
+        session.setUserId(user.getId());
+        session.setMeta(Map.of());
+        session.setCreatedAt(timeService.now().toInstant());
+
+        sessionService.newSession(session);
+
+        return accessToken;
     }
 }

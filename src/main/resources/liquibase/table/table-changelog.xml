@@ -24,4 +24,6 @@
     <include file="user_roles.sql" relativeToChangelogFile="true"/>
     <include file="role_privileges.sql" relativeToChangelogFile="true"/>
 
+    <include file="sessions.sql" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>

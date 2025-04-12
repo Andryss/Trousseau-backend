@@ -22,6 +22,7 @@ import ru.andryss.trousseau.generated.model.ErrorObject;
 import ru.andryss.trousseau.security.JwtRequestFilter;
 import ru.andryss.trousseau.security.JwtTokenUtil;
 import ru.andryss.trousseau.service.ObjectMapperWrapper;
+import ru.andryss.trousseau.service.SessionService;
 import ru.andryss.trousseau.service.TimeService;
 
 @Slf4j
@@ -34,6 +35,7 @@ public class SecurityConfig {
     public static final String RESPONSE_CHARACTER_ENCODING = "UTF-8";
 
     private final JwtProperties properties;
+    private final SessionService sessionService;
     private final TimeService timeService;
     private final ObjectMapperWrapper objectMapper;
 
@@ -44,7 +46,7 @@ public class SecurityConfig {
 
     @Bean
     public JwtRequestFilter jwtRequestFilter() {
-        return new JwtRequestFilter(jwtTokenUtil(), objectMapper);
+        return new JwtRequestFilter(jwtTokenUtil(), sessionService, objectMapper);
     }
 
     @Bean

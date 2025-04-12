@@ -32,7 +32,7 @@ public class JwtTokenUtil implements InitializingBean {
     }
 
     public String generateAccessToken(UserData userData) {
-        Date now = new Date();
+        Date now = new Date(timeService.epochMillis());
         Date expired = new Date(now.getTime() + properties.getTokenExpirationMillis());
         return Jwts.builder()
                 .setSubject(userData.getId())
