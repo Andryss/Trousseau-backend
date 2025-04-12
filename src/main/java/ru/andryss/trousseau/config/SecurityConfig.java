@@ -10,8 +10,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -24,6 +22,7 @@ import ru.andryss.trousseau.generated.model.ErrorObject;
 import ru.andryss.trousseau.security.JwtRequestFilter;
 import ru.andryss.trousseau.security.JwtTokenUtil;
 import ru.andryss.trousseau.service.ObjectMapperWrapper;
+import ru.andryss.trousseau.service.TimeService;
 
 @Slf4j
 @Configuration
@@ -35,11 +34,12 @@ public class SecurityConfig {
     public static final String RESPONSE_CHARACTER_ENCODING = "UTF-8";
 
     private final JwtProperties properties;
+    private final TimeService timeService;
     private final ObjectMapperWrapper objectMapper;
 
     @Bean
     public JwtTokenUtil jwtTokenUtil() {
-        return new JwtTokenUtil(properties);
+        return new JwtTokenUtil(properties, timeService);
     }
 
     @Bean
@@ -53,16 +53,12 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-        return config.getAuthenticationManager();
-    }
-
-    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(c -> c
                         .requestMatchers("/ping").permitAll()
+                        .requestMatchers("/auth/*").permitAll()
                         .anyRequest().denyAll()
                 )
                 .addFilterBefore(jwtRequestFilter(), UsernamePasswordAuthenticationFilter.class)

@@ -12,4 +12,8 @@ public class TimeServiceImpl implements TimeService {
     public ZonedDateTime now() {
         return Instant.now().atZone(ZoneOffset.UTC);
     }
+    @Override
+    public long epochMillis() {
+        return Instant.now().toEpochMilli();
+    }
 }

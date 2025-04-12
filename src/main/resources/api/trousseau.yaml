@@ -18,6 +18,8 @@ tags:
     description: API для работы с подписками
   - name: notifications
     description: API для работы с уведомлениями
+  - name: auth
+    description: API для авторизации
 
 components:
   schemas:
@@ -289,6 +291,41 @@ components:
       properties:
         count:
           type: integer
+    username:
+      type: string
+    password:
+      type: string
+    SignInRequest:
+      type: object
+      properties:
+        username:
+          $ref: "#/components/schemas/username"
+        password:
+          $ref: "#/components/schemas/password"
+    token:
+      type: string
+    AuthResponse:
+      type: object
+      properties:
+        token:
+          $ref: "#/components/schemas/token"
+    contact:
+      type: string
+    room:
+      type: string
+    SignUpRequest:
+      type: object
+      properties:
+        username:
+          $ref: "#/components/schemas/username"
+        password:
+          $ref: "#/components/schemas/password"
+        contacts:
+          type: array
+          items:
+            $ref: "#/components/schemas/contact"
+        room:
+          $ref: "#/components/schemas/room"
 
 paths:
   /seller/media:
@@ -834,6 +871,68 @@ paths:
       responses:
         200:
           description: Успешная отметка уведомления прочитанным
+        500:
+          description: Сервис временно недоступен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+  /auth/signup:
+    post:
+      summary: Зарегистрироваться в системе
+      operationId: signUp
+      tags:
+        - auth
+        - public
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SignUpRequest"
+      responses:
+        200:
+          description: Успешная регистрация
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        400:
+          description: Неверный формат запроса
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+        500:
+          description: Сервис временно недоступен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+  /auth/signin:
+    post:
+      summary: Войти в аккаунт
+      operationId: signIn
+      tags:
+        - auth
+        - public
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SignInRequest"
+      responses:
+        200:
+          description: Успешный вход в аккаунт
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        400:
+          description: Неверный формат запроса
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
         500:
           description: Сервис временно недоступен
           content:

@@ -55,4 +55,13 @@ public class Errors {
         builder.setLength(builder.length() - 2);
         return new TrousseauException(400, "validation.errors", builder.toString());
     }
+
+    public static TrousseauException usernameForbidden(String username) {
+        return new TrousseauException(403, "user.username.forbidden",
+                String.format("Имя пользователя \"%s\" нельзя использовать", username));
+    }
+
+    public static TrousseauException unauthorized() {
+        return new TrousseauException(401, "user.unauthorized", "Неверный логин или пароль");
+    }
 }

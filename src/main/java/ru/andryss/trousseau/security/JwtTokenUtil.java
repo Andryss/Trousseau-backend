@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.Map;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -13,11 +14,13 @@ import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.InitializingBean;
 import ru.andryss.trousseau.config.JwtProperties;
+import ru.andryss.trousseau.service.TimeService;
 
 @RequiredArgsConstructor
 public class JwtTokenUtil implements InitializingBean {
 
     private final JwtProperties properties;
+    private final TimeService timeService;
 
     private Key signingKey;
 
@@ -42,10 +45,9 @@ public class JwtTokenUtil implements InitializingBean {
 
     public boolean isTokenValid(String token) {
         try {
-            JwtParser jwtParser = Jwts.parserBuilder().setSigningKey(signingKey).build();
-            Claims claims = jwtParser.parseClaimsJws(token).getBody();
+            Claims claims = getTokenClaims(token);
             long expirationTime = claims.getExpiration().getTime();
-            long currentTime = System.currentTimeMillis();
+            long currentTime = timeService.epochMillis();
             return currentTime <= expirationTime;
         } catch (Exception e) {
             return false;
@@ -53,8 +55,12 @@ public class JwtTokenUtil implements InitializingBean {
     }
 
     public UserData extractUserData(String token) {
-        JwtParser jwtParser = Jwts.parserBuilder().setSigningKey(signingKey).build();
-        Claims body = jwtParser.parseClaimsJws(token).getBody();
+        Claims body = getTokenClaims(token);
         return body.get("data", UserData.class);
+    }
+
+    private Claims getTokenClaims(String token) throws JwtException {
+        JwtParser jwtParser = Jwts.parserBuilder().setSigningKey(signingKey).build();
+        return jwtParser.parseClaimsJws(token).getBody();
     }
 }

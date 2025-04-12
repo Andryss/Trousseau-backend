@@ -4,4 +4,5 @@ import java.time.ZonedDateTime;
 
 public interface TimeService {
     ZonedDateTime now();
+    long epochMillis();
 }
