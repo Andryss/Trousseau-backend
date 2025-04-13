@@ -10,8 +10,6 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -63,12 +61,11 @@ public class AuthServiceImpl implements AuthService {
                 .map(UserRole::getId)
                 .toList();
 
-        transactionTemplate.executeWithoutResult(status -> {
+        return transactionTemplate.execute(status -> {
             userRepository.save(user);
             userRepository.saveUserRoles(user.getId(), roleIds);
+            return generateTokenFromUser(user);
         });
-
-        return generateTokenFromUser(user);
     }
 
     private List<UserRole> getUserRoles(SignUpRequest request) {
@@ -94,8 +91,7 @@ public class AuthServiceImpl implements AuthService {
         }
 
         UserEntity user = optionalUser.get();
-        String encodedPassword = passwordEncoder.encode(request.getPassword());
-        if (!encodedPassword.equals(user.getPasswordHash())) {
+        if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
             throw Errors.unauthorized();
         }
 
@@ -106,18 +102,16 @@ public class AuthServiceImpl implements AuthService {
         List<String> userRoles = userRepository.findUserRoles(user.getId());
         List<String> userPrivileges = userRepository.findRolesPrivileges(userRoles);
 
-        List<GrantedAuthority> authorities = new ArrayList<>();
+        List<String> authorities = new ArrayList<>();
         for (String userRole : userRoles) {
-            authorities.add(new SimpleGrantedAuthority(String.format("ROLE_%s", userRole)));
+            authorities.add(String.format("ROLE_%s", userRole));
         }
-        for (String userPrivilege : userPrivileges) {
-            authorities.add(new SimpleGrantedAuthority(userPrivilege));
-        }
+        authorities.addAll(userPrivileges);
 
         UserData userData = new UserData();
         userData.setId(user.getId());
         userData.setUsername(user.getUsername());
-        userData.setAuthorities(authorities);
+        userData.setPrivileges(authorities);
 
         String accessToken = jwtTokenUtil.generateAccessToken(userData);
 

@@ -37,7 +37,7 @@ public class SessionRepositoryImpl implements SessionRepository, InitializingBea
     @Override
     public void save(SessionEntity session) {
         jdbcTemplate.update("""
-                insert into sessions(id, user_id, meta, create_at)
+                insert into sessions(id, user_id, meta, created_at)
                     values (:id, :userId, :meta::jsonb, :createdAt)
         """, new MapSqlParameterSource()
                 .addValue("id", session.getId())

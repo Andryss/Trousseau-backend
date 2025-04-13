@@ -2,6 +2,7 @@ package ru.andryss.trousseau.security;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.List;
 import java.util.Optional;
 
 import jakarta.servlet.FilterChain;
@@ -13,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 import ru.andryss.trousseau.config.SecurityConfig;
@@ -50,13 +52,16 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             SessionEntity session = sessionOptional.get();
             try {
                 UserData userData = jwtTokenUtil.extractUserData(token.get());
-                if (!session.getId().equals(userData.getId())) {
+                if (!session.getUserId().equals(userData.getId())) {
                     error(response, new ErrorObject()
                             .code(401).message("user.unauthorized.session.different").humanMessage(ERROR_MESSAGE));
                     return;
                 }
+                List<SimpleGrantedAuthority> authorities = userData.getPrivileges().stream()
+                        .map(SimpleGrantedAuthority::new)
+                        .toList();
                 UsernamePasswordAuthenticationToken authentication =
-                        authenticated(userData, null, userData.getAuthorities());
+                        authenticated(userData, null, authorities);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } catch (Exception e) {
                 log.error("Catch exception when parsing user token", e);

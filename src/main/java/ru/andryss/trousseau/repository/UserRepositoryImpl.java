@@ -50,7 +50,7 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public Optional<UserEntity> findByUsername(String username) {
         List<UserEntity> result = jdbcTemplate.query("""
-                select value from users
+                select * from users
                 where username = :username
         """, new MapSqlParameterSource()
                 .addValue("username", username), rowMapper);

@@ -5,7 +5,6 @@ import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.security.core.GrantedAuthority;
 
 @Getter
 @Setter
@@ -13,5 +12,5 @@ import org.springframework.security.core.GrantedAuthority;
 public class UserData {
     private String id;
     private String username;
-    private List<GrantedAuthority> authorities;
+    private List<String> privileges;
 }

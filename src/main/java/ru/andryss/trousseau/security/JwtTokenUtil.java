@@ -14,6 +14,7 @@ import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.InitializingBean;
 import ru.andryss.trousseau.config.JwtProperties;
+import ru.andryss.trousseau.service.ObjectMapperWrapper;
 import ru.andryss.trousseau.service.TimeService;
 
 @RequiredArgsConstructor
@@ -21,6 +22,7 @@ public class JwtTokenUtil implements InitializingBean {
 
     private final JwtProperties properties;
     private final TimeService timeService;
+    private final ObjectMapperWrapper objectMapper;
 
     private Key signingKey;
 
@@ -36,7 +38,7 @@ public class JwtTokenUtil implements InitializingBean {
         Date expired = new Date(now.getTime() + properties.getTokenExpirationMillis());
         return Jwts.builder()
                 .setSubject(userData.getId())
-                .setClaims(Map.of("data", userData))
+                .setClaims(Map.of("data", objectMapper.writeValueAsString(userData)))
                 .setIssuedAt(now)
                 .setExpiration(expired)
                 .signWith(signingKey, SignatureAlgorithm.HS256)
@@ -56,7 +58,8 @@ public class JwtTokenUtil implements InitializingBean {
 
     public UserData extractUserData(String token) {
         Claims body = getTokenClaims(token);
-        return body.get("data", UserData.class);
+        String data = body.get("data", String.class);
+        return objectMapper.readValue(data, UserData.class);
     }
 
     private Claims getTokenClaims(String token) throws JwtException {

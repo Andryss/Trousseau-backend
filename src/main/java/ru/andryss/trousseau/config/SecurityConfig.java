@@ -19,6 +19,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import ru.andryss.trousseau.generated.model.ErrorObject;
+import ru.andryss.trousseau.model.UserRole;
 import ru.andryss.trousseau.security.JwtRequestFilter;
 import ru.andryss.trousseau.security.JwtTokenUtil;
 import ru.andryss.trousseau.service.ObjectMapperWrapper;
@@ -41,7 +42,7 @@ public class SecurityConfig {
 
     @Bean
     public JwtTokenUtil jwtTokenUtil() {
-        return new JwtTokenUtil(properties, timeService);
+        return new JwtTokenUtil(properties, timeService, objectMapper);
     }
 
     @Bean
@@ -61,6 +62,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(c -> c
                         .requestMatchers("/ping").permitAll()
                         .requestMatchers("/auth/*").permitAll()
+                        .requestMatchers("/public/items:search").hasRole(UserRole.USER.getRole())
                         .anyRequest().denyAll()
                 )
                 .addFilterBefore(jwtRequestFilter(), UsernamePasswordAuthenticationFilter.class)
