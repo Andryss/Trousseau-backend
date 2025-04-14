@@ -1,0 +1,245 @@
+components:
+
+  parameters:
+    itemId:
+      in: path
+      name: itemId
+      description: Идентификатор объявления
+      required: true
+      schema:
+        $ref: "#/components/schemas/itemId"
+    subscriptionId:
+      in: path
+      name: subscriptionId
+      description: Идентификатор подписки
+      required: true
+      schema:
+        $ref: "#/components/schemas/subscriptionId"
+
+  schemas:
+    ErrorObject:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        humanMessage:
+          type: string
+    mediaData:
+      type: string
+      format: binary
+    UploadMediaRequest:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/mediaData"
+    mediaId:
+      type: string
+    UploadMediaResponse:
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/mediaId"
+    itemTitle:
+      type: string
+    itemMedia:
+      type: array
+      items:
+        $ref: "#/components/schemas/mediaId"
+    itemDescription:
+      type: string
+    categoryId:
+      type: string
+    ItemInfoRequest:
+      type: object
+      properties:
+        title:
+          $ref: "#/components/schemas/itemTitle"
+        media:
+          $ref: "#/components/schemas/itemMedia"
+        description:
+          $ref: "#/components/schemas/itemDescription"
+        category:
+          $ref: "#/components/schemas/categoryId"
+    url:
+      type: string
+    ItemMediaDto:
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/mediaId"
+        href:
+          $ref: "#/components/schemas/url"
+    mediaDtos:
+      type: array
+      items:
+        $ref: "#/components/schemas/ItemMediaDto"
+    itemId:
+      type: string
+    itemStatus:
+      type: string
+      enum:
+        - DRAFT
+        - READY
+        - PUBLISHED
+        - BOOKED
+        - ARCHIVED
+    itemIsFavourite:
+      type: boolean
+    categoryName:
+      type: string
+    CategoryDto:
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/categoryId"
+        name:
+          $ref: "#/components/schemas/categoryName"
+    ItemDto:
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/itemId"
+        title:
+          $ref: "#/components/schemas/itemTitle"
+        media:
+          $ref: "#/components/schemas/mediaDtos"
+        description:
+          $ref: "#/components/schemas/itemDescription"
+        category:
+          $ref: "#/components/schemas/CategoryDto"
+        status:
+          $ref: "#/components/schemas/itemStatus"
+        isFavourite:
+          $ref: "#/components/schemas/itemIsFavourite"
+    ItemListResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/ItemDto"
+    ChangeStatusRequest:
+      type: object
+      properties:
+        status:
+          $ref: "#/components/schemas/itemStatus"
+    sortField:
+      type: string
+      enum:
+        - created_at
+    sortOrder:
+      type: string
+      enum:
+        - asc
+        - desc
+    SortInfo:
+      type: object
+      required: [ field, order ]
+      properties:
+        field:
+          $ref: "#/components/schemas/sortField"
+        order:
+          $ref: "#/components/schemas/sortOrder"
+    filterCondition:
+      type: string
+    FilterInfo:
+      type: object
+      required: [ conditions ]
+      properties:
+        conditions:
+          type: array
+          items:
+            $ref: "#/components/schemas/filterCondition"
+    pageSize:
+      type: integer
+      minimum: 1
+    pageToken:
+      type: string
+    PageInfo:
+      type: object
+      required: [ size ]
+      properties:
+        size:
+          $ref: "#/components/schemas/pageSize"
+        token:
+          $ref: "#/components/schemas/pageToken"
+    searchText:
+      type: string
+      maxLength: 50
+    SearchInfo:
+      type: object
+      required: [ sort, page ]
+      properties:
+        text:
+          $ref: "#/components/schemas/searchText"
+        sort:
+          $ref: "#/components/schemas/SortInfo"
+        filter:
+          $ref: "#/components/schemas/FilterInfo"
+        page:
+          $ref: "#/components/schemas/PageInfo"
+    ChangeFavouriteRequest:
+      type: object
+      properties:
+        isFavourite:
+          $ref: "#/components/schemas/itemIsFavourite"
+    CategoryNode:
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/categoryId"
+        name:
+          $ref: "#/components/schemas/categoryName"
+        children:
+          type: array
+          items:
+            $ref: "#/components/schemas/CategoryNode"
+    CategoryTree:
+      type: object
+      properties:
+        root:
+          $ref: "#/components/schemas/CategoryNode"
+    subscriptionName:
+      type: string
+    SubscriptionData:
+      type: object
+      properties:
+        categoryIds:
+          type: array
+          items:
+            $ref: "#/components/schemas/categoryId"
+    SubscriptionInfoRequest:
+      type: object
+      properties:
+        name:
+          $ref: "#/components/schemas/subscriptionName"
+        data:
+          $ref: "#/components/schemas/SubscriptionData"
+    subscriptionId:
+      type: string
+    SubscriptionDataDto:
+      type: object
+      properties:
+        categories:
+          type: array
+          items:
+            $ref: "#/components/schemas/CategoryDto"
+    SubscriptionDto:
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/subscriptionId"
+        name:
+          $ref: "#/components/schemas/subscriptionName"
+        data:
+          $ref: "#/components/schemas/SubscriptionDataDto"
+    SubscriptionListResponse:
+      type: object
+      properties:
+        subscriptions:
+          type: array
+          items:
+            $ref: "#/components/schemas/SubscriptionDto"

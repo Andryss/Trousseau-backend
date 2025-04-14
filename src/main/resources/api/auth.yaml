@@ -1,0 +1,123 @@
+endpoints:
+  signUp:
+    post:
+      summary: Зарегистрироваться в системе
+      operationId: signUp
+      tags:
+        - auth
+        - public
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SignUpRequest"
+      responses:
+        200:
+          description: Успешная регистрация
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        400:
+          description: Неверный формат запроса
+          content:
+            application/json:
+              schema:
+                $ref: "./common.yaml#/components/schemas/ErrorObject"
+        500:
+          description: Сервис временно недоступен
+          content:
+            application/json:
+              schema:
+                $ref: "./common.yaml#/components/schemas/ErrorObject"
+  signIn:
+    post:
+      summary: Войти в аккаунт
+      operationId: signIn
+      tags:
+        - auth
+        - public
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SignInRequest"
+      responses:
+        200:
+          description: Успешный вход в аккаунт
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        400:
+          description: Неверный формат запроса
+          content:
+            application/json:
+              schema:
+                $ref: "./common.yaml#/components/schemas/ErrorObject"
+        500:
+          description: Сервис временно недоступен
+          content:
+            application/json:
+              schema:
+                $ref: "./common.yaml#/components/schemas/ErrorObject"
+  signOut:
+    post:
+      summary: Выйти из аккаунта
+      operationId: signOut
+      tags:
+        - auth
+        - public
+      responses:
+        200:
+          description: Успешный выход из аккаунта
+        400:
+          description: Неверный формат запроса
+          content:
+            application/json:
+              schema:
+                $ref: "./common.yaml#/components/schemas/ErrorObject"
+        500:
+          description: Сервис временно недоступен
+          content:
+            application/json:
+              schema:
+                $ref: "./common.yaml#/components/schemas/ErrorObject"
+
+components:
+  schemas:
+    username:
+      type: string
+    password:
+      type: string
+    token:
+      type: string
+    contact:
+      type: string
+    room:
+      type: string
+    SignInRequest:
+      type: object
+      properties:
+        username:
+          $ref: "#/components/schemas/username"
+        password:
+          $ref: "#/components/schemas/password"
+    AuthResponse:
+      type: object
+      properties:
+        token:
+          $ref: "#/components/schemas/token"
+    SignUpRequest:
+      type: object
+      properties:
+        username:
+          $ref: "#/components/schemas/username"
+        password:
+          $ref: "#/components/schemas/password"
+        contacts:
+          type: array
+          items:
+            $ref: "#/components/schemas/contact"
+        room:
+          $ref: "#/components/schemas/room"

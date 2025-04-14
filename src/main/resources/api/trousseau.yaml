@@ -21,312 +21,6 @@ tags:
   - name: auth
     description: API для авторизации
 
-components:
-  schemas:
-    ErrorObject:
-      type: object
-      properties:
-        code:
-          type: integer
-          format: int32
-        message:
-          type: string
-        humanMessage:
-          type: string
-    mediaData:
-      type: string
-      format: binary
-    UploadMediaRequest:
-      type: object
-      properties:
-        data:
-          $ref: "#/components/schemas/mediaData"
-    mediaId:
-      type: string
-    UploadMediaResponse:
-      type: object
-      properties:
-        id:
-          $ref: "#/components/schemas/mediaId"
-    itemTitle:
-      type: string
-    itemMedia:
-      type: array
-      items:
-        $ref: "#/components/schemas/mediaId"
-    itemDescription:
-      type: string
-    categoryId:
-      type: string
-    ItemInfoRequest:
-      type: object
-      properties:
-        title:
-          $ref: "#/components/schemas/itemTitle"
-        media:
-          $ref: "#/components/schemas/itemMedia"
-        description:
-          $ref: "#/components/schemas/itemDescription"
-        category:
-          $ref: "#/components/schemas/categoryId"
-    url:
-      type: string
-    ItemMediaDto:
-      type: object
-      properties:
-        id:
-          $ref: "#/components/schemas/mediaId"
-        href:
-          $ref: "#/components/schemas/url"
-    mediaDtos:
-      type: array
-      items:
-        $ref: "#/components/schemas/ItemMediaDto"
-    itemId:
-      type: string
-    itemStatus:
-      type: string
-      enum:
-        - DRAFT
-        - READY
-        - PUBLISHED
-        - BOOKED
-        - ARCHIVED
-    itemIsFavourite:
-      type: boolean
-    categoryName:
-      type: string
-    CategoryDto:
-      type: object
-      properties:
-        id:
-          $ref: "#/components/schemas/categoryId"
-        name:
-          $ref: "#/components/schemas/categoryName"
-    ItemDto:
-      type: object
-      properties:
-        id:
-          $ref: "#/components/schemas/itemId"
-        title:
-          $ref: "#/components/schemas/itemTitle"
-        media:
-          $ref: "#/components/schemas/mediaDtos"
-        description:
-          $ref: "#/components/schemas/itemDescription"
-        category:
-          $ref: "#/components/schemas/CategoryDto"
-        status:
-          $ref: "#/components/schemas/itemStatus"
-        isFavourite:
-          $ref: "#/components/schemas/itemIsFavourite"
-    ItemListResponse:
-      type: object
-      properties:
-        items:
-          type: array
-          items:
-            $ref: "#/components/schemas/ItemDto"
-    ChangeStatusRequest:
-      type: object
-      properties:
-        status:
-          $ref: "#/components/schemas/itemStatus"
-    sortField:
-      type: string
-      enum:
-        - created_at
-    sortOrder:
-      type: string
-      enum:
-        - asc
-        - desc
-    SortInfo:
-      type: object
-      required: [ field, order ]
-      properties:
-        field:
-          $ref: "#/components/schemas/sortField"
-        order:
-          $ref: "#/components/schemas/sortOrder"
-    filterCondition:
-      type: string
-    FilterInfo:
-      type: object
-      required: [ conditions ]
-      properties:
-        conditions:
-          type: array
-          items:
-            $ref: "#/components/schemas/filterCondition"
-    pageSize:
-      type: integer
-      minimum: 1
-    pageToken:
-      type: string
-    PageInfo:
-      type: object
-      required: [ size ]
-      properties:
-        size:
-          $ref: "#/components/schemas/pageSize"
-        token:
-          $ref: "#/components/schemas/pageToken"
-    searchText:
-      type: string
-      maxLength: 50
-    SearchInfo:
-      type: object
-      required: [ sort, page ]
-      properties:
-        text:
-          $ref: "#/components/schemas/searchText"
-        sort:
-          $ref: "#/components/schemas/SortInfo"
-        filter:
-          $ref: "#/components/schemas/FilterInfo"
-        page:
-          $ref: "#/components/schemas/PageInfo"
-    ChangeFavouriteRequest:
-      type: object
-      properties:
-        isFavourite:
-          $ref: "#/components/schemas/itemIsFavourite"
-    CategoryNode:
-      type: object
-      properties:
-        id:
-          $ref: "#/components/schemas/categoryId"
-        name:
-          $ref: "#/components/schemas/categoryName"
-        children:
-          type: array
-          items:
-            $ref: "#/components/schemas/CategoryNode"
-    CategoryTree:
-      type: object
-      properties:
-        root:
-          $ref: "#/components/schemas/CategoryNode"
-    subscriptionName:
-      type: string
-    SubscriptionData:
-      type: object
-      properties:
-        categoryIds:
-          type: array
-          items:
-            $ref: "#/components/schemas/categoryId"
-    SubscriptionInfoRequest:
-      type: object
-      properties:
-        name:
-          $ref: "#/components/schemas/subscriptionName"
-        data:
-          $ref: "#/components/schemas/SubscriptionData"
-    subscriptionId:
-      type: string
-    SubscriptionDataDto:
-      type: object
-      properties:
-        categories:
-          type: array
-          items:
-            $ref: "#/components/schemas/CategoryDto"
-    SubscriptionDto:
-      type: object
-      properties:
-        id:
-          $ref: "#/components/schemas/subscriptionId"
-        name:
-          $ref: "#/components/schemas/subscriptionName"
-        data:
-          $ref: "#/components/schemas/SubscriptionDataDto"
-    SubscriptionListResponse:
-      type: object
-      properties:
-        subscriptions:
-          type: array
-          items:
-            $ref: "#/components/schemas/SubscriptionDto"
-    notificationId:
-      type: string
-    notificationTitle:
-      type: string
-    notificationContent:
-      type: string
-    notificationLinks:
-      type: array
-      items:
-        type: string
-    notificationTimestamp:
-      type: string
-      format: date-time
-    notificationIsRead:
-      type: boolean
-    NotificationDto:
-      type: object
-      properties:
-        id:
-          $ref: "#/components/schemas/notificationId"
-        title:
-          $ref: "#/components/schemas/notificationTitle"
-        content:
-          $ref: "#/components/schemas/notificationContent"
-        links:
-          $ref: "#/components/schemas/notificationLinks"
-        timestamp:
-          $ref: "#/components/schemas/notificationTimestamp"
-        isRead:
-          $ref: "#/components/schemas/notificationIsRead"
-    NotificationListResponse:
-      type: object
-      properties:
-        notifications:
-          type: array
-          items:
-            $ref: "#/components/schemas/NotificationDto"
-    NotificationCountResponse:
-      type: object
-      properties:
-        count:
-          type: integer
-    username:
-      type: string
-    password:
-      type: string
-    SignInRequest:
-      type: object
-      properties:
-        username:
-          $ref: "#/components/schemas/username"
-        password:
-          $ref: "#/components/schemas/password"
-    token:
-      type: string
-    AuthResponse:
-      type: object
-      properties:
-        token:
-          $ref: "#/components/schemas/token"
-    contact:
-      type: string
-    room:
-      type: string
-    SignUpRequest:
-      type: object
-      properties:
-        username:
-          $ref: "#/components/schemas/username"
-        password:
-          $ref: "#/components/schemas/password"
-        contacts:
-          type: array
-          items:
-            $ref: "#/components/schemas/contact"
-        room:
-          $ref: "#/components/schemas/room"
-
 paths:
   /seller/media:
     post:
@@ -338,26 +32,26 @@ paths:
         content:
           multipart/form-data:
             schema:
-              $ref: "#/components/schemas/UploadMediaRequest"
+              $ref: "./common.yaml#/components/schemas/UploadMediaRequest"
       responses:
         200:
           description: Медиа-файл успешно загружен
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/UploadMediaResponse"
+                $ref: "./common.yaml#/components/schemas/UploadMediaResponse"
         400:
           description: Неверный формат запроса
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorObject"
+                $ref: "./common.yaml#/components/schemas/ErrorObject"
         500:
           description: Сервис временно недоступен
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorObject"
+                $ref: "./common.yaml#/components/schemas/ErrorObject"
   /seller/items:
     post:
       summary: Создание объявления
@@ -368,26 +62,26 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ItemInfoRequest"
+              $ref: "./common.yaml#/components/schemas/ItemInfoRequest"
       responses:
         200:
           description: Объявление успешно создано
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ItemDto"
+                $ref: "./common.yaml#/components/schemas/ItemDto"
         400:
           description: Неверный формат запроса
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorObject"
+                $ref: "./common.yaml#/components/schemas/ErrorObject"
         500:
           description: Сервис временно недоступен
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorObject"
+                $ref: "./common.yaml#/components/schemas/ErrorObject"
     get:
       summary: Получение списка объявлений
       operationId: getSellerItems
@@ -399,13 +93,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ItemListResponse"
+                $ref: "./common.yaml#/components/schemas/ItemListResponse"
         500:
           description: Сервис временно недоступен
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorObject"
+                $ref: "./common.yaml#/components/schemas/ErrorObject"
   /seller/items/{itemId}:
     put:
       summary: Обновление объявления
@@ -413,67 +107,57 @@ paths:
       tags:
         - seller
       parameters:
-        - in: path
-          name: itemId
-          description: Идентификатор объявления
-          required: true
-          schema:
-            $ref: "#/components/schemas/itemId"
+        - $ref: "./common.yaml#/components/parameters/itemId"
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ItemInfoRequest"
+              $ref: "./common.yaml#/components/schemas/ItemInfoRequest"
       responses:
         200:
           description: Объявление успешно обновлено
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ItemDto"
+                $ref: "./common.yaml#/components/schemas/ItemDto"
         400:
           description: Неверный формат запроса
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorObject"
+                $ref: "./common.yaml#/components/schemas/ErrorObject"
         500:
           description: Сервис временно недоступен
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorObject"
+                $ref: "./common.yaml#/components/schemas/ErrorObject"
     get:
       summary: Получение объявления
       operationId: getSellerItem
       tags:
         - seller
       parameters:
-        - in: path
-          name: itemId
-          description: Идентификатор объявления
-          required: true
-          schema:
-            $ref: "#/components/schemas/itemId"
+        - $ref: "./common.yaml#/components/parameters/itemId"
       responses:
         200:
           description: Объявление успешно найдено
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ItemDto"
+                $ref: "./common.yaml#/components/schemas/ItemDto"
         400:
           description: Неверный формат запроса
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorObject"
+                $ref: "./common.yaml#/components/schemas/ErrorObject"
         500:
           description: Сервис временно недоступен
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorObject"
+                $ref: "./common.yaml#/components/schemas/ErrorObject"
   /seller/items/{itemId}/status:
     put:
       summary: Смена состояния объявления
@@ -481,17 +165,12 @@ paths:
       tags:
         - seller
       parameters:
-        - in: path
-          name: itemId
-          description: Идентификатор объявления
-          required: true
-          schema:
-            $ref: "#/components/schemas/itemId"
+        - $ref: "./common.yaml#/components/parameters/itemId"
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ChangeStatusRequest"
+              $ref: "./common.yaml#/components/schemas/ChangeStatusRequest"
       responses:
         200:
           description: Статус успешно изменен
@@ -500,13 +179,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorObject"
+                $ref: "./common.yaml#/components/schemas/ErrorObject"
         500:
           description: Сервис временно недоступен
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorObject"
+                $ref: "./common.yaml#/components/schemas/ErrorObject"
   /public/items:search:
     post:
       summary: Поиск объявлений
@@ -517,26 +196,26 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/SearchInfo"
+              $ref: "./common.yaml#/components/schemas/SearchInfo"
       responses:
         200:
           description: Успешный поиск объявлений
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ItemListResponse"
+                $ref: "./common.yaml#/components/schemas/ItemListResponse"
         400:
           description: Неверный формат запроса
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorObject"
+                $ref: "./common.yaml#/components/schemas/ErrorObject"
         500:
           description: Сервис временно недоступен
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorObject"
+                $ref: "./common.yaml#/components/schemas/ErrorObject"
   /public/items/{itemId}:
     get:
       summary: Получение объявления
@@ -544,31 +223,26 @@ paths:
       tags:
         - public
       parameters:
-        - in: path
-          name: itemId
-          description: Идентификатор объявления
-          required: true
-          schema:
-            $ref: "#/components/schemas/itemId"
+        - $ref: "./common.yaml#/components/parameters/itemId"
       responses:
         200:
           description: Объявление успешно найдено
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ItemDto"
+                $ref: "./common.yaml#/components/schemas/ItemDto"
         400:
           description: Неверный формат запроса
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorObject"
+                $ref: "./common.yaml#/components/schemas/ErrorObject"
         500:
           description: Сервис временно недоступен
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorObject"
+                $ref: "./common.yaml#/components/schemas/ErrorObject"
   /public/items/{itemId}/status:
     put:
       summary: Смена состояния объявления
@@ -576,17 +250,12 @@ paths:
       tags:
         - public
       parameters:
-        - in: path
-          name: itemId
-          description: Идентификатор объявления
-          required: true
-          schema:
-            $ref: "#/components/schemas/itemId"
+        - $ref: "./common.yaml#/components/parameters/itemId"
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ChangeStatusRequest"
+              $ref: "./common.yaml#/components/schemas/ChangeStatusRequest"
       responses:
         200:
           description: Статус успешно изменен
@@ -595,13 +264,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorObject"
+                $ref: "./common.yaml#/components/schemas/ErrorObject"
         500:
           description: Сервис временно недоступен
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorObject"
+                $ref: "./common.yaml#/components/schemas/ErrorObject"
   /public/items/bookings:
     get:
       summary: Получение списка забронированных объявлений
@@ -614,19 +283,19 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ItemListResponse"
+                $ref: "./common.yaml#/components/schemas/ItemListResponse"
         400:
           description: Неверный формат запроса
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorObject"
+                $ref: "./common.yaml#/components/schemas/ErrorObject"
         500:
           description: Сервис временно недоступен
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorObject"
+                $ref: "./common.yaml#/components/schemas/ErrorObject"
   /public/items/{itemId}/favourite:
     post:
       summary: Добавить или удалить из избранного
@@ -634,17 +303,12 @@ paths:
       tags:
         - public
       parameters:
-        - in: path
-          name: itemId
-          description: Идентификатор объявления
-          required: true
-          schema:
-            $ref: "#/components/schemas/itemId"
+        - $ref: "./common.yaml#/components/parameters/itemId"
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ChangeFavouriteRequest"
+              $ref: "./common.yaml#/components/schemas/ChangeFavouriteRequest"
       responses:
         200:
           description: Успешное добавление или удаление из избранного
@@ -653,13 +317,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorObject"
+                $ref: "./common.yaml#/components/schemas/ErrorObject"
         500:
           description: Сервис временно недоступен
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorObject"
+                $ref: "./common.yaml#/components/schemas/ErrorObject"
   /public/items/favourites:
     get:
       summary: Получить избранные объявления
@@ -672,19 +336,19 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ItemListResponse"
+                $ref: "./common.yaml#/components/schemas/ItemListResponse"
         400:
           description: Неверный формат запроса
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorObject"
+                $ref: "./common.yaml#/components/schemas/ErrorObject"
         500:
           description: Сервис временно недоступен
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorObject"
+                $ref: "./common.yaml#/components/schemas/ErrorObject"
   /public/categories/tree:
     get:
       summary: Получить дерево категорий
@@ -697,7 +361,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/CategoryTree"
+                $ref: "./common.yaml#/components/schemas/CategoryTree"
   /public/subscriptions:
     post:
       summary: Создание подписки
@@ -709,26 +373,26 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/SubscriptionInfoRequest"
+              $ref: "./common.yaml#/components/schemas/SubscriptionInfoRequest"
       responses:
         200:
           description: Подписка успешно создана
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SubscriptionDto"
+                $ref: "./common.yaml#/components/schemas/SubscriptionDto"
         400:
           description: Неверный формат запроса
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorObject"
+                $ref: "./common.yaml#/components/schemas/ErrorObject"
         500:
           description: Сервис временно недоступен
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorObject"
+                $ref: "./common.yaml#/components/schemas/ErrorObject"
     get:
       summary: Получение списка подписок
       operationId: getSubscriptions
@@ -741,13 +405,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SubscriptionListResponse"
+                $ref: "./common.yaml#/components/schemas/SubscriptionListResponse"
         500:
           description: Сервис временно недоступен
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorObject"
+                $ref: "./common.yaml#/components/schemas/ErrorObject"
   /public/subscriptions/{subscriptionId}:
     put:
       summary: Обновление подписки
@@ -756,36 +420,31 @@ paths:
         - subscription
         - public
       parameters:
-        - in: path
-          name: subscriptionId
-          description: Идентификатор подписки
-          required: true
-          schema:
-            $ref: "#/components/schemas/subscriptionId"
+        - $ref: "./common.yaml#/components/parameters/subscriptionId"
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/SubscriptionInfoRequest"
+              $ref: "./common.yaml#/components/schemas/SubscriptionInfoRequest"
       responses:
         200:
           description: Подписка успешно обновлена
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SubscriptionDto"
+                $ref: "./common.yaml#/components/schemas/SubscriptionDto"
         400:
           description: Неверный формат запроса
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorObject"
+                $ref: "./common.yaml#/components/schemas/ErrorObject"
         500:
           description: Сервис временно недоступен
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorObject"
+                $ref: "./common.yaml#/components/schemas/ErrorObject"
     delete:
       summary: Удаление подписки
       operationId: deleteSubscription
@@ -793,12 +452,7 @@ paths:
         - subscription
         - public
       parameters:
-        - in: path
-          name: subscriptionId
-          description: Идентификатор подписки
-          required: true
-          schema:
-            $ref: "#/components/schemas/subscriptionId"
+        - $ref: "./common.yaml#/components/parameters/subscriptionId"
       responses:
         200:
           description: Подписка успешно удалена
@@ -807,157 +461,24 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorObject"
+                $ref: "./common.yaml#/components/schemas/ErrorObject"
         500:
           description: Сервис временно недоступен
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorObject"
+                $ref: "./common.yaml#/components/schemas/ErrorObject"
+
   /public/notifications:
-    get:
-      summary: Получение списка уведомлений
-      operationId: getNotifications
-      tags:
-        - notifications
-        - public
-      responses:
-        200:
-          description: Успешное получение уведомлений
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/NotificationListResponse"
-        500:
-          description: Сервис временно недоступен
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
+    $ref: "./notifications.yaml#/endpoints/getNotifications"
   /public/notifications/unread/count:
-    get:
-      summary: Получение количества непрочитанных уведомлений
-      operationId: getUnreadNotificationsCount
-      tags:
-        - notifications
-        - public
-      responses:
-        200:
-          description: Успешное получение количества непрочитанных уведомлений
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/NotificationCountResponse"
-        500:
-          description: Сервис временно недоступен
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
+    $ref: "./notifications.yaml#/endpoints/getUnreadNotificationsCount"
   /public/notifications/{notificationId}/read:
-    post:
-      summary: Пометить уведомление прочитанным
-      operationId: markNotificationRead
-      tags:
-        - notifications
-        - public
-      parameters:
-        - in: path
-          name: notificationId
-          description: Идентификатор уведомления
-          required: true
-          schema:
-            $ref: "#/components/schemas/notificationId"
-      responses:
-        200:
-          description: Успешная отметка уведомления прочитанным
-        500:
-          description: Сервис временно недоступен
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
+    $ref: "./notifications.yaml#/endpoints/markNotificationRead"
+
   /auth/signup:
-    post:
-      summary: Зарегистрироваться в системе
-      operationId: signUp
-      tags:
-        - auth
-        - public
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/SignUpRequest"
-      responses:
-        200:
-          description: Успешная регистрация
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AuthResponse"
-        400:
-          description: Неверный формат запроса
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        500:
-          description: Сервис временно недоступен
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
+    $ref: "./auth.yaml#/endpoints/signUp"
   /auth/signin:
-    post:
-      summary: Войти в аккаунт
-      operationId: signIn
-      tags:
-        - auth
-        - public
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/SignInRequest"
-      responses:
-        200:
-          description: Успешный вход в аккаунт
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AuthResponse"
-        400:
-          description: Неверный формат запроса
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        500:
-          description: Сервис временно недоступен
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
+    $ref: "./auth.yaml#/endpoints/signIn"
   /auth/signout:
-    post:
-      summary: Выйти из аккаунта
-      operationId: signOut
-      tags:
-        - auth
-        - public
-      responses:
-        200:
-          description: Успешный выход из аккаунта
-        400:
-          description: Неверный формат запроса
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
-        500:
-          description: Сервис временно недоступен
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorObject"
+    $ref: "./auth.yaml#/endpoints/signOut"
