@@ -939,3 +939,25 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorObject"
+  /auth/signout:
+    post:
+      summary: Выйти из аккаунта
+      operationId: signOut
+      tags:
+        - auth
+        - public
+      responses:
+        200:
+          description: Успешный выход из аккаунта
+        400:
+          description: Неверный формат запроса
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"
+        500:
+          description: Сервис временно недоступен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorObject"

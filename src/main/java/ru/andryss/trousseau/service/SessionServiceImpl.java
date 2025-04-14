@@ -28,4 +28,11 @@ public class SessionServiceImpl implements SessionService {
 
         sessionRepository.save(session);
     }
+
+    @Override
+    public void deleteById(String id) {
+        log.info("Deleting session {}", id.substring(0, 3));
+
+        sessionRepository.removeById(id);
+    }
 }

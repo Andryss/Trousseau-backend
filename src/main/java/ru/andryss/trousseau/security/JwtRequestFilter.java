@@ -41,9 +41,10 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             @NotNull HttpServletResponse response,
             @NotNull FilterChain filterChain
     ) throws ServletException, IOException {
-        Optional<String> token = getTokenFromRequest(request);
-        if (token.isPresent() && jwtTokenUtil.isTokenValid(token.get())) {
-            Optional<SessionEntity> sessionOptional = sessionService.getById(token.get());
+        Optional<String> tokenOptional = getTokenFromRequest(request);
+        if (tokenOptional.isPresent() && jwtTokenUtil.isTokenValid(tokenOptional.get())) {
+            String token = tokenOptional.get();
+            Optional<SessionEntity> sessionOptional = sessionService.getById(token);
             if (sessionOptional.isEmpty()) {
                 error(response, new ErrorObject()
                         .code(401).message("user.unauthorized.session.absent").humanMessage(ERROR_MESSAGE));
@@ -51,7 +52,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             }
             SessionEntity session = sessionOptional.get();
             try {
-                UserData userData = jwtTokenUtil.extractUserData(token.get());
+                UserData userData = jwtTokenUtil.extractUserData(token);
                 if (!session.getUserId().equals(userData.getId())) {
                     error(response, new ErrorObject()
                             .code(401).message("user.unauthorized.session.different").humanMessage(ERROR_MESSAGE));
@@ -61,7 +62,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                         .map(SimpleGrantedAuthority::new)
                         .toList();
                 UsernamePasswordAuthenticationToken authentication =
-                        authenticated(userData, null, authorities);
+                        authenticated(userData, token, authorities);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } catch (Exception e) {
                 log.error("Catch exception when parsing user token", e);

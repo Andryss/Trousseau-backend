@@ -10,7 +10,7 @@ import ru.andryss.trousseau.service.AuthService;
 
 @RestController
 @RequiredArgsConstructor
-public class AuthApiController implements AuthApi {
+public class AuthApiController extends BaseApiController implements AuthApi {
 
     private final AuthService authService;
 
@@ -20,6 +20,15 @@ public class AuthApiController implements AuthApi {
 
         return new AuthResponse()
                 .token(token);
+    }
+
+    @Override
+    public void signOut() {
+        String session = getSession();
+        if (session == null) {
+            return;
+        }
+        authService.signOut(session);
     }
 
     @Override

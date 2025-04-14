@@ -6,4 +6,5 @@ import ru.andryss.trousseau.generated.model.SignUpRequest;
 public interface AuthService {
     String signUp(SignUpRequest request);
     String signIn(SignInRequest request);
+    void signOut(String session);
 }

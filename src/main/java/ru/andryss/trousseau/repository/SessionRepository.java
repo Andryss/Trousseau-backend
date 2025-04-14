@@ -7,4 +7,5 @@ import ru.andryss.trousseau.model.SessionEntity;
 public interface SessionRepository {
     void save(SessionEntity session);
     Optional<SessionEntity> findById(String id);
+    void removeById(String id);
 }

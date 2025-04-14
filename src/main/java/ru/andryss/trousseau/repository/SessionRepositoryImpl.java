@@ -59,4 +59,12 @@ public class SessionRepositoryImpl implements SessionRepository, InitializingBea
 
         return Optional.of(result.get(0));
     }
+
+    @Override
+    public void removeById(String id) {
+        jdbcTemplate.update("""
+                delete from sessions where id = :id
+        """, new MapSqlParameterSource()
+                .addValue("id", id));
+    }
 }

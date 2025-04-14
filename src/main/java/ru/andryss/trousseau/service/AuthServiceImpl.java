@@ -98,6 +98,13 @@ public class AuthServiceImpl implements AuthService {
         return generateTokenFromUser(user);
     }
 
+    @Override
+    public void signOut(String session) {
+        log.info("Signing out session {}...", session.substring(0, 3));
+
+        sessionService.deleteById(session);
+    }
+
     private String generateTokenFromUser(UserEntity user) {
         List<String> userRoles = userRepository.findUserRoles(user.getId());
         List<String> userPrivileges = userRepository.findRolesPrivileges(userRoles);

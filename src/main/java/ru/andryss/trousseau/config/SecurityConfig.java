@@ -19,12 +19,16 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import ru.andryss.trousseau.generated.model.ErrorObject;
-import ru.andryss.trousseau.model.UserRole;
 import ru.andryss.trousseau.security.JwtRequestFilter;
 import ru.andryss.trousseau.security.JwtTokenUtil;
 import ru.andryss.trousseau.service.ObjectMapperWrapper;
 import ru.andryss.trousseau.service.SessionService;
 import ru.andryss.trousseau.service.TimeService;
+
+import static org.springframework.http.HttpMethod.DELETE;
+import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.http.HttpMethod.PUT;
 
 @Slf4j
 @Configuration
@@ -60,9 +64,40 @@ public class SecurityConfig {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(c -> c
-                        .requestMatchers("/ping").permitAll()
-                        .requestMatchers("/auth/*").permitAll()
-                        .requestMatchers("/public/items:search").hasRole(UserRole.USER.getRole())
+                        // ping
+                        .requestMatchers(GET, "/ping").permitAll()
+                        // auth
+                        .requestMatchers(POST, "/auth/signup").permitAll()
+                        .requestMatchers(POST, "/auth/signin").permitAll()
+                        .requestMatchers(POST, "/auth/signout").permitAll()
+                        // media
+                        .requestMatchers(POST, "/seller/media").hasAuthority("MEDIA_UPLOAD")
+                        // seller
+                        .requestMatchers(POST, "/seller/items").hasAuthority("ITEMS_CREATE")
+                        .requestMatchers(GET, "/seller/items").hasAuthority("ITEMS_CREATED_VIEW")
+                        .requestMatchers(GET, "/seller/items/*").hasAuthority("ITEMS_CREATED_VIEW")
+                        .requestMatchers(PUT, "/seller/items/*").hasAuthority("ITEMS_CREATE")
+                        .requestMatchers(PUT, "/seller/items/*/status").hasAuthority("ITEMS_CREATE")
+                        // category tree
+                        .requestMatchers(GET, "/public/categories/tree").hasAuthority("CATEGORY_TREE_VIEW")
+                        // public items
+                        .requestMatchers(POST, "/public/items:search").hasAuthority("ITEMS_PUBLISHED_VIEW")
+                        .requestMatchers(GET, "/public/items/*").hasAuthority("ITEMS_PUBLISHED_VIEW")
+                        .requestMatchers(PUT, "/public/items/*/status").hasAuthority("ITEMS_PUBLISHED_STATUS_CHANGED")
+                        .requestMatchers(GET, "/public/items/bookings").hasAuthority("ITEMS_PUBLISHED_VIEW")
+                        // favourites
+                        .requestMatchers(POST, "/public/items/*/favourite").hasAuthority("ITEMS_FAVOURITES")
+                        .requestMatchers(GET, "/public/items/favourites").hasAuthority("ITEMS_FAVOURITES")
+                        // subscriptions
+                        .requestMatchers(POST, "/public/subscriptions").hasAuthority("SUBSCRIPTIONS_EDIT")
+                        .requestMatchers(GET, "/public/subscriptions").hasAuthority("SUBSCRIPTIONS_VIEW")
+                        .requestMatchers(PUT, "/public/subscriptions/*").hasAuthority("SUBSCRIPTIONS_EDIT")
+                        .requestMatchers(DELETE, "/public/subscriptions/*").hasAuthority("SUBSCRIPTIONS_EDIT")
+                        // notifications
+                        .requestMatchers(GET, "/public/notifications").hasAuthority("NOTIFICATIONS_VIEW")
+                        .requestMatchers(GET, "/public/notifications/unread/count").hasAuthority("NOTIFICATIONS_VIEW")
+                        .requestMatchers(GET, "/public/notifications/*/read").hasAuthority("NOTIFICATIONS_VIEW")
+                        // other
                         .anyRequest().denyAll()
                 )
                 .addFilterBefore(jwtRequestFilter(), UsernamePasswordAuthenticationFilter.class)
