@@ -16,7 +16,7 @@ import ru.andryss.trousseau.service.ItemService;
 import ru.andryss.trousseau.service.MediaService;
 
 @RestController
-public class SellerApiController extends CommonApiController implements SellerApi {
+public class SellerApiController extends ItemApiController implements SellerApi {
 
     private final ItemService itemService;
 

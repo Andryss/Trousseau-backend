@@ -14,7 +14,7 @@ import ru.andryss.trousseau.service.FavouriteService;
 import ru.andryss.trousseau.service.MediaService;
 
 @RequiredArgsConstructor
-public abstract class CommonApiController {
+public abstract class ItemApiController extends BaseApiController {
 
     private final MediaService mediaService;
     private final FavouriteService favouriteService;

@@ -16,7 +16,7 @@ import ru.andryss.trousseau.service.MediaService;
 import ru.andryss.trousseau.service.SubscriptionService;
 
 @RestController
-public class SubscriptionApiController extends CommonApiController implements SubscriptionApi {
+public class SubscriptionApiController extends ItemApiController implements SubscriptionApi {
 
     private final SubscriptionService subscriptionService;
 

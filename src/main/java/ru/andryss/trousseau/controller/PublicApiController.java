@@ -23,7 +23,7 @@ import ru.andryss.trousseau.service.ItemService;
 import ru.andryss.trousseau.service.MediaService;
 
 @RestController
-public class PublicApiController extends CommonApiController implements PublicApi {
+public class PublicApiController extends ItemApiController implements PublicApi {
 
     private final ItemService itemService;
     private final FavouriteService favouriteService;
