@@ -25,20 +25,22 @@ public class BookingRepositoryImpl implements BookingRepository {
     };
 
     @Override
-    public List<BookingEntity> findAll() {
+    public List<BookingEntity> findAllByUserId(String userId) {
         return jdbcTemplate.query("""
-                select * from bookings order by booked_at desc
-        """, rowMapper);
+                select * from bookings where user_id = :userId order by booked_at desc
+        """, new MapSqlParameterSource()
+                .addValue("userId", userId), rowMapper);
     }
 
     @Override
     public void save(BookingEntity booking) {
         jdbcTemplate.update("""
-                insert into bookings(id, item_id, booked_at)
-                    values(:id, :itemId, :bookedAt)
+                insert into bookings(id, item_id, user_id, booked_at)
+                    values(:id, :itemId, :userId, :bookedAt)
         """, new MapSqlParameterSource()
                 .addValue("id", booking.getId())
                 .addValue("itemId", booking.getItemId())
+                .addValue("userId", booking.getUserId())
                 .addValue("bookedAt", Timestamp.from(booking.getBookedAt())));
     }
 
@@ -48,5 +50,14 @@ public class BookingRepositoryImpl implements BookingRepository {
                 delete from bookings where item_id = :itemId
         """, new MapSqlParameterSource()
                 .addValue("itemId", itemId));
+    }
+
+    @Override
+    public int deleteByItemIdAndUserId(String itemId, String userId) {
+        return jdbcTemplate.update("""
+                delete from bookings where item_id = :itemId and user_id = :userId
+        """, new MapSqlParameterSource()
+                .addValue("itemId", itemId)
+                .addValue("userId", userId));
     }
 }

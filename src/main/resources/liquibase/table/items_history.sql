@@ -3,9 +3,11 @@
 --changeset andryss:create-items_history-table
 create table items_history (
     id text,
+    owner text not null,
     title text,
     media_ids jsonb,
     description text,
+    category_id text,
     status text not null,
     created_at timestamp not null,
     change_type row_change_type not null,
@@ -23,8 +25,8 @@ create or replace function insert_items_history(
     change_type row_change_type
 ) returns void as $$
 begin
-    insert into items_history(id, title, media_ids, description, status, created_at, change_type, changed_at)
-    select id, title, media_ids, description, status, created_at, change_type, now()
+    insert into items_history(id, owner, title, media_ids, description, category_id, status, created_at, change_type, changed_at)
+    select id, owner, title, media_ids, description, category_id, status, created_at, change_type, now()
     from items
     where id = item_id;
 end;

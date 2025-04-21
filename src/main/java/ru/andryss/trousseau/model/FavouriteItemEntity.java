@@ -11,6 +11,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class FavouriteItemEntity {
     private String id;
+    private String userId;
     private String itemId;
     private Instant createdAt;
 }

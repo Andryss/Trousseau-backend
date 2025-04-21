@@ -28,26 +28,26 @@ public class SellerApiController extends ItemApiController implements SellerApi 
 
     @Override
     public void changeSellerItemStatus(String itemId, ChangeStatusRequest request) {
-        itemService.changeSellerItemStatus(itemId, ItemStatus.fromOpenApi(request.getStatus()));
+        itemService.changeSellerItemStatus(itemId, getUser(), ItemStatus.fromOpenApi(request.getStatus()));
     }
 
     @Override
     public ItemDto createSellerItem(ItemInfoRequest request) {
-        ItemEntity item = itemService.createItem(request);
+        ItemEntity item = itemService.createItem(getUser(), request);
 
         return mapToDto(item);
     }
 
     @Override
     public ItemDto getSellerItem(String itemId) {
-        ItemEntity item = itemService.getItem(itemId);
+        ItemEntity item = itemService.getItem(itemId, getUser());
 
         return mapToDto(item);
     }
 
     @Override
     public ItemListResponse getSellerItems() {
-        List<ItemEntity> items = itemService.getItems();
+        List<ItemEntity> items = itemService.getItems(getUser());
 
         List<ItemDto> dtoList = mapToDto(items);
 
@@ -57,7 +57,7 @@ public class SellerApiController extends ItemApiController implements SellerApi 
 
     @Override
     public ItemDto updateSellerItem(String itemId, ItemInfoRequest request) {
-        ItemEntity item = itemService.updateItem(itemId, request);
+        ItemEntity item = itemService.updateItem(itemId, getUser(), request);
 
         return mapToDto(item);
     }

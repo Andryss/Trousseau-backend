@@ -27,7 +27,7 @@ public class JwtTokenUtil implements InitializingBean {
     private Key signingKey;
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         byte[] bytes = Decoders.BASE64.decode(properties.getSecret());
         signingKey = Keys.hmacShaKeyFor(bytes);
         properties.setSecret(null);

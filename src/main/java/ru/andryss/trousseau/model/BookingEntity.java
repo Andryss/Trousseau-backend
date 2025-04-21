@@ -12,5 +12,6 @@ import lombok.Setter;
 public class BookingEntity {
     private String id;
     private String itemId;
+    private String userId;
     private Instant bookedAt;
 }

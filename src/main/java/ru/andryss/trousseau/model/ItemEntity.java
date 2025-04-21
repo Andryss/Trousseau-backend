@@ -12,6 +12,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class ItemEntity {
     private String id;
+    private String owner;
     private String title;
     private List<String> mediaIds;
     private String description;

@@ -4,6 +4,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import com.google.common.collect.ImmutableTable;
@@ -25,6 +26,7 @@ import ru.andryss.trousseau.model.ItemEntity;
 import ru.andryss.trousseau.model.ItemStatus;
 import ru.andryss.trousseau.repository.BookingRepository;
 import ru.andryss.trousseau.repository.ItemRepository;
+import ru.andryss.trousseau.security.UserData;
 
 import static ru.andryss.trousseau.model.ItemStatus.ARCHIVED;
 import static ru.andryss.trousseau.model.ItemStatus.BOOKED;
@@ -60,7 +62,7 @@ public class ItemServiceImpl implements ItemService {
     private final Table<ItemStatus, ItemStatus, Transit> sellerTransitions =
             ImmutableTable.<ItemStatus, ItemStatus, Transit>builder()
                     .put(READY, PUBLISHED, publishTransit())
-                    .put(PUBLISHED, READY, emptyTransit())
+                    .put(PUBLISHED, READY, unpublishTransit())
                     .put(BOOKED, PUBLISHED, unbookTransit())
                     .put(BOOKED, ARCHIVED, closeTransit())
                     .build();
@@ -72,27 +74,28 @@ public class ItemServiceImpl implements ItemService {
                     .build();
 
     @Override
-    public ItemEntity createItem(ItemInfoRequest info) {
-        log.info("Creating item title={}, mediaIds={}, description={}, category={}", info.getTitle(), info.getMedia(),
-                info.getDescription(), info.getCategory());
+    public ItemEntity createItem(UserData user, ItemInfoRequest info) {
+        log.info("Creating item for user {}: title={}, mediaIds={}, description={}, category={}",
+                user.getId(), info.getTitle(), info.getMedia(), info.getDescription(), info.getCategory());
 
         ItemEntity item = new ItemEntity();
         patchItem(item, info);
 
         ZonedDateTime now = timeService.now();
         item.setId(itemIdFormatter.format(now));
+        item.setOwner(user.getId());
         item.setCreatedAt(now.toInstant());
 
         return itemRepository.save(item);
     }
 
     @Override
-    public ItemEntity updateItem(String id, ItemInfoRequest info) {
-        log.info("Updating item with id={}, title={}, mediaIds={}, description={}, category={}", id, info.getTitle(),
-                info.getMedia(), info.getDescription(), info.getCategory());
+    public ItemEntity updateItem(String id, UserData user, ItemInfoRequest info) {
+        log.info("Updating item with id {} as user {}: title={}, mediaIds={}, description={}, category={}",
+                id, user.getId(), info.getTitle(), info.getMedia(), info.getDescription(), info.getCategory());
 
         return transactionTemplate.execute((status) -> {
-            ItemEntity item = findByIdOrThrow(id);
+            ItemEntity item = findByIdAndOwnerOrThrow(id, user.getId());
 
             if (!ITEM_EDITABLE_STATUSES.contains(item.getStatus())) {
                 throw Errors.itemNotEditable(item.getStatus());
@@ -104,10 +107,10 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemEntity> getItems() {
-        log.info("Getting items");
+    public List<ItemEntity> getItems(UserData user) {
+        log.info("Getting items as user {}", user.getId());
 
-        return itemRepository.findAllOrderByCreatedAtDesc();
+        return itemRepository.findAllByOwnerOrderByCreatedAtDesc(user.getId());
     }
 
     @Override
@@ -118,17 +121,24 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public void changeSellerItemStatus(String id, ItemStatus status) {
-        log.info("Changing item {} status to {} as seller", id, status);
+    public ItemEntity getItem(String id, UserData user) {
+        log.info("Getting item {} as user {}", id, user.getId());
 
-        changeStatusInternal(id, status, sellerTransitions);
+        return findByIdAndOwnerOrThrow(id, user.getId());
     }
 
     @Override
-    public void changePublicItemStatus(String id, ItemStatus status) {
-        log.info("Changing item {} status to {} as public", id, status);
+    public void changeSellerItemStatus(String id, UserData user, ItemStatus status) {
+        log.info("Changing item {} status to {} as seller {}", id, status, user.getId());
 
-        changeStatusInternal(id, status, publicTransitions);
+        changeStatusInternal(id, user, status, sellerTransitions);
+    }
+
+    @Override
+    public void changePublicItemStatus(String id, UserData user, ItemStatus status) {
+        log.info("Changing item {} status to {} as public {}", id, status, user.getId());
+
+        changeStatusInternal(id, user, status, publicTransitions);
     }
 
     @Override
@@ -161,10 +171,10 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemEntity> getBooked() {
-        log.info("Getting booked items");
+    public List<ItemEntity> getBooked(UserData user) {
+        log.info("Getting booked items as user {}", user.getId());
 
-        return itemRepository.findAllByStatusOrderByCreatedAtDesc(BOOKED);
+        return itemRepository.findAllBookedBy(user.getId());
     }
 
     private ItemEntity findByIdOrThrow(String itemId) {
@@ -175,8 +185,17 @@ public class ItemServiceImpl implements ItemService {
         return item.get();
     }
 
+    private ItemEntity findByIdAndOwnerOrThrow(String itemId, String owner) {
+        Optional<ItemEntity> item = itemRepository.findByIdAndOwner(itemId, owner);
+        if (item.isEmpty()) {
+            throw Errors.itemNotFound(itemId);
+        }
+        return item.get();
+    }
+
     private void changeStatusInternal(
             String id,
+            UserData user,
             ItemStatus status,
             Table<ItemStatus, ItemStatus, Transit> transitions
     ) {
@@ -188,7 +207,7 @@ public class ItemServiceImpl implements ItemService {
             if (transit == null) {
                 throw Errors.illegalItemStatusTransition(currentStatus, status);
             }
-            transit.transit(item);
+            transit.transit(user, item);
 
             item.setStatus(status);
             itemRepository.update(item);
@@ -196,22 +215,29 @@ public class ItemServiceImpl implements ItemService {
     }
 
     private interface Transit {
-        void transit(ItemEntity item) throws TrousseauException; // must be called inside transaction
+        void transit(UserData user, ItemEntity item) throws TrousseauException; // must be called inside transaction
     }
 
     private Transit publishTransit() {
-        return item -> eventService.push(EventType.ITEM_PUBLISHED, Map.of("itemId", item.getId()));
+        return (user, item) -> {
+            if (!Objects.equals(item.getOwner(), user.getId())) {
+                throw Errors.itemNotFound(item.getId());
+            }
+            eventService.push(EventType.ITEM_PUBLISHED, Map.of("itemId", item.getId()));
+        };
     }
 
-    private Transit emptyTransit() {
-        return item -> {
-
+    private Transit unpublishTransit() {
+        return (user, item) -> {
+            if (!Objects.equals(item.getOwner(), user.getId())) {
+                throw Errors.itemNotFound(item.getId());
+            }
         };
     }
 
     private Transit bookTransit() {
-        return item -> {
-            List<BookingEntity> bookings = bookingRepository.findAll();
+        return (user, item) -> {
+            List<BookingEntity> bookings = bookingRepository.findAllByUserId(user.getId());
 
             if (bookings.size() >= MAX_BOOKINGS_PER_USER) {
                 throw Errors.maximumBookingsCountReached(MAX_BOOKINGS_PER_USER);
@@ -222,6 +248,7 @@ public class ItemServiceImpl implements ItemService {
             BookingEntity booking = new BookingEntity();
             booking.setId(itemIdFormatter.format(now));
             booking.setItemId(item.getId());
+            booking.setUserId(user.getId());
             booking.setBookedAt(now.toInstant());
 
             bookingRepository.save(booking);
@@ -229,17 +256,30 @@ public class ItemServiceImpl implements ItemService {
     }
 
     private Transit unbookTransit() {
-        return this::deleteBookingOrThrow;
+        return (user, item) -> {
+            if (Objects.equals(item.getOwner(), user.getId())) {
+                deleteBookingOrThrow(item);
+                return;
+            }
+
+            if (bookingRepository.deleteByItemIdAndUserId(item.getId(), user.getId()) == 0) {
+                throw Errors.bookingNotFound(item.getId());
+            }
+        };
     }
 
     private Transit closeTransit() {
-        return this::deleteBookingOrThrow;
+        return (user, item) -> {
+            if (!Objects.equals(item.getOwner(), user.getId())) {
+                throw Errors.itemNotFound(item.getId());
+            }
+
+            deleteBookingOrThrow(item);
+        };
     }
 
     private void deleteBookingOrThrow(ItemEntity item) {
-        int deleted = bookingRepository.deleteByItemId(item.getId());
-
-        if (deleted == 0) {
+        if (bookingRepository.deleteByItemId(item.getId()) == 0) {
             throw Errors.bookingNotFound(item.getId());
         }
     }

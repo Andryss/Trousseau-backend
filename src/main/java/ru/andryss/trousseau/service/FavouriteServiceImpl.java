@@ -12,6 +12,7 @@ import ru.andryss.trousseau.model.FavouriteItemEntity;
 import ru.andryss.trousseau.model.ItemEntity;
 import ru.andryss.trousseau.repository.FavouriteItemRepository;
 import ru.andryss.trousseau.repository.ItemRepository;
+import ru.andryss.trousseau.security.UserData;
 
 import static java.util.stream.Collectors.toMap;
 
@@ -27,28 +28,29 @@ public class FavouriteServiceImpl implements FavouriteService {
     private final DateTimeFormatter favouriteIdFormatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmssSSS");
 
     @Override
-    public void changeIsFavourite(String itemId, boolean isFavourite) {
-        log.info("Changing isFavourite of item {} to {}", itemId, isFavourite);
+    public void changeIsFavourite(String itemId, UserData user, boolean isFavourite) {
+        log.info("Changing isFavourite of item {} of user {} to {}", itemId, user.getId(), isFavourite);
 
         if (isFavourite) {
             ZonedDateTime now = timeService.now();
 
             FavouriteItemEntity favourite = new FavouriteItemEntity();
             favourite.setId(favouriteIdFormatter.format(now));
+            favourite.setUserId(user.getId());
             favourite.setItemId(itemId);
             favourite.setCreatedAt(now.toInstant());
 
             favouriteItemRepository.upsert(favourite);
         } else {
-            favouriteItemRepository.deleteByItemId(itemId);
+            favouriteItemRepository.deleteByItemIdAndUserId(itemId, user.getId());
         }
     }
 
     @Override
-    public List<ItemEntity> getAll() {
-        log.info("Getting favourite items");
+    public List<ItemEntity> getAll(UserData user) {
+        log.info("Getting favourite items as user {}", user.getId());
 
-        return itemRepository.findAllFavourites();
+        return itemRepository.findFavouritesOf(user.getId());
     }
 
     @Override

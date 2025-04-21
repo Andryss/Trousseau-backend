@@ -4,14 +4,14 @@ import java.util.List;
 import java.util.Optional;
 
 import ru.andryss.trousseau.model.ItemEntity;
-import ru.andryss.trousseau.model.ItemStatus;
 
 public interface ItemRepository {
     ItemEntity save(ItemEntity item);
     ItemEntity update(ItemEntity item);
     Optional<ItemEntity> findById(String id);
-    List<ItemEntity> findAllOrderByCreatedAtDesc();
-    List<ItemEntity> findAllByStatusOrderByCreatedAtDesc(ItemStatus status);
-    List<ItemEntity> findAllFavourites();
+    Optional<ItemEntity> findByIdAndOwner(String id, String owner);
+    List<ItemEntity> findAllByOwnerOrderByCreatedAtDesc(String owner);
+    List<ItemEntity> findAllBookedBy(String userId);
+    List<ItemEntity> findFavouritesOf(String userId);
     List<ItemEntity> executeQuery(String query);
 }

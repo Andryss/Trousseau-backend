@@ -18,21 +18,23 @@ public class FavouriteItemRepositoryImpl implements FavouriteItemRepository {
     @Override
     public void upsert(FavouriteItemEntity favourite) {
         jdbcTemplate.update("""
-                insert into favourites(id, item_id, created_at)
-                    values(:id, :itemId, :createdAt)
+                insert into favourites(id, item_id, user_id, created_at)
+                    values(:id, :itemId, :userId, :createdAt)
                 on conflict on constraint favourites_unique do nothing
         """, new MapSqlParameterSource()
                 .addValue("id", favourite.getId())
                 .addValue("itemId", favourite.getItemId())
+                .addValue("userId", favourite.getUserId())
                 .addValue("createdAt", Timestamp.from(favourite.getCreatedAt())));
     }
 
     @Override
-    public void deleteByItemId(String itemId) {
+    public void deleteByItemIdAndUserId(String itemId, String userId) {
         jdbcTemplate.update("""
-                delete from favourites where item_id = :itemId
+                delete from favourites where item_id = :itemId and user_id = :userId
         """, new MapSqlParameterSource()
-                .addValue("itemId", itemId));
+                .addValue("itemId", itemId)
+                .addValue("userId", userId));
     }
 
     @Override

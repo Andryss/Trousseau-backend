@@ -41,17 +41,17 @@ public class PublicApiController extends ItemApiController implements PublicApi 
 
     @Override
     public void changeFavourite(String itemId, ChangeFavouriteRequest request) {
-        favouriteService.changeIsFavourite(itemId, request.getIsFavourite());
+        favouriteService.changeIsFavourite(itemId, getUser(), request.getIsFavourite());
     }
 
     @Override
     public void changeItemStatus(String itemId, ChangeStatusRequest request) {
-        itemService.changePublicItemStatus(itemId, ItemStatus.fromOpenApi(request.getStatus()));
+        itemService.changePublicItemStatus(itemId, getUser(), ItemStatus.fromOpenApi(request.getStatus()));
     }
 
     @Override
     public ItemListResponse getBookedItems() {
-        List<ItemEntity> items = itemService.getBooked();
+        List<ItemEntity> items = itemService.getBooked(getUser());
 
         List<ItemDto> dtoList = mapToDto(items);
 
@@ -68,7 +68,7 @@ public class PublicApiController extends ItemApiController implements PublicApi 
 
     @Override
     public ItemListResponse getFavourites() {
-        List<ItemEntity> items = favouriteService.getAll();
+        List<ItemEntity> items = favouriteService.getAll(getUser());
 
         List<ItemDto> dtoList = mapToDto(items);
 

@@ -29,6 +29,7 @@ public class ItemRepositoryImpl implements ItemRepository, InitializingBean {
         rowMapper = (rs, rowNum) -> {
             ItemEntity item = new ItemEntity();
             item.setId(rs.getString("id"));
+            item.setOwner(rs.getString("owner"));
             item.setTitle(rs.getString("title"));
             item.setMediaIds(objectMapper.readValue(rs.getString("media_ids")));
             item.setDescription(rs.getString("description"));
@@ -43,8 +44,8 @@ public class ItemRepositoryImpl implements ItemRepository, InitializingBean {
     @Transactional
     public ItemEntity save(ItemEntity item) {
         jdbcTemplate.update("""
-            insert into items(id, title, media_ids, description, category_id, status, created_at)
-                values(:id, :title, :mediaIds::jsonb, :description, :categoryId, :status, :createdAt)
+            insert into items(id, owner, title, media_ids, description, category_id, status, created_at)
+                values(:id, :owner, :title, :mediaIds::jsonb, :description, :categoryId, :status, :createdAt)
         """, getParameterSource(item));
 
         return item;
@@ -78,27 +79,48 @@ public class ItemRepositoryImpl implements ItemRepository, InitializingBean {
     }
 
     @Override
-    public List<ItemEntity> findAllOrderByCreatedAtDesc() {
-        return jdbcTemplate.query("""
-                select * from items order by created_at desc
-        """, rowMapper);
-    }
-
-    @Override
-    public List<ItemEntity> findAllByStatusOrderByCreatedAtDesc(ItemStatus status) {
-        return jdbcTemplate.query("""
-                select * from items where status = :status order by created_at desc
+    public Optional<ItemEntity> findByIdAndOwner(String id, String owner) {
+        List<ItemEntity> result = jdbcTemplate.query("""
+                select * from items where id = :id and owner = :owner
         """, new MapSqlParameterSource()
-                .addValue("status", status.getValue()), rowMapper);
+                .addValue("id", id)
+                .addValue("owner", owner), rowMapper);
+
+        if (result.isEmpty()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(result.get(0));
     }
 
     @Override
-    public List<ItemEntity> findAllFavourites() {
+    public List<ItemEntity> findAllByOwnerOrderByCreatedAtDesc(String owner) {
         return jdbcTemplate.query("""
-                select i.id, i.title, i.media_ids, i.description, i.category_id, i.status, i.created_at
+                select * from items where owner = :owner order by created_at desc
+        """, new MapSqlParameterSource()
+                .addValue("owner", owner), rowMapper);
+    }
+
+    @Override
+    public List<ItemEntity> findAllBookedBy(String userId) {
+        return jdbcTemplate.query("""
+                select i.id, i.owner, i.title, i.media_ids, i.description, i.category_id, i.status, i.created_at
+                    from items i join bookings b on b.item_id = i.id
+                where b.user_id = :userId
+                order by b.booked_at desc
+        """, new MapSqlParameterSource()
+                .addValue("userId", userId), rowMapper);
+    }
+
+    @Override
+    public List<ItemEntity> findFavouritesOf(String userId) {
+        return jdbcTemplate.query("""
+                select i.id, i.owner, i.title, i.media_ids, i.description, i.category_id, i.status, i.created_at
                     from items i join favourites f on i.id = f.item_id
+                where f.user_id = :userId
                 order by f.created_at desc
-        """, rowMapper);
+        """, new MapSqlParameterSource()
+                .addValue("userId", userId), rowMapper);
     }
 
     @Override
@@ -109,6 +131,7 @@ public class ItemRepositoryImpl implements ItemRepository, InitializingBean {
     private MapSqlParameterSource getParameterSource(ItemEntity item) {
         return new MapSqlParameterSource()
                 .addValue("id", item.getId())
+                .addValue("owner", item.getOwner())
                 .addValue("title", item.getTitle())
                 .addValue("mediaIds", objectMapper.writeValueAsString(item.getMediaIds()))
                 .addValue("description", item.getDescription())
