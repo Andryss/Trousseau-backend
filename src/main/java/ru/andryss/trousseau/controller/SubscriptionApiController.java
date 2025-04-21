@@ -28,19 +28,19 @@ public class SubscriptionApiController extends ItemApiController implements Subs
 
     @Override
     public SubscriptionDto createSubscription(SubscriptionInfoRequest request) {
-        SubscriptionEntity entity = subscriptionService.create(request);
+        SubscriptionEntity entity = subscriptionService.create(getUser(), request);
 
         return mapToDto(entity);
     }
 
     @Override
     public void deleteSubscription(String subscriptionId) {
-        subscriptionService.delete(subscriptionId);
+        subscriptionService.delete(subscriptionId, getUser());
     }
 
     @Override
     public SubscriptionListResponse getSubscriptions() {
-        List<SubscriptionEntity> entities = subscriptionService.getAll();
+        List<SubscriptionEntity> entities = subscriptionService.getAll(getUser());
 
         List<SubscriptionDto> dtoList = entities.stream()
                 .map(this::mapToDto)
@@ -52,7 +52,7 @@ public class SubscriptionApiController extends ItemApiController implements Subs
 
     @Override
     public SubscriptionDto updateSubscription(String subscriptionId, SubscriptionInfoRequest request) {
-        SubscriptionEntity entity = subscriptionService.update(subscriptionId, request);
+        SubscriptionEntity entity = subscriptionService.update(subscriptionId, getUser(), request);
 
         return mapToDto(entity);
     }

@@ -81,6 +81,7 @@ public class ItemPublishedEventHandlerExecutor extends BaseExecutor {
             StringSubstitutor substitutor = new StringSubstitutor(params);
 
             NotificationInfo info = new NotificationInfo(
+                    subscription.getOwner(),
                     substitutor.replace(NOTIFICATION_TITLE),
                     substitutor.replace(NOTIFICATION_CONTENT),
                     List.of(item, subscription)

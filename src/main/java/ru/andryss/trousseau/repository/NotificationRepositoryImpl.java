@@ -26,6 +26,7 @@ public class NotificationRepositoryImpl implements NotificationRepository, Initi
         rowMapper = (rs, rowNum) -> {
             NotificationEntity notification = new NotificationEntity();
             notification.setId(rs.getString("id"));
+            notification.setReceiver(rs.getString("receiver"));
             notification.setTitle(rs.getString("title"));
             notification.setContent(rs.getString("content"));
             notification.setLinks(objectMapper.readValue(rs.getString("links")));
@@ -38,10 +39,11 @@ public class NotificationRepositoryImpl implements NotificationRepository, Initi
     @Override
     public void save(NotificationEntity entity) {
         jdbcTemplate.update("""
-                insert into notifications(id, title, content, links, is_read, created_at)
-                    values (:id, :title, :content, :links::jsonb, :isRead, :createdAt)
+                insert into notifications(id, receiver, title, content, links, is_read, created_at)
+                    values (:id, :receiver, :title, :content, :links::jsonb, :isRead, :createdAt)
         """, new MapSqlParameterSource()
                 .addValue("id", entity.getId())
+                .addValue("receiver", entity.getReceiver())
                 .addValue("title", entity.getTitle())
                 .addValue("content", entity.getContent())
                 .addValue("links", objectMapper.writeValueAsString(entity.getLinks()))
@@ -50,26 +52,29 @@ public class NotificationRepositoryImpl implements NotificationRepository, Initi
     }
 
     @Override
-    public List<NotificationEntity> findAllOrderByCreatedAtDesc() {
+    public List<NotificationEntity> findAllByReceiverOrderByCreatedAtDesc(String receiver) {
         return jdbcTemplate.query("""
-                select * from notifications order by created_at desc
-        """, rowMapper);
+                select * from notifications where receiver = :receiver order by created_at desc
+        """, new MapSqlParameterSource()
+                .addValue("receiver", receiver), rowMapper);
     }
 
     @Override
-    public int countWithIsRead(boolean isRead) {
+    public int countByReceiverAndIsRead(String receiver, boolean isRead) {
         return jdbcTemplate.queryForObject("""
-                select count(*) from notifications where is_read = :isRead
+                select count(*) from notifications where receiver = :receiver and is_read = :isRead
         """, new MapSqlParameterSource()
+                .addValue("receiver", receiver)
                 .addValue("isRead", isRead), Integer.class);
     }
 
     @Override
-    public void updateByIdSetIsRead(String id, boolean isRead) {
+    public void updateByIdAndReceiverSetIsRead(String id, String receiver, boolean isRead) {
         jdbcTemplate.update("""
-                update notifications set is_read = :isRead where id = :id
+                update notifications set is_read = :isRead where id = :id and receiver = :receiver
         """, new MapSqlParameterSource()
                 .addValue("id", id)
+                .addValue("receiver", receiver)
                 .addValue("isRead", isRead));
     }
 }

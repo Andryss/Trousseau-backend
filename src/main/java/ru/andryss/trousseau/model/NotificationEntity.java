@@ -12,6 +12,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class NotificationEntity {
     private String id;
+    private String receiver;
     private String title;
     private String content;
     private List<String> links;

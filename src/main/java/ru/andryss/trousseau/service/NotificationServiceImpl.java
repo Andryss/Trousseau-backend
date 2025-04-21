@@ -12,6 +12,7 @@ import ru.andryss.trousseau.model.ItemEntity;
 import ru.andryss.trousseau.model.NotificationEntity;
 import ru.andryss.trousseau.model.SubscriptionEntity;
 import ru.andryss.trousseau.repository.NotificationRepository;
+import ru.andryss.trousseau.security.UserData;
 
 @Slf4j
 @Service
@@ -24,24 +25,24 @@ public class NotificationServiceImpl implements NotificationService {
     private final DateTimeFormatter idFormatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmssSSS");
 
     @Override
-    public List<NotificationEntity> getAll() {
-        log.info("Getting all notifications");
+    public List<NotificationEntity> getAll(UserData user) {
+        log.info("Getting all notifications as user {}", user.getId());
 
-        return notificationRepository.findAllOrderByCreatedAtDesc();
+        return notificationRepository.findAllByReceiverOrderByCreatedAtDesc(user.getId());
     }
 
     @Override
-    public int getUnreadCount() {
-        log.info("Getting unread notifications count");
+    public int getUnreadCount(UserData user) {
+        log.info("Getting unread notifications count as user {}", user.getId());
 
-        return notificationRepository.countWithIsRead(false);
+        return notificationRepository.countByReceiverAndIsRead(user.getId(), false);
     }
 
     @Override
-    public void markRead(String id) {
-        log.info("Marking notification with id={} as read", id);
+    public void markRead(String id, UserData user) {
+        log.info("Marking notification {} as user {} as read", id, user.getId());
 
-        notificationRepository.updateByIdSetIsRead(id, true);
+        notificationRepository.updateByIdAndReceiverSetIsRead(id, user.getId(), true);
     }
 
     @Override
@@ -50,6 +51,7 @@ public class NotificationServiceImpl implements NotificationService {
 
         NotificationEntity entity = new NotificationEntity();
         entity.setId(idFormatter.format(now));
+        entity.setReceiver(info.receiver());
         entity.setTitle(info.title());
         entity.setContent(info.content());
         entity.setLinks(mapLinks(info.links()));

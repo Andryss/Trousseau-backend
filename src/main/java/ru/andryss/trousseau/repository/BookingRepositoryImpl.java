@@ -20,6 +20,7 @@ public class BookingRepositoryImpl implements BookingRepository {
         BookingEntity booking = new BookingEntity();
         booking.setId(rs.getString("id"));
         booking.setItemId(rs.getString("item_id"));
+        booking.setUserId(rs.getString("user_id"));
         booking.setBookedAt(rs.getTimestamp("booked_at").toInstant());
         return booking;
     };

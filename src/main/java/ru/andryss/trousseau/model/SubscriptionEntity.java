@@ -11,6 +11,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class SubscriptionEntity {
     private String id;
+    private String owner;
     private String name;
     private SubscriptionInfo data;
     private Instant createdAt;

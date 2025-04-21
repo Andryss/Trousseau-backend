@@ -3,12 +3,13 @@ package ru.andryss.trousseau.service;
 import java.util.List;
 
 import ru.andryss.trousseau.model.NotificationEntity;
+import ru.andryss.trousseau.security.UserData;
 
 public interface NotificationService {
-    List<NotificationEntity> getAll();
-    int getUnreadCount();
-    void markRead(String id);
+    List<NotificationEntity> getAll(UserData user);
+    int getUnreadCount(UserData user);
+    void markRead(String id, UserData user);
     void sendNotification(NotificationInfo info);
 
-    record NotificationInfo(String title, String content, List<Object> links) { }
+    record NotificationInfo(String receiver, String title, String content, List<Object> links) { }
 }

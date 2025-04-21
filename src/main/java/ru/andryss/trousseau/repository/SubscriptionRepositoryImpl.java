@@ -25,10 +25,11 @@ public class SubscriptionRepositoryImpl implements SubscriptionRepository, Initi
 
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         rowMapper = (rs, rowNum) -> {
             SubscriptionEntity subscription = new SubscriptionEntity();
             subscription.setId(rs.getString("id"));
+            subscription.setOwner(rs.getString("owner"));
             subscription.setName(rs.getString("name"));
             subscription.setData(objectMapper.readValue(rs.getString("data"), SubscriptionInfo.class));
             subscription.setCreatedAt(rs.getTimestamp("created_at").toInstant());
@@ -39,8 +40,8 @@ public class SubscriptionRepositoryImpl implements SubscriptionRepository, Initi
     @Override
     public SubscriptionEntity save(SubscriptionEntity subscription) {
         jdbcTemplate.update("""
-                insert into subscriptions(id, name, data, created_at)
-                    values (:id, :name, :data::jsonb, :createdAt)
+                insert into subscriptions(id, owner, name, data, created_at)
+                    values (:id, :owner, :name, :data::jsonb, :createdAt)
         """, getParameterSource(subscription));
 
         return subscription;
@@ -61,6 +62,21 @@ public class SubscriptionRepositoryImpl implements SubscriptionRepository, Initi
     }
 
     @Override
+    public Optional<SubscriptionEntity> findByIdAndOwner(String id, String owner) {
+        List<SubscriptionEntity> result = jdbcTemplate.query("""
+                select * from subscriptions where id = :id and owner = :owner
+        """, new MapSqlParameterSource()
+                .addValue("id", id)
+                .addValue("owner", owner), rowMapper);
+
+        if (result.isEmpty()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(result.get(0));
+    }
+
+    @Override
     public SubscriptionEntity update(SubscriptionEntity subscription) {
         jdbcTemplate.update("""
                 update subscriptions
@@ -72,18 +88,20 @@ public class SubscriptionRepositoryImpl implements SubscriptionRepository, Initi
     }
 
     @Override
-    public List<SubscriptionEntity> findAllOrderByCreatedAt() {
+    public List<SubscriptionEntity> findAllByOwnerOrderByCreatedAt(String owner) {
         return jdbcTemplate.query("""
-                select * from subscriptions order by created_at
-        """, rowMapper);
+                select * from subscriptions where owner = :owner order by created_at
+        """, new MapSqlParameterSource()
+                .addValue("owner", owner), rowMapper);
     }
 
     @Override
-    public void deleteById(String id) {
+    public void deleteByIdAndOwner(String id, String owner) {
         jdbcTemplate.update("""
-                delete from subscriptions where id = :id
+                delete from subscriptions where id = :id and owner = :owner
         """, new MapSqlParameterSource()
-                .addValue("id", id));
+                .addValue("id", id)
+                .addValue("owner", owner));
     }
 
     @Override
@@ -104,6 +122,7 @@ public class SubscriptionRepositoryImpl implements SubscriptionRepository, Initi
     private MapSqlParameterSource getParameterSource(SubscriptionEntity subscription) {
         return new MapSqlParameterSource()
                 .addValue("id", subscription.getId())
+                .addValue("owner", subscription.getOwner())
                 .addValue("name", subscription.getName())
                 .addValue("data", objectMapper.writeValueAsString(subscription.getData()))
                 .addValue("createdAt", Timestamp.from(subscription.getCreatedAt()));

@@ -14,6 +14,7 @@ import ru.andryss.trousseau.generated.model.SubscriptionInfoRequest;
 import ru.andryss.trousseau.model.SubscriptionEntity;
 import ru.andryss.trousseau.model.SubscriptionInfo;
 import ru.andryss.trousseau.repository.SubscriptionRepository;
+import ru.andryss.trousseau.security.UserData;
 
 @Slf4j
 @Service
@@ -27,39 +28,42 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private final DateTimeFormatter idFormatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmssSSS");
 
     @Override
-    public SubscriptionEntity create(SubscriptionInfoRequest request) {
-        log.info("Creating subscription name={} data={}", request.getName(), request.getData());
+    public SubscriptionEntity create(UserData user, SubscriptionInfoRequest request) {
+        log.info("Creating user {} subscription: name={} data={}",
+                user.getId(), request.getName(), request.getData());
 
         SubscriptionEntity subscription = new SubscriptionEntity();
         patch(subscription, request);
 
         ZonedDateTime now = timeService.now();
         subscription.setId(idFormatter.format(now));
+        subscription.setOwner(user.getId());
         subscription.setCreatedAt(now.toInstant());
 
         return subscriptionRepository.save(subscription);
     }
 
     @Override
-    public void delete(String id) {
-        log.info("Deleting subscription with id={}", id);
+    public void delete(String id, UserData user) {
+        log.info("Deleting subscription {} as user {}", id, user.getId());
 
-        subscriptionRepository.deleteById(id);
+        subscriptionRepository.deleteByIdAndOwner(id, user.getId());
     }
 
     @Override
-    public List<SubscriptionEntity> getAll() {
-        log.info("Getting all subscriptions");
+    public List<SubscriptionEntity> getAll(UserData user) {
+        log.info("Getting all subscriptions as user {}", user.getId());
 
-        return subscriptionRepository.findAllOrderByCreatedAt();
+        return subscriptionRepository.findAllByOwnerOrderByCreatedAt(user.getId());
     }
 
     @Override
-    public SubscriptionEntity update(String id, SubscriptionInfoRequest request) {
-        log.info("Updating subscription id={} name={} data={}", id, request.getName(), request.getData());
+    public SubscriptionEntity update(String id, UserData user, SubscriptionInfoRequest request) {
+        log.info("Updating subscription {} as user {}: name={} data={}",
+                id, user.getId(), request.getName(), request.getData());
 
         return transactionTemplate.execute(status -> {
-            Optional<SubscriptionEntity> optional = subscriptionRepository.findById(id);
+            Optional<SubscriptionEntity> optional = subscriptionRepository.findByIdAndOwner(id, user.getId());
 
             if (optional.isEmpty()) {
                 throw Errors.subscriptionNotFound(id);

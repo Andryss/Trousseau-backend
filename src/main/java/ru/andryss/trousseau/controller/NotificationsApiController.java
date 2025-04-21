@@ -15,13 +15,13 @@ import ru.andryss.trousseau.service.NotificationService;
 
 @RestController
 @RequiredArgsConstructor
-public class NotificationsApiController implements NotificationsApi {
+public class NotificationsApiController extends BaseApiController implements NotificationsApi {
 
     private final NotificationService notificationService;
 
     @Override
     public NotificationListResponse getNotifications() {
-        List<NotificationEntity> list = notificationService.getAll();
+        List<NotificationEntity> list = notificationService.getAll(getUser());
 
         List<NotificationDto> dtoList = list.stream()
                 .map(entity -> {
@@ -42,7 +42,7 @@ public class NotificationsApiController implements NotificationsApi {
 
     @Override
     public NotificationCountResponse getUnreadNotificationsCount() {
-        int count = notificationService.getUnreadCount();
+        int count = notificationService.getUnreadCount(getUser());
 
         return new NotificationCountResponse()
                 .count(count);
@@ -50,6 +50,6 @@ public class NotificationsApiController implements NotificationsApi {
 
     @Override
     public void markNotificationRead(String notificationId) {
-        notificationService.markRead(notificationId);
+        notificationService.markRead(notificationId, getUser());
     }
 }

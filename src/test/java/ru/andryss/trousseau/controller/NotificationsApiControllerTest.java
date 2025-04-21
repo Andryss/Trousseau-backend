@@ -26,9 +26,9 @@ class NotificationsApiControllerTest extends BaseApiTest {
     @Test
     @SneakyThrows
     void getNotificationsTest() {
-        createNotification(new NotificationInfo("test-title0", "test-content0",
+        createNotification(new NotificationInfo("test-id", "test-title0", "test-content0",
                 List.of(mockItem("test-link00"))));
-        createNotification(new NotificationInfo("test-title1", "test-content1",
+        createNotification(new NotificationInfo("test-id", "test-title1", "test-content1",
                 List.of(mockItem("test-link10"), mockSubscription("test-link11"))));
 
         mockMvc.perform(
@@ -62,11 +62,11 @@ class NotificationsApiControllerTest extends BaseApiTest {
     @Test
     @SneakyThrows
     void getUnreadCountTest() {
-        createNotification(new NotificationInfo("test-title0", "test-content0",
+        createNotification(new NotificationInfo("test-id", "test-title0", "test-content0",
                 List.of(mockItem("test-link00"))));
-        createNotification(new NotificationInfo("test-title1", "test-content1",
+        createNotification(new NotificationInfo("test-id", "test-title1", "test-content1",
                 List.of(mockSubscription("test-link10"), mockSubscription("test-link11"))));
-        createNotification(new NotificationInfo("test-title2", "test-content2",
+        createNotification(new NotificationInfo("test-id", "test-title2", "test-content2",
                 List.of()));
 
         mockMvc.perform(
@@ -82,7 +82,7 @@ class NotificationsApiControllerTest extends BaseApiTest {
     @Test
     @SneakyThrows
     void markNotificationReadTest() {
-        createNotification(new NotificationInfo("test-title", "test-content",
+        createNotification(new NotificationInfo("test-id", "test-title", "test-content",
                 List.of(mockItem("test-link"))));
 
         MvcResult result = mockMvc.perform(
