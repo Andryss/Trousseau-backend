@@ -1,5 +1,8 @@
 package ru.andryss.trousseau.controller;
 
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.Optional;
 
 import org.springframework.lang.Nullable;
@@ -21,6 +24,14 @@ public abstract class BaseApiController {
         return getAuthentication()
                 .map(auth -> ((UserData) auth.getPrincipal()))
                 .orElse(null);
+    }
+
+    @Nullable
+    protected OffsetDateTime toOffsetDateTime(@Nullable Instant instant) {
+        if (instant == null) {
+            return null;
+        }
+        return OffsetDateTime.ofInstant(instant, ZoneOffset.UTC);
     }
 
     private Optional<Authentication> getAuthentication() {

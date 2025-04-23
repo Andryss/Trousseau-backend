@@ -51,12 +51,14 @@ public class AuthServiceImpl implements AuthService {
         UserEntity user = new UserEntity();
         user.setUsername(username);
         user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
+        user.setContacts(request.getContacts());
+        user.setRoom(request.getRoom());
 
         ZonedDateTime now = timeService.now();
         user.setId(idFormatter.format(now));
         user.setCreatedAt(now.toInstant());
 
-        List<UserRole> userRoles = getUserRoles(request);
+        List<UserRole> userRoles = getUserRoles(user);
         List<String> roleIds = userRoles.stream()
                 .map(UserRole::getId)
                 .toList();
@@ -68,13 +70,13 @@ public class AuthServiceImpl implements AuthService {
         });
     }
 
-    private List<UserRole> getUserRoles(SignUpRequest request) {
+    private List<UserRole> getUserRoles(UserEntity user) {
         List<UserRole> roles = new ArrayList<>();
-        if (!StringUtils.isBlank(request.getUsername())
-                && !CollectionUtils.isEmpty(request.getContacts())) {
+        if (!StringUtils.isBlank(user.getUsername())
+                && !CollectionUtils.isEmpty(user.getContacts())) {
             roles.add(UserRole.USER);
 
-            if (!StringUtils.isBlank(request.getRoom())) {
+            if (!StringUtils.isBlank(user.getRoom())) {
                 roles.add(UserRole.SELLER);
             }
         }

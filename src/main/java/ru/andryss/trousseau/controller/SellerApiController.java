@@ -14,15 +14,21 @@ import ru.andryss.trousseau.service.CategoryService;
 import ru.andryss.trousseau.service.FavouriteService;
 import ru.andryss.trousseau.service.ItemService;
 import ru.andryss.trousseau.service.MediaService;
+import ru.andryss.trousseau.service.UserService;
 
 @RestController
 public class SellerApiController extends ItemApiController implements SellerApi {
 
     private final ItemService itemService;
 
-    public SellerApiController(ItemService itemService, MediaService mediaService, FavouriteService favouriteService,
-                               CategoryService categoryService) {
-        super(mediaService, favouriteService, categoryService);
+    public SellerApiController(
+            ItemService itemService,
+            MediaService mediaService,
+            FavouriteService favouriteService,
+            CategoryService categoryService,
+            UserService userService
+    ) {
+        super(mediaService, favouriteService, categoryService, userService);
         this.itemService = itemService;
     }
 

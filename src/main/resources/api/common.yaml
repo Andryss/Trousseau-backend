@@ -97,11 +97,35 @@ components:
           $ref: "#/components/schemas/categoryId"
         name:
           $ref: "#/components/schemas/categoryName"
+    username:
+      type: string
+    contact:
+      type: string
+    contacts:
+      type: array
+      items:
+        $ref: "#/components/schemas/contact"
+    room:
+      type: string
+    AuthorDto:
+      type: object
+      properties:
+        username:
+          $ref: "#/components/schemas/username"
+        contacts:
+          $ref: "#/components/schemas/contacts"
+        room:
+          $ref: "#/components/schemas/room"
+    publishedAt:
+      type: string
+      format: date-time
     ItemDto:
       type: object
       properties:
         id:
           $ref: "#/components/schemas/itemId"
+        author:
+          $ref: "#/components/schemas/AuthorDto"
         title:
           $ref: "#/components/schemas/itemTitle"
         media:
@@ -114,6 +138,8 @@ components:
           $ref: "#/components/schemas/itemStatus"
         isFavourite:
           $ref: "#/components/schemas/itemIsFavourite"
+        publishedAt:
+          $ref: "#/components/schemas/publishedAt"
     ItemListResponse:
       type: object
       properties:

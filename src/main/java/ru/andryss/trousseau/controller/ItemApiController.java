@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import lombok.RequiredArgsConstructor;
+import ru.andryss.trousseau.generated.model.AuthorDto;
 import ru.andryss.trousseau.generated.model.CategoryDto;
 import ru.andryss.trousseau.generated.model.ItemDto;
 import ru.andryss.trousseau.generated.model.ItemMediaDto;
@@ -12,6 +13,7 @@ import ru.andryss.trousseau.model.ItemEntity;
 import ru.andryss.trousseau.service.CategoryService;
 import ru.andryss.trousseau.service.FavouriteService;
 import ru.andryss.trousseau.service.MediaService;
+import ru.andryss.trousseau.service.UserService;
 
 @RequiredArgsConstructor
 public abstract class ItemApiController extends BaseApiController {
@@ -19,6 +21,7 @@ public abstract class ItemApiController extends BaseApiController {
     private final MediaService mediaService;
     private final FavouriteService favouriteService;
     private final CategoryService categoryService;
+    private final UserService userService;
 
 
     protected List<ItemDto> mapToDto(List<ItemEntity> items) {
@@ -41,15 +44,26 @@ public abstract class ItemApiController extends BaseApiController {
     protected ItemDto mapToDtoCommon(ItemEntity entity, boolean enrichFavourite) {
         ItemDto dto = new ItemDto()
                 .id(entity.getId())
+                .author(mapAuthorDto(entity.getOwner()))
                 .title(entity.getTitle())
                 .media(mapMediaIdToDto(entity.getMediaIds()))
                 .description(entity.getDescription())
                 .category(mapCategoryDto(entity.getCategoryId()))
-                .status(entity.getStatus().toOpenApi());
+                .status(entity.getStatus().toOpenApi())
+                .publishedAt(toOffsetDateTime(entity.getPublishedAt()));
         if (enrichFavourite) {
             dto.isFavourite(favouriteService.checkFavourite(entity));
         }
         return dto;
+    }
+
+    private AuthorDto mapAuthorDto(String userId) {
+        return userService.findById(userId)
+                .map(user -> new AuthorDto()
+                        .username(user.getUsername())
+                        .contacts(user.getContacts())
+                        .room(user.getRoom()))
+                .orElse(null);
     }
 
     private List<ItemMediaDto> mapMediaIdToDto(List<String> ids) {

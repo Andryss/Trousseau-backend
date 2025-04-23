@@ -21,6 +21,7 @@ import ru.andryss.trousseau.service.CategoryService;
 import ru.andryss.trousseau.service.FavouriteService;
 import ru.andryss.trousseau.service.ItemService;
 import ru.andryss.trousseau.service.MediaService;
+import ru.andryss.trousseau.service.UserService;
 
 @RestController
 public class PublicApiController extends ItemApiController implements PublicApi {
@@ -30,9 +31,15 @@ public class PublicApiController extends ItemApiController implements PublicApi 
     private final CategoryService categoryService;
     private final SearchInfoValidator searchInfoValidator;
 
-    public PublicApiController(ItemService itemService, MediaService mediaService, FavouriteService favouriteService,
-                               CategoryService categoryService, SearchInfoValidator searchInfoValidator) {
-        super(mediaService, favouriteService, categoryService);
+    public PublicApiController(
+            ItemService itemService,
+            MediaService mediaService,
+            FavouriteService favouriteService,
+            CategoryService categoryService,
+            SearchInfoValidator searchInfoValidator,
+            UserService userService
+    ) {
+        super(mediaService, favouriteService, categoryService, userService);
         this.itemService = itemService;
         this.favouriteService = favouriteService;
         this.categoryService = categoryService;

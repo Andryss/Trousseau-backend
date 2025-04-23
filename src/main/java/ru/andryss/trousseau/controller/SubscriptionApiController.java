@@ -14,15 +14,21 @@ import ru.andryss.trousseau.service.CategoryService;
 import ru.andryss.trousseau.service.FavouriteService;
 import ru.andryss.trousseau.service.MediaService;
 import ru.andryss.trousseau.service.SubscriptionService;
+import ru.andryss.trousseau.service.UserService;
 
 @RestController
 public class SubscriptionApiController extends ItemApiController implements SubscriptionApi {
 
     private final SubscriptionService subscriptionService;
 
-    public SubscriptionApiController(MediaService mediaService, FavouriteService favouriteService,
-                                     CategoryService categoryService, SubscriptionService subscriptionService) {
-        super(mediaService, favouriteService, categoryService);
+    public SubscriptionApiController(
+            MediaService mediaService,
+            FavouriteService favouriteService,
+            CategoryService categoryService,
+            SubscriptionService subscriptionService,
+            UserService userService
+    ) {
+        super(mediaService, favouriteService, categoryService, userService);
         this.subscriptionService = subscriptionService;
     }
 

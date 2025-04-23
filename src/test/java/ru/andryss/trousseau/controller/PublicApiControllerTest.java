@@ -44,6 +44,11 @@ class PublicApiControllerTest extends BaseApiTest {
                         jsonPath("$.items").isArray(),
                         jsonPath("$.items.size()").value(2),
                         jsonPath("$.items[0].id").value(item1.getId()),
+                        jsonPath("$.items[0].author.username").value("test-username"),
+                        jsonPath("$.items[0].author.contacts.size()").value(2),
+                        jsonPath("$.items[0].author.contacts[0]").value("test-contact-1"),
+                        jsonPath("$.items[0].author.contacts[1]").value("test-contact-2"),
+                        jsonPath("$.items[0].author.room").value("test-room"),
                         jsonPath("$.items[0].title").value("title-1"),
                         jsonPath("$.items[0].media").isArray(),
                         jsonPath("$.items[0].media.size()").value(2),
@@ -54,7 +59,13 @@ class PublicApiControllerTest extends BaseApiTest {
                         jsonPath("$.items[0].category.name").value("Одежда и обувь"),
                         jsonPath("$.items[0].status").value("PUBLISHED"),
                         jsonPath("$.items[0].isFavourite").value("false"),
+                        jsonPath("$.items[0].publishedAt").value("2024-05-20T12:30:05Z"),
                         jsonPath("$.items[1].id").value(item0.getId()),
+                        jsonPath("$.items[1].author.username").value("test-username"),
+                        jsonPath("$.items[1].author.contacts.size()").value(2),
+                        jsonPath("$.items[1].author.contacts[0]").value("test-contact-1"),
+                        jsonPath("$.items[1].author.contacts[1]").value("test-contact-2"),
+                        jsonPath("$.items[1].author.room").value("test-room"),
                         jsonPath("$.items[1].title").value("title-0"),
                         jsonPath("$.items[1].media").isArray(),
                         jsonPath("$.items[1].media.size()").value(1),
@@ -63,7 +74,8 @@ class PublicApiControllerTest extends BaseApiTest {
                         jsonPath("$.items[1].category.id").value("clothes"),
                         jsonPath("$.items[1].category.name").value("Одежда и обувь"),
                         jsonPath("$.items[1].status").value("PUBLISHED"),
-                        jsonPath("$.items[1].isFavourite").value("false")
+                        jsonPath("$.items[1].isFavourite").value("false"),
+                        jsonPath("$.items[1].publishedAt").value("2024-05-20T12:30:02Z")
                 );
     }
 
@@ -79,6 +91,11 @@ class PublicApiControllerTest extends BaseApiTest {
                 .andExpectAll(
                         status().isOk(),
                         jsonPath("$.id").value(item.getId()),
+                        jsonPath("$.author.username").value("test-username"),
+                        jsonPath("$.author.contacts.size()").value(2),
+                        jsonPath("$.author.contacts[0]").value("test-contact-1"),
+                        jsonPath("$.author.contacts[1]").value("test-contact-2"),
+                        jsonPath("$.author.room").value("test-room"),
                         jsonPath("$.title").value("title"),
                         jsonPath("$.media").isArray(),
                         jsonPath("$.media.size()").value(2),
@@ -88,7 +105,8 @@ class PublicApiControllerTest extends BaseApiTest {
                         jsonPath("$.category.id").value("clothes"),
                         jsonPath("$.category.name").value("Одежда и обувь"),
                         jsonPath("$.status").value("PUBLISHED"),
-                        jsonPath("$.isFavourite").value("false")
+                        jsonPath("$.isFavourite").value("false"),
+                        jsonPath("$.publishedAt").value("2024-05-20T12:30:02Z")
                 );
     }
 
@@ -113,6 +131,11 @@ class PublicApiControllerTest extends BaseApiTest {
                         jsonPath("$.items").isArray(),
                         jsonPath("$.items.size()").value(1),
                         jsonPath("$.items[0].id").value(item.getId()),
+                        jsonPath("$.items[0].author.username").value("test-username"),
+                        jsonPath("$.items[0].author.contacts.size()").value(2),
+                        jsonPath("$.items[0].author.contacts[0]").value("test-contact-1"),
+                        jsonPath("$.items[0].author.contacts[1]").value("test-contact-2"),
+                        jsonPath("$.items[0].author.room").value("test-room"),
                         jsonPath("$.items[0].title").value("title"),
                         jsonPath("$.items[0].media").isArray(),
                         jsonPath("$.items[0].media.size()").value(2),
@@ -122,7 +145,8 @@ class PublicApiControllerTest extends BaseApiTest {
                         jsonPath("$.items[0].category.id").value("clothes"),
                         jsonPath("$.items[0].category.name").value("Одежда и обувь"),
                         jsonPath("$.items[0].status").value("BOOKED"),
-                        jsonPath("$.items[0].isFavourite").value("false")
+                        jsonPath("$.items[0].isFavourite").value("false"),
+                        jsonPath("$.items[0].publishedAt").value("2024-05-20T12:30:02Z")
                 );
     }
 
@@ -147,6 +171,11 @@ class PublicApiControllerTest extends BaseApiTest {
                         jsonPath("$.items").isArray(),
                         jsonPath("$.items.size()").value(1),
                         jsonPath("$.items[0].id").value(item.getId()),
+                        jsonPath("$.items[0].author.username").value("test-username"),
+                        jsonPath("$.items[0].author.contacts.size()").value(2),
+                        jsonPath("$.items[0].author.contacts[0]").value("test-contact-1"),
+                        jsonPath("$.items[0].author.contacts[1]").value("test-contact-2"),
+                        jsonPath("$.items[0].author.room").value("test-room"),
                         jsonPath("$.items[0].title").value("title"),
                         jsonPath("$.items[0].media").isArray(),
                         jsonPath("$.items[0].media.size()").value(2),
@@ -156,7 +185,8 @@ class PublicApiControllerTest extends BaseApiTest {
                         jsonPath("$.items[0].category.id").value("clothes"),
                         jsonPath("$.items[0].category.name").value("Одежда и обувь"),
                         jsonPath("$.items[0].status").value("PUBLISHED"),
-                        jsonPath("$.items[0].isFavourite").value("true")
+                        jsonPath("$.items[0].isFavourite").value("true"),
+                        jsonPath("$.items[0].publishedAt").value("2024-05-20T12:30:02Z")
                 );
 
         mockMvc.perform(

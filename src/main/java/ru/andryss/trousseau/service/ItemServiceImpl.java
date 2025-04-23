@@ -223,6 +223,7 @@ public class ItemServiceImpl implements ItemService {
             if (!Objects.equals(item.getOwner(), user.getId())) {
                 throw Errors.itemNotFound(item.getId());
             }
+            item.setPublishedAt(timeService.now().toInstant());
             eventService.push(EventType.ITEM_PUBLISHED, Map.of("itemId", item.getId()));
         };
     }

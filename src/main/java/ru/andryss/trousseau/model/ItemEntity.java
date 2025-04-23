@@ -18,5 +18,6 @@ public class ItemEntity {
     private String description;
     private String categoryId;
     private ItemStatus status;
+    private Instant publishedAt;
     private Instant createdAt;
 }

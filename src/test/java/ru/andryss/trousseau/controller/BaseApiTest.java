@@ -18,6 +18,7 @@ import ru.andryss.trousseau.generated.model.ItemDto;
 import ru.andryss.trousseau.model.UserEntity;
 import ru.andryss.trousseau.repository.UserRepository;
 import ru.andryss.trousseau.security.UserData;
+import ru.andryss.trousseau.service.MockTimeService;
 
 import static org.springframework.security.authentication.UsernamePasswordAuthenticationToken.authenticated;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -36,12 +37,19 @@ public abstract class BaseApiTest extends BaseDbTest {
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    MockTimeService timeService;
+
     @BeforeEach
-    void setUpUser() {
+    void setUp() {
+        timeService.reset();
+
         UserEntity userEntity = new UserEntity();
         userEntity.setId("test-id");
         userEntity.setUsername("test-username");
         userEntity.setPasswordHash("test-password-hash");
+        userEntity.setContacts(List.of("test-contact-1", "test-contact-2"));
+        userEntity.setRoom("test-room");
         userEntity.setCreatedAt(Instant.ofEpochMilli(1_000_000));
 
         userRepository.save(userEntity);

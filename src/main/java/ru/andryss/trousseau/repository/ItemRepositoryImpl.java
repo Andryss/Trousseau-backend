@@ -1,6 +1,7 @@
 package ru.andryss.trousseau.repository;
 
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import ru.andryss.trousseau.model.ItemEntity;
@@ -35,7 +37,8 @@ public class ItemRepositoryImpl implements ItemRepository, InitializingBean {
             item.setDescription(rs.getString("description"));
             item.setCategoryId(rs.getString("category_id"));
             item.setStatus(ItemStatus.fromValue(rs.getString("status")));
-            item.setCreatedAt(rs.getTimestamp("created_at").toInstant());
+            item.setPublishedAt(toInstant(rs.getTimestamp("published_at")));
+            item.setCreatedAt(toInstant(rs.getTimestamp("created_at")));
             return item;
         };
     }
@@ -44,8 +47,8 @@ public class ItemRepositoryImpl implements ItemRepository, InitializingBean {
     @Transactional
     public ItemEntity save(ItemEntity item) {
         jdbcTemplate.update("""
-            insert into items(id, owner, title, media_ids, description, category_id, status, created_at)
-                values(:id, :owner, :title, :mediaIds::jsonb, :description, :categoryId, :status, :createdAt)
+            insert into items(id, owner, title, media_ids, description, category_id, status, published_at, created_at)
+                values(:id, :owner, :title, :mediaIds::jsonb, :description, :categoryId, :status, :publishedAt, :createdAt)
         """, getParameterSource(item));
 
         return item;
@@ -56,7 +59,7 @@ public class ItemRepositoryImpl implements ItemRepository, InitializingBean {
         jdbcTemplate.update("""
             update items
                 set title = :title, media_ids = :mediaIds::jsonb, description = :description,
-                    category_id = :categoryId, status = :status
+                    category_id = :categoryId, status = :status, published_at = :publishedAt
                 where id = :id
         """, getParameterSource(item));
 
@@ -104,7 +107,8 @@ public class ItemRepositoryImpl implements ItemRepository, InitializingBean {
     @Override
     public List<ItemEntity> findAllBookedBy(String userId) {
         return jdbcTemplate.query("""
-                select i.id, i.owner, i.title, i.media_ids, i.description, i.category_id, i.status, i.created_at
+                select i.id, i.owner, i.title, i.media_ids, i.description, i.category_id, i.status,
+                        i.published_at, i.created_at
                     from items i join bookings b on b.item_id = i.id
                 where b.user_id = :userId
                 order by b.booked_at desc
@@ -115,7 +119,8 @@ public class ItemRepositoryImpl implements ItemRepository, InitializingBean {
     @Override
     public List<ItemEntity> findFavouritesOf(String userId) {
         return jdbcTemplate.query("""
-                select i.id, i.owner, i.title, i.media_ids, i.description, i.category_id, i.status, i.created_at
+                select i.id, i.owner, i.title, i.media_ids, i.description, i.category_id, i.status,
+                        i.published_at, i.created_at
                     from items i join favourites f on i.id = f.item_id
                 where f.user_id = :userId
                 order by f.created_at desc
@@ -137,6 +142,24 @@ public class ItemRepositoryImpl implements ItemRepository, InitializingBean {
                 .addValue("description", item.getDescription())
                 .addValue("categoryId", item.getCategoryId())
                 .addValue("status", item.getStatus().getValue())
-                .addValue("createdAt", Timestamp.from(item.getCreatedAt()));
+                .addValue("publishedAt", toTimestamp(item.getPublishedAt()))
+                .addValue("createdAt", toTimestamp(item.getCreatedAt()));
+    }
+
+
+    @Nullable
+    private Instant toInstant(@Nullable Timestamp timestamp) {
+        if (timestamp == null) {
+            return null;
+        }
+        return timestamp.toInstant();
+    }
+
+    @Nullable
+    private Timestamp toTimestamp(@Nullable Instant instant) {
+        if (instant == null) {
+            return null;
+        }
+        return Timestamp.from(instant);
     }
 }

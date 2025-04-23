@@ -9,6 +9,7 @@ create table items (
     description text,
     category_id text references categories(id),
     status text not null,
+    published_at timestamp,
     created_at timestamp not null
 );
 
@@ -21,4 +22,5 @@ comment on column items.media_ids is 'Идентификаторы медиа-д
 comment on column items.description is 'Описание';
 comment on column items.category_id is 'Идентификатор категории';
 comment on column items.status is 'Текущий статус';
+comment on column items.published_at is 'Время публикации';
 comment on column items.created_at is 'Время создания';

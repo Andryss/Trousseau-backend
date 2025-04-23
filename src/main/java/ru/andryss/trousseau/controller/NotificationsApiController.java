@@ -1,7 +1,5 @@
 package ru.andryss.trousseau.controller;
 
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
@@ -31,7 +29,7 @@ public class NotificationsApiController extends BaseApiController implements Not
                     dto.setContent(entity.getContent());
                     dto.setLinks(entity.getLinks());
                     dto.setIsRead(entity.isRead());
-                    dto.setTimestamp(OffsetDateTime.ofInstant(entity.getCreatedAt(), ZoneOffset.UTC));
+                    dto.setTimestamp(toOffsetDateTime(entity.getCreatedAt()));
                     return dto;
                 })
                 .toList();
