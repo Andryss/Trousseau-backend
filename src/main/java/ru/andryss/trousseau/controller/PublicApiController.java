@@ -48,7 +48,7 @@ public class PublicApiController extends ItemApiController implements PublicApi 
     public ItemListResponse getBookedItems() {
         List<ItemEntity> items = itemService.getBooked(getUser());
 
-        List<ItemDto> dtoList = mapToDto(items);
+        List<ItemDto> dtoList = mapItemDtoList(items);
 
         return new ItemListResponse()
                 .items(dtoList);
@@ -58,7 +58,7 @@ public class PublicApiController extends ItemApiController implements PublicApi 
     public ItemDto getItem(String itemId) {
         ItemEntity item = itemService.getPublicItem(itemId);
 
-        return mapToDto(item);
+        return mapItemDto(item);
     }
 
     @Override
@@ -71,7 +71,7 @@ public class PublicApiController extends ItemApiController implements PublicApi 
 
         List<ItemEntity> items = itemService.searchItems(searchInfo);
 
-        List<ItemDto> dtoList = mapToDto(items);
+        List<ItemDto> dtoList = mapItemDtoList(items);
 
         return new ItemListResponse()
                 .items(dtoList);

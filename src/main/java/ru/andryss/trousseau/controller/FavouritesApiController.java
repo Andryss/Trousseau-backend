@@ -36,7 +36,7 @@ public class FavouritesApiController extends ItemApiController implements Favour
     public ItemListResponse getFavourites() {
         List<ItemEntity> items = favouriteService.getAll(getUser());
 
-        List<ItemDto> dtoList = mapToDto(items);
+        List<ItemDto> dtoList = mapItemDtoList(items);
 
         return new ItemListResponse()
                 .items(dtoList);

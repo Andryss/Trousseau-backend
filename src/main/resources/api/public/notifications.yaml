@@ -78,9 +78,6 @@ components:
       type: array
       items:
         type: string
-    notificationTimestamp:
-      type: string
-      format: date-time
     notificationIsRead:
       type: boolean
     NotificationDto:
@@ -95,7 +92,7 @@ components:
         links:
           $ref: "#/components/schemas/notificationLinks"
         timestamp:
-          $ref: "#/components/schemas/notificationTimestamp"
+          $ref: "../common.yaml#/components/schemas/timestamp"
         isRead:
           $ref: "#/components/schemas/notificationIsRead"
     NotificationListResponse:

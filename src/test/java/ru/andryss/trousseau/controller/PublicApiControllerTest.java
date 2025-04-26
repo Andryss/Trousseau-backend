@@ -148,6 +148,20 @@ class PublicApiControllerTest extends BaseApiTest {
                         jsonPath("$.items[0].isFavourite").value("false"),
                         jsonPath("$.items[0].publishedAt").value("2024-05-20T12:30:02Z")
                 );
+
+        mockMvc.perform(
+                        get("/seller/items/{itemId}/booking", item.getId())
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpectAll(
+                        status().isOk(),
+                        jsonPath("$.author.username").value("test-username"),
+                        jsonPath("$.author.contacts.size()").value(2),
+                        jsonPath("$.author.contacts[0]").value("test-contact-1"),
+                        jsonPath("$.author.contacts[1]").value("test-contact-2"),
+                        jsonPath("$.author.room").value("test-room"),
+                        jsonPath("$.bookedAt").value("2024-05-20T12:30:04Z")
+                );
     }
 
 }

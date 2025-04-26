@@ -2,6 +2,7 @@ package ru.andryss.trousseau.repository;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Optional;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.RowMapper;
@@ -31,6 +32,21 @@ public class BookingRepositoryImpl implements BookingRepository {
                 select * from bookings where user_id = :userId order by booked_at desc
         """, new MapSqlParameterSource()
                 .addValue("userId", userId), rowMapper);
+    }
+
+    @Override
+    public Optional<BookingEntity> findByItemIdAndUserId(String itemId, String userId) {
+        List<BookingEntity> result = jdbcTemplate.query("""
+                select * from bookings where item_id = :itemId and user_id = :userId
+        """, new MapSqlParameterSource()
+                .addValue("itemId", itemId)
+                .addValue("userId", userId), rowMapper);
+
+        if (result.isEmpty()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(result.get(0));
     }
 
     @Override

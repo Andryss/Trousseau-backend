@@ -103,7 +103,7 @@ components:
           $ref: "#/components/schemas/contacts"
         room:
           $ref: "#/components/schemas/room"
-    publishedAt:
+    timestamp:
       type: string
       format: date-time
     ItemDto:
@@ -126,7 +126,7 @@ components:
         isFavourite:
           $ref: "#/components/schemas/itemIsFavourite"
         publishedAt:
-          $ref: "#/components/schemas/publishedAt"
+          $ref: "#/components/schemas/timestamp"
     ItemListResponse:
       type: object
       properties:
@@ -235,3 +235,10 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/SubscriptionDto"
+    BookingDto:
+      type: object
+      properties:
+        author:
+          $ref: "#/components/schemas/AuthorDto"
+        bookedAt:
+          $ref: "#/components/schemas/timestamp"

@@ -24,9 +24,9 @@ public abstract class ItemApiController extends BaseApiController {
     private final UserService userService;
 
 
-    protected List<ItemDto> mapToDto(List<ItemEntity> items) {
+    protected List<ItemDto> mapItemDtoList(List<ItemEntity> items) {
         List<ItemDto> dtoList = items.stream()
-                .map(entity -> mapToDtoCommon(entity, false))
+                .map(entity -> mapItemDtoCommon(entity, false))
                 .toList();
 
         Map<String, Boolean> favouritesMap = favouriteService.checkFavourite(items);
@@ -37,11 +37,11 @@ public abstract class ItemApiController extends BaseApiController {
         return dtoList;
     }
 
-    protected ItemDto mapToDto(ItemEntity entity) {
-        return mapToDtoCommon(entity, true);
+    protected ItemDto mapItemDto(ItemEntity entity) {
+        return mapItemDtoCommon(entity, true);
     }
 
-    protected ItemDto mapToDtoCommon(ItemEntity entity, boolean enrichFavourite) {
+    protected ItemDto mapItemDtoCommon(ItemEntity entity, boolean enrichFavourite) {
         ItemDto dto = new ItemDto()
                 .id(entity.getId())
                 .author(mapAuthorDto(entity.getOwner()))
@@ -57,7 +57,7 @@ public abstract class ItemApiController extends BaseApiController {
         return dto;
     }
 
-    private AuthorDto mapAuthorDto(String userId) {
+    protected AuthorDto mapAuthorDto(String userId) {
         return userService.findById(userId)
                 .map(user -> new AuthorDto()
                         .username(user.getUsername())

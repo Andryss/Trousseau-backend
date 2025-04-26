@@ -163,6 +163,33 @@ paths:
             application/json:
               schema:
                 $ref: "./common.yaml#/components/schemas/ErrorObject"
+  /seller/items/{itemId}/booking:
+    get:
+      summary: Получение информации о бронировании
+      operationId: getItemBookingInfo
+      tags:
+        - seller
+      parameters:
+        - $ref: "./common.yaml#/components/parameters/itemId"
+      responses:
+        200:
+          description: Успешное получение бронирования
+          content:
+            application/json:
+              schema:
+                $ref: "./common.yaml#/components/schemas/BookingDto"
+        400:
+          description: Неверный формат запроса
+          content:
+            application/json:
+              schema:
+                $ref: "./common.yaml#/components/schemas/ErrorObject"
+        500:
+          description: Сервис временно недоступен
+          content:
+            application/json:
+              schema:
+                $ref: "./common.yaml#/components/schemas/ErrorObject"
   /public/items:search:
     post:
       summary: Поиск объявлений
