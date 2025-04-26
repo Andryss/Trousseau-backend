@@ -8,9 +8,6 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.andryss.trousseau.controller.validator.SearchInfoValidator;
 import ru.andryss.trousseau.exception.Errors;
 import ru.andryss.trousseau.generated.api.PublicApi;
-import ru.andryss.trousseau.generated.model.CategoryNode;
-import ru.andryss.trousseau.generated.model.CategoryTree;
-import ru.andryss.trousseau.generated.model.ChangeFavouriteRequest;
 import ru.andryss.trousseau.generated.model.ChangeStatusRequest;
 import ru.andryss.trousseau.generated.model.ItemDto;
 import ru.andryss.trousseau.generated.model.ItemListResponse;
@@ -27,8 +24,6 @@ import ru.andryss.trousseau.service.UserService;
 public class PublicApiController extends ItemApiController implements PublicApi {
 
     private final ItemService itemService;
-    private final FavouriteService favouriteService;
-    private final CategoryService categoryService;
     private final SearchInfoValidator searchInfoValidator;
 
     public PublicApiController(
@@ -41,14 +36,7 @@ public class PublicApiController extends ItemApiController implements PublicApi 
     ) {
         super(mediaService, favouriteService, categoryService, userService);
         this.itemService = itemService;
-        this.favouriteService = favouriteService;
-        this.categoryService = categoryService;
         this.searchInfoValidator = searchInfoValidator;
-    }
-
-    @Override
-    public void changeFavourite(String itemId, ChangeFavouriteRequest request) {
-        favouriteService.changeIsFavourite(itemId, getUser(), request.getIsFavourite());
     }
 
     @Override
@@ -59,23 +47,6 @@ public class PublicApiController extends ItemApiController implements PublicApi 
     @Override
     public ItemListResponse getBookedItems() {
         List<ItemEntity> items = itemService.getBooked(getUser());
-
-        List<ItemDto> dtoList = mapToDto(items);
-
-        return new ItemListResponse()
-                .items(dtoList);
-    }
-
-    @Override
-    public CategoryTree getCategoryTree() {
-        CategoryNode root = categoryService.getCategoryTree();
-
-        return new CategoryTree().root(root);
-    }
-
-    @Override
-    public ItemListResponse getFavourites() {
-        List<ItemEntity> items = favouriteService.getAll(getUser());
 
         List<ItemDto> dtoList = mapToDto(items);
 

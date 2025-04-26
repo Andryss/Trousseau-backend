@@ -14,6 +14,10 @@ tags:
     description: API для работы продавца
   - name: public
     description: общедоступный API
+  - name: favourites
+    description: API для работы с избранным
+  - name: constants
+    description: API для работы с публичными константами / словарями
   - name: subscription
     description: API для работы с подписками
   - name: notifications
@@ -23,35 +27,8 @@ tags:
 
 paths:
   /seller/media:
-    post:
-      summary: Загрузка медиа-файла
-      operationId: uploadMedia
-      tags:
-        - media
-      requestBody:
-        content:
-          multipart/form-data:
-            schema:
-              $ref: "./common.yaml#/components/schemas/UploadMediaRequest"
-      responses:
-        200:
-          description: Медиа-файл успешно загружен
-          content:
-            application/json:
-              schema:
-                $ref: "./common.yaml#/components/schemas/UploadMediaResponse"
-        400:
-          description: Неверный формат запроса
-          content:
-            application/json:
-              schema:
-                $ref: "./common.yaml#/components/schemas/ErrorObject"
-        500:
-          description: Сервис временно недоступен
-          content:
-            application/json:
-              schema:
-                $ref: "./common.yaml#/components/schemas/ErrorObject"
+    $ref: "./seller/media.yaml#/endpoints/uploadMedia"
+
   /seller/items:
     post:
       summary: Создание объявления
@@ -296,72 +273,15 @@ paths:
             application/json:
               schema:
                 $ref: "./common.yaml#/components/schemas/ErrorObject"
+
   /public/items/{itemId}/favourite:
-    post:
-      summary: Добавить или удалить из избранного
-      operationId: changeFavourite
-      tags:
-        - public
-      parameters:
-        - $ref: "./common.yaml#/components/parameters/itemId"
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "./common.yaml#/components/schemas/ChangeFavouriteRequest"
-      responses:
-        200:
-          description: Успешное добавление или удаление из избранного
-        400:
-          description: Неверный формат запроса
-          content:
-            application/json:
-              schema:
-                $ref: "./common.yaml#/components/schemas/ErrorObject"
-        500:
-          description: Сервис временно недоступен
-          content:
-            application/json:
-              schema:
-                $ref: "./common.yaml#/components/schemas/ErrorObject"
+    $ref: "./public/favourites.yaml#/endpoints/changeFavourite"
   /public/items/favourites:
-    get:
-      summary: Получить избранные объявления
-      operationId: getFavourites
-      tags:
-        - public
-      responses:
-        200:
-          description: Успешное добавление или удаление из избранного
-          content:
-            application/json:
-              schema:
-                $ref: "./common.yaml#/components/schemas/ItemListResponse"
-        400:
-          description: Неверный формат запроса
-          content:
-            application/json:
-              schema:
-                $ref: "./common.yaml#/components/schemas/ErrorObject"
-        500:
-          description: Сервис временно недоступен
-          content:
-            application/json:
-              schema:
-                $ref: "./common.yaml#/components/schemas/ErrorObject"
+    $ref: "./public/favourites.yaml#/endpoints/getFavourites"
+
   /public/categories/tree:
-    get:
-      summary: Получить дерево категорий
-      operationId: getCategoryTree
-      tags:
-        - public
-      responses:
-        200:
-          description: Успешное получение дерева категорий
-          content:
-            application/json:
-              schema:
-                $ref: "./common.yaml#/components/schemas/CategoryTree"
+    $ref: "./public/constants.yaml#/endpoints/getCategoryTree"
+
   /public/subscriptions:
     post:
       summary: Создание подписки
@@ -470,11 +390,11 @@ paths:
                 $ref: "./common.yaml#/components/schemas/ErrorObject"
 
   /public/notifications:
-    $ref: "./notifications.yaml#/endpoints/getNotifications"
+    $ref: "./public/notifications.yaml#/endpoints/getNotifications"
   /public/notifications/unread/count:
-    $ref: "./notifications.yaml#/endpoints/getUnreadNotificationsCount"
+    $ref: "./public/notifications.yaml#/endpoints/getUnreadNotificationsCount"
   /public/notifications/{notificationId}/read:
-    $ref: "./notifications.yaml#/endpoints/markNotificationRead"
+    $ref: "./public/notifications.yaml#/endpoints/markNotificationRead"
 
   /auth/signup:
     $ref: "./auth.yaml#/endpoints/signUp"

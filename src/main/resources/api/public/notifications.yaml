@@ -18,7 +18,7 @@ endpoints:
           content:
             application/json:
               schema:
-                $ref: "./common.yaml#/components/schemas/ErrorObject"
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
   getUnreadNotificationsCount:
     get:
       summary: Получение количества непрочитанных уведомлений
@@ -38,7 +38,7 @@ endpoints:
           content:
             application/json:
               schema:
-                $ref: "./common.yaml#/components/schemas/ErrorObject"
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
   markNotificationRead:
     post:
       summary: Пометить уведомление прочитанным
@@ -56,7 +56,7 @@ endpoints:
           content:
             application/json:
               schema:
-                $ref: "./common.yaml#/components/schemas/ErrorObject"
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
 
 components:
   parameters:

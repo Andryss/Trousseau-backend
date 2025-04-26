@@ -1,0 +1,47 @@
+endpoints:
+  uploadMedia:
+    post:
+      summary: Загрузка медиа-файла
+      operationId: uploadMedia
+      tags:
+        - media
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/UploadMediaRequest"
+      responses:
+        200:
+          description: Медиа-файл успешно загружен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UploadMediaResponse"
+        400:
+          description: Неверный формат запроса
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        500:
+          description: Сервис временно недоступен
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+
+components:
+  schemas:
+    mediaData:
+      type: string
+      format: binary
+    UploadMediaRequest:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/mediaData"
+    UploadMediaResponse:
+      type: object
+      properties:
+        id:
+          $ref: "../common.yaml#/components/schemas/mediaId"

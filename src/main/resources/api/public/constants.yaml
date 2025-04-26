@@ -1,0 +1,40 @@
+endpoints:
+  getCategoryTree:
+    get:
+      summary: Получить дерево категорий
+      operationId: getCategoryTree
+      tags:
+        - constants
+        - public
+      responses:
+        200:
+          description: Успешное получение дерева категорий
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CategoryTree"
+        500:
+          description: Сервис временно недоступен
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+
+components:
+  schemas:
+    CategoryNode:
+      type: object
+      properties:
+        id:
+          $ref: "../common.yaml#/components/schemas/categoryId"
+        name:
+          $ref: "../common.yaml#/components/schemas/categoryName"
+        children:
+          type: array
+          items:
+            $ref: "#/components/schemas/CategoryNode"
+    CategoryTree:
+      type: object
+      properties:
+        root:
+          $ref: "#/components/schemas/CategoryNode"

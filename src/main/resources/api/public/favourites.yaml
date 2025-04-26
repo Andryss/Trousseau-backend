@@ -1,0 +1,64 @@
+endpoints:
+  changeFavourite:
+    post:
+      summary: Добавить или удалить из избранного
+      operationId: changeFavourite
+      tags:
+        - favourites
+        - public
+      parameters:
+        - $ref: "../common.yaml#/components/parameters/itemId"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChangeFavouriteRequest"
+      responses:
+        200:
+          description: Успешное добавление или удаление из избранного
+        400:
+          description: Неверный формат запроса
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        500:
+          description: Сервис временно недоступен
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+  getFavourites:
+    get:
+      summary: Получить избранные объявления
+      operationId: getFavourites
+      tags:
+        - favourites
+        - public
+      responses:
+        200:
+          description: Успешное добавление или удаление из избранного
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ItemListResponse"
+        400:
+          description: Неверный формат запроса
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+        500:
+          description: Сервис временно недоступен
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
+
+components:
+  schemas:
+    ChangeFavouriteRequest:
+      type: object
+      properties:
+        isFavourite:
+          $ref: "../common.yaml#/components/schemas/itemIsFavourite"

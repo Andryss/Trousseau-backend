@@ -27,21 +27,8 @@ components:
           type: string
         humanMessage:
           type: string
-    mediaData:
-      type: string
-      format: binary
-    UploadMediaRequest:
-      type: object
-      properties:
-        data:
-          $ref: "#/components/schemas/mediaData"
     mediaId:
       type: string
-    UploadMediaResponse:
-      type: object
-      properties:
-        id:
-          $ref: "#/components/schemas/mediaId"
     itemTitle:
       type: string
     itemMedia:
@@ -207,27 +194,6 @@ components:
           $ref: "#/components/schemas/FilterInfo"
         page:
           $ref: "#/components/schemas/PageInfo"
-    ChangeFavouriteRequest:
-      type: object
-      properties:
-        isFavourite:
-          $ref: "#/components/schemas/itemIsFavourite"
-    CategoryNode:
-      type: object
-      properties:
-        id:
-          $ref: "#/components/schemas/categoryId"
-        name:
-          $ref: "#/components/schemas/categoryName"
-        children:
-          type: array
-          items:
-            $ref: "#/components/schemas/CategoryNode"
-    CategoryTree:
-      type: object
-      properties:
-        root:
-          $ref: "#/components/schemas/CategoryNode"
     subscriptionName:
       type: string
     SubscriptionData:
