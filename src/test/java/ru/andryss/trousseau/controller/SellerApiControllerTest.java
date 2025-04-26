@@ -15,7 +15,7 @@ import ru.andryss.trousseau.generated.model.ItemStatus;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class SellerApiControllerTest extends BaseApiTest {
@@ -31,8 +31,12 @@ public class SellerApiControllerTest extends BaseApiTest {
                 )
                 .andExpectAll(
                         status().isOk(),
-                        jsonPath("$.id").isNotEmpty(),
-                        jsonPath("$.status").value(expectedStatus)
+                        content().json("""
+                        {
+                            "id": "20240520_123001000",
+                            "status": "%s"
+                        }
+                        """.formatted(expectedStatus))
                 );
     }
 
@@ -51,16 +55,20 @@ public class SellerApiControllerTest extends BaseApiTest {
                 )
                 .andExpectAll(
                         status().isOk(),
-                        jsonPath("$.id").isNotEmpty(),
-                        jsonPath("$.status").value(expectedStatus)
+                        content().json("""
+                        {
+                            "id": "20240520_123001000",
+                            "status": "%s"
+                        }
+                        """.formatted(expectedStatus))
                 );
     }
 
     @Test
     @SneakyThrows
     public void getItemsTest() {
-        ItemDto response0 = createEmptyItem();
-        ItemDto response1 = createEmptyItem();
+        createEmptyItem();
+        createEmptyItem();
 
         mockMvc.perform(
                         get("/seller/items")
@@ -68,12 +76,20 @@ public class SellerApiControllerTest extends BaseApiTest {
                 )
                 .andExpectAll(
                         status().isOk(),
-                        jsonPath("$.items").isArray(),
-                        jsonPath("$.items.size()").value(2),
-                        jsonPath("$.items[0].id").value(response1.getId()),
-                        jsonPath("$.items[0].status").value(response1.getStatus().getValue()),
-                        jsonPath("$.items[1].id").value(response0.getId()),
-                        jsonPath("$.items[1].status").value(response0.getStatus().getValue())
+                        content().json("""
+                        {
+                            "items": [
+                                {
+                                    "id": "20240520_123002000",
+                                    "status": "DRAFT"
+                                },
+                                {
+                                    "id": "20240520_123001000",
+                                    "status": "DRAFT"
+                                }
+                            ]
+                        }
+                        """)
                 );
     }
 
@@ -90,11 +106,15 @@ public class SellerApiControllerTest extends BaseApiTest {
                 )
                 .andExpectAll(
                         status().isOk(),
-                        jsonPath("$.id").isNotEmpty(),
-                        jsonPath("$.title").isEmpty(),
-                        jsonPath("$.media").isEmpty(),
-                        jsonPath("$.description").isEmpty(),
-                        jsonPath("$.status").value("DRAFT")
+                        content().json("""
+                        {
+                            "id": "20240520_123001000",
+                            "title": null,
+                            "media": [],
+                            "description": null,
+                            "status": "DRAFT"
+                        }
+                        """)
                 );
     }
 
