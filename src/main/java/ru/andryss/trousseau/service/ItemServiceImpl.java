@@ -253,6 +253,7 @@ public class ItemServiceImpl implements ItemService {
             booking.setBookedAt(now.toInstant());
 
             bookingRepository.save(booking);
+            eventService.push(EventType.ITEM_BOOKED, Map.of("itemId", item.getId()));
         };
     }
 

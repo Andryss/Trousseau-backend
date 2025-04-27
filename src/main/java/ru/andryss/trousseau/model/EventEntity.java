@@ -20,7 +20,8 @@ public class EventEntity {
     @Getter
     @RequiredArgsConstructor
     public enum EventType {
-        ITEM_PUBLISHED("ITEM_PUBLISHED");
+        ITEM_PUBLISHED("ITEM_PUBLISHED"),
+        ITEM_BOOKED("ITEM_BOOKED");
 
         private final String value;
     }

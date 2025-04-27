@@ -3,9 +3,7 @@ package ru.andryss.trousseau.tms;
 import java.util.List;
 import java.util.Map;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.commons.text.StringSubstitutor;
-import org.quartz.JobExecutionContext;
 import org.springframework.stereotype.Component;
 import ru.andryss.trousseau.model.EventEntity;
 import ru.andryss.trousseau.model.EventEntity.EventType;
@@ -19,20 +17,34 @@ import ru.andryss.trousseau.service.NotificationService;
 import ru.andryss.trousseau.service.NotificationService.NotificationInfo;
 import ru.andryss.trousseau.service.SubscriptionService;
 
+import static ru.andryss.trousseau.service.NotificationService.NotificationInfo.itemLink;
+import static ru.andryss.trousseau.service.NotificationService.NotificationInfo.subscriptionLink;
+
 @Component
-@RequiredArgsConstructor
-public class ItemPublishedEventHandlerExecutor extends BaseExecutor {
+public class ItemPublishedEventHandlerExecutor extends BaseEventHandlerExecutor {
 
     private static final String NOTIFICATION_TITLE = "Новое объявление";
     private static final String NOTIFICATION_CONTENT = "Новое объявление \"${itemTitle}\"" +
             " по подписке \"${subscriptionName}\".";
 
-    private final KeyStorageService keyStorageService;
-    private final EventService eventService;
     private final ItemService itemService;
     private final CategoryService categoryService;
     private final SubscriptionService subscriptionService;
     private final NotificationService notificationService;
+
+    public ItemPublishedEventHandlerExecutor(
+            KeyStorageService keyStorageService,
+            EventService eventService,
+            ItemService itemService,
+            CategoryService categoryService,
+            SubscriptionService subscriptionService,
+            NotificationService notificationService) {
+        super(keyStorageService, eventService);
+        this.itemService = itemService;
+        this.categoryService = categoryService;
+        this.subscriptionService = subscriptionService;
+        this.notificationService = notificationService;
+    }
 
     @Override
     public String cronExpression() {
@@ -40,32 +52,12 @@ public class ItemPublishedEventHandlerExecutor extends BaseExecutor {
     }
 
     @Override
-    public void doJob(JobExecutionContext context) {
-        if (!keyStorageService.get("itemPublishedEventHandlerExecutor.enabled", true)) {
-            log.info("Skipping ItemPublishedEventHandlerExecutor");
-            return;
-        }
-
-        log.info("ItemPublishedEventHandlerExecutor started");
-
-        int batchSize = keyStorageService.get("itemPublishedEventHandlerExecutor.batchSize", 5);
-
-        List<EventEntity> events;
-        do {
-            events = eventService.readBatch(EventType.ITEM_PUBLISHED, batchSize);
-            log.info("Read next {} events", events.size());
-
-            for (EventEntity event : events) {
-                handleEvent(event);
-            }
-
-            eventService.delete(events);
-        } while (events.size() == batchSize);
-
-        log.info("ItemPublishedEventHandlerExecutor finished");
+    protected EventType getEventType() {
+        return EventType.ITEM_PUBLISHED;
     }
 
-    private void handleEvent(EventEntity event) {
+    @Override
+    protected void handleEvent(EventEntity event) {
         String itemId = (String) event.getPayload().get("itemId");
         ItemEntity item = itemService.getItem(itemId);
 
@@ -84,7 +76,7 @@ public class ItemPublishedEventHandlerExecutor extends BaseExecutor {
                     subscription.getOwner(),
                     substitutor.replace(NOTIFICATION_TITLE),
                     substitutor.replace(NOTIFICATION_CONTENT),
-                    List.of(item, subscription)
+                    List.of(itemLink(item), subscriptionLink(subscription))
             );
 
             notificationService.sendNotification(info);
