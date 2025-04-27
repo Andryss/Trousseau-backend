@@ -98,7 +98,7 @@ public class SecurityConfig {
                         // notifications
                         .requestMatchers(GET, "/public/notifications").hasAuthority("NOTIFICATIONS_VIEW")
                         .requestMatchers(GET, "/public/notifications/unread/count").hasAuthority("NOTIFICATIONS_VIEW")
-                        .requestMatchers(GET, "/public/notifications/*/read").hasAuthority("NOTIFICATIONS_VIEW")
+                        .requestMatchers(POST, "/public/notifications/*/read").hasAuthority("NOTIFICATIONS_VIEW")
                         // other
                         .anyRequest().denyAll()
                 )
