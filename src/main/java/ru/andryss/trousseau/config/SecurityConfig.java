@@ -70,6 +70,7 @@ public class SecurityConfig {
                         .requestMatchers(POST, "/auth/signup").permitAll()
                         .requestMatchers(POST, "/auth/signin").permitAll()
                         .requestMatchers(POST, "/auth/signout").permitAll()
+                        .requestMatchers(GET, "/auth/profile").authenticated()
                         // media
                         .requestMatchers(POST, "/seller/media").hasAuthority("MEDIA_UPLOAD")
                         // seller

@@ -35,12 +35,14 @@ public class BookingRepositoryImpl implements BookingRepository {
     }
 
     @Override
-    public Optional<BookingEntity> findByItemIdAndUserId(String itemId, String userId) {
+    public Optional<BookingEntity> findByItemIdAndOwner(String itemId, String owner) {
         List<BookingEntity> result = jdbcTemplate.query("""
-                select * from bookings where item_id = :itemId and user_id = :userId
+                select b.id, b.user_id, b.item_id, b.booked_at
+                from bookings b join items i on b.item_id = i.id
+                where b.item_id = :itemId and i.owner = :owner
         """, new MapSqlParameterSource()
                 .addValue("itemId", itemId)
-                .addValue("userId", userId), rowMapper);
+                .addValue("owner", owner), rowMapper);
 
         if (result.isEmpty()) {
             return Optional.empty();

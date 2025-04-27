@@ -19,7 +19,7 @@ public class BookingServiceImpl implements BookingService {
     public BookingEntity findByItem(String itemId, UserData user) {
         log.info("Getting booking info for item {} as user {}", itemId, user.getId());
 
-        return bookingRepository.findByItemIdAndUserId(itemId, user.getId())
+        return bookingRepository.findByItemIdAndOwner(itemId, user.getId())
                 .orElseThrow(() -> Errors.bookingNotFound(itemId));
     }
 }
