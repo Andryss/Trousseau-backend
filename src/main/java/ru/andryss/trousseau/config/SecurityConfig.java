@@ -78,6 +78,7 @@ public class SecurityConfig {
                         .requestMatchers(GET, "/seller/items/*").hasAuthority("ITEMS_CREATED_VIEW")
                         .requestMatchers(PUT, "/seller/items/*").hasAuthority("ITEMS_CREATE")
                         .requestMatchers(PUT, "/seller/items/*/status").hasAuthority("ITEMS_CREATE")
+                        .requestMatchers(GET, "/seller/items/*/booking").hasAuthority("ITEMS_CREATED_VIEW")
                         // category tree
                         .requestMatchers(GET, "/public/categories/tree").hasAuthority("CATEGORY_TREE_VIEW")
                         // public items

@@ -429,3 +429,5 @@ paths:
     $ref: "./auth.yaml#/endpoints/signIn"
   /auth/signout:
     $ref: "./auth.yaml#/endpoints/signOut"
+  /auth/profile:
+    $ref: "./auth.yaml#/endpoints/getProfileInfo"

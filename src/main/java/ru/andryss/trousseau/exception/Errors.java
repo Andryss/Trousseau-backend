@@ -64,4 +64,9 @@ public class Errors {
     public static TrousseauException unauthorized() {
         return new TrousseauException(401, "user.unauthorized", "Неверный логин или пароль");
     }
+
+    public static TrousseauException userNotFound(String userId) {
+        return new TrousseauException(404, "user.absent",
+                String.format("Пользователь \"%s\" не найден", userId));
+    }
 }

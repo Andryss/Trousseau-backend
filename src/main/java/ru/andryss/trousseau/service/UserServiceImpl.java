@@ -5,6 +5,7 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.andryss.trousseau.exception.Errors;
 import ru.andryss.trousseau.model.UserEntity;
 import ru.andryss.trousseau.repository.UserRepository;
 
@@ -18,5 +19,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public Optional<UserEntity> findById(String id) {
         return userRepository.findById(id);
+    }
+
+    @Override
+    public UserEntity findByIdOrThrow(String id) {
+        return findById(id).orElseThrow(() -> Errors.userNotFound(id));
     }
 }

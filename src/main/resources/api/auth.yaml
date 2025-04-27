@@ -83,6 +83,32 @@ endpoints:
             application/json:
               schema:
                 $ref: "./common.yaml#/components/schemas/ErrorObject"
+  getProfileInfo:
+    get:
+      summary: Получение информации о профиле
+      operationId: getProfileInfo
+      tags:
+        - auth
+        - public
+      responses:
+        200:
+          description: Успешное получение
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProfileDto"
+        400:
+          description: Неверный формат запроса
+          content:
+            application/json:
+              schema:
+                $ref: "./common.yaml#/components/schemas/ErrorObject"
+        500:
+          description: Сервис временно недоступен
+          content:
+            application/json:
+              schema:
+                $ref: "./common.yaml#/components/schemas/ErrorObject"
 
 components:
   schemas:
@@ -113,3 +139,18 @@ components:
           $ref: "./common.yaml#/components/schemas/contacts"
         room:
           $ref: "./common.yaml#/components/schemas/room"
+    privilege:
+      type: string
+    ProfileDto:
+      type: object
+      properties:
+        username:
+          $ref: "./common.yaml#/components/schemas/username"
+        contacts:
+          $ref: "./common.yaml#/components/schemas/contacts"
+        room:
+          $ref: "./common.yaml#/components/schemas/room"
+        privileges:
+          type: array
+          item:
+            $ref: "#/components/schemas/privilege"
