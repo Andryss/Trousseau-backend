@@ -49,6 +49,7 @@ public abstract class ItemApiController extends BaseApiController {
                 .media(mapMediaIdToDto(entity.getMediaIds()))
                 .description(entity.getDescription())
                 .category(mapCategoryDto(entity.getCategoryId()))
+                .cost(entity.getCost())
                 .status(entity.getStatus().toOpenApi())
                 .publishedAt(toOffsetDateTime(entity.getPublishedAt()));
         if (enrichFavourite) {

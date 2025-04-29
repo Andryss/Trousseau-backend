@@ -112,6 +112,8 @@ public class SellerApiControllerTest extends BaseApiTest {
                             "title": null,
                             "media": [],
                             "description": null,
+                            "category": null,
+                            "cost": 0,
                             "status": "DRAFT"
                         }
                         """)
@@ -128,7 +130,8 @@ public class SellerApiControllerTest extends BaseApiTest {
                 "some-title",
                 List.of("media-1"),
                 "some-description",
-                "clothes"
+                "clothes",
+                30L
         ));
 
         Assertions.assertEquals(ItemStatus.READY, updated.getStatus());

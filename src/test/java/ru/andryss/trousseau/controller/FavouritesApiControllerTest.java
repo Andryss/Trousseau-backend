@@ -17,7 +17,7 @@ class FavouritesApiControllerTest extends BaseApiTest {
     @Test
     @SneakyThrows
     public void addFavouriteTest() {
-        ItemDto item = createPublicItem(new BaseApiTest.ItemInfo("title", List.of("media-0", "media-1"), "description", "clothes"));
+        ItemDto item = createPublicItem(new BaseApiTest.ItemInfo("title", List.of("media-0", "media-1"), "description", "clothes", 4L));
 
         mockMvc.perform(
                         get("/public/items/favourites")

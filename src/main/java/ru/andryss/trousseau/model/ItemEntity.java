@@ -17,6 +17,7 @@ public class ItemEntity {
     private List<String> mediaIds;
     private String description;
     private String categoryId;
+    private long cost;
     private ItemStatus status;
     private Instant publishedAt;
     private Instant createdAt;

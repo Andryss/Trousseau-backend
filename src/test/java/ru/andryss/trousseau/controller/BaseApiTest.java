@@ -111,6 +111,6 @@ public abstract class BaseApiTest extends BaseDbTest {
         return item;
     }
 
-    protected record ItemInfo(String title, List<String> media, String description, String category) {
+    protected record ItemInfo(String title, List<String> media, String description, String category, Long cost) {
     }
 }

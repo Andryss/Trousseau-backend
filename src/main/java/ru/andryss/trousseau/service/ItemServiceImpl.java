@@ -75,8 +75,9 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemEntity createItem(UserData user, ItemInfoRequest info) {
-        log.info("Creating item for user {}: title={}, mediaIds={}, description={}, category={}",
-                user.getId(), info.getTitle(), info.getMedia(), info.getDescription(), info.getCategory());
+        log.info("Creating item for user {}: title={}, mediaIds={}, description={}, category={}, cost={}",
+                user.getId(), info.getTitle(), info.getMedia(), info.getDescription(), info.getCategory(),
+                info.getCost());
 
         ItemEntity item = new ItemEntity();
         patchItem(item, info);
@@ -91,8 +92,9 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemEntity updateItem(String id, UserData user, ItemInfoRequest info) {
-        log.info("Updating item with id {} as user {}: title={}, mediaIds={}, description={}, category={}",
-                id, user.getId(), info.getTitle(), info.getMedia(), info.getDescription(), info.getCategory());
+        log.info("Updating item with id {} as user {}: title={}, mediaIds={}, description={}, category={}, cost={}",
+                id, user.getId(), info.getTitle(), info.getMedia(), info.getDescription(), info.getCategory(),
+                info.getCost());
 
         return transactionTemplate.execute((status) -> {
             ItemEntity item = findByIdAndOwnerOrThrow(id, user.getId());
@@ -291,6 +293,7 @@ public class ItemServiceImpl implements ItemService {
         item.setMediaIds(info.getMedia());
         item.setDescription(info.getDescription());
         item.setCategoryId(info.getCategory());
+        item.setCost(info.getCost() == null ? 0 : info.getCost());
 
         item.setStatus(isFilledRequiredFields(item) ? READY : DRAFT);
     }

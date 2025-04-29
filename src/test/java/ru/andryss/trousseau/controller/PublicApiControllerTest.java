@@ -10,7 +10,7 @@ import ru.andryss.trousseau.generated.model.ItemDto;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class PublicApiControllerTest extends BaseApiTest {
@@ -18,8 +18,8 @@ class PublicApiControllerTest extends BaseApiTest {
     @Test
     @SneakyThrows
     public void searchItemsTest() {
-        ItemDto item0 = createPublicItem(new ItemInfo("title-0", List.of("media-00"), "description-0", "clothes"));
-        ItemDto item1 = createPublicItem(new ItemInfo("title-1", List.of("media-10", "media-11"), "description-1", "clothes"));
+        createPublicItem(new ItemInfo("title-0", List.of("media-00"), "description-0", "clothes", 1L));
+        createPublicItem(new ItemInfo("title-1", List.of("media-10", "media-11"), "description-1", "clothes", 2L));
 
         mockMvc.perform(
                         post("/public/items:search")
@@ -41,48 +41,68 @@ class PublicApiControllerTest extends BaseApiTest {
                 )
                 .andExpectAll(
                         status().isOk(),
-                        jsonPath("$.items").isArray(),
-                        jsonPath("$.items.size()").value(2),
-                        jsonPath("$.items[0].id").value(item1.getId()),
-                        jsonPath("$.items[0].author.username").value("test-username"),
-                        jsonPath("$.items[0].author.contacts.size()").value(2),
-                        jsonPath("$.items[0].author.contacts[0]").value("test-contact-1"),
-                        jsonPath("$.items[0].author.contacts[1]").value("test-contact-2"),
-                        jsonPath("$.items[0].author.room").value("test-room"),
-                        jsonPath("$.items[0].title").value("title-1"),
-                        jsonPath("$.items[0].media").isArray(),
-                        jsonPath("$.items[0].media.size()").value(2),
-                        jsonPath("$.items[0].media[0].id").value("media-10"),
-                        jsonPath("$.items[0].media[1].id").value("media-11"),
-                        jsonPath("$.items[0].description").value("description-1"),
-                        jsonPath("$.items[0].category.id").value("clothes"),
-                        jsonPath("$.items[0].category.name").value("Одежда и обувь"),
-                        jsonPath("$.items[0].status").value("PUBLISHED"),
-                        jsonPath("$.items[0].isFavourite").value("false"),
-                        jsonPath("$.items[0].publishedAt").value("2024-05-20T12:30:05Z"),
-                        jsonPath("$.items[1].id").value(item0.getId()),
-                        jsonPath("$.items[1].author.username").value("test-username"),
-                        jsonPath("$.items[1].author.contacts.size()").value(2),
-                        jsonPath("$.items[1].author.contacts[0]").value("test-contact-1"),
-                        jsonPath("$.items[1].author.contacts[1]").value("test-contact-2"),
-                        jsonPath("$.items[1].author.room").value("test-room"),
-                        jsonPath("$.items[1].title").value("title-0"),
-                        jsonPath("$.items[1].media").isArray(),
-                        jsonPath("$.items[1].media.size()").value(1),
-                        jsonPath("$.items[1].media[0].id").value("media-00"),
-                        jsonPath("$.items[1].description").value("description-0"),
-                        jsonPath("$.items[1].category.id").value("clothes"),
-                        jsonPath("$.items[1].category.name").value("Одежда и обувь"),
-                        jsonPath("$.items[1].status").value("PUBLISHED"),
-                        jsonPath("$.items[1].isFavourite").value("false"),
-                        jsonPath("$.items[1].publishedAt").value("2024-05-20T12:30:02Z")
+                        content().json("""
+                        {
+                            "items": [
+                                {
+                                    "id": "20240520_123004000",
+                                    "author": {
+                                        "username": "test-username",
+                                        "contacts": [ "test-contact-1", "test-contact-2" ],
+                                        "room": "test-room"
+                                    },
+                                    "title": "title-1",
+                                    "media": [
+                                        {
+                                            "id": "media-10"
+                                        },
+                                        {
+                                            "id": "media-11"
+                                        }
+                                    ],
+                                    "description": "description-1",
+                                    "category": {
+                                        "id": "clothes",
+                                        "name": "Одежда и обувь"
+                                    },
+                                    "cost": 2,
+                                    "status": "PUBLISHED",
+                                    "isFavourite": false,
+                                    "publishedAt": "2024-05-20T12:30:05Z"
+                                },
+                                {
+                                    "id": "20240520_123001000",
+                                    "author": {
+                                        "username": "test-username",
+                                        "contacts": [ "test-contact-1", "test-contact-2" ],
+                                        "room": "test-room"
+                                    },
+                                    "title": "title-0",
+                                    "media": [
+                                        {
+                                            "id": "media-00"
+                                        }
+                                    ],
+                                    "description": "description-0",
+                                    "category": {
+                                        "id": "clothes",
+                                        "name": "Одежда и обувь"
+                                    },
+                                    "cost": 1,
+                                    "status": "PUBLISHED",
+                                    "isFavourite": false,
+                                    "publishedAt": "2024-05-20T12:30:02Z"
+                                }
+                            ]
+                        }
+                        """)
                 );
     }
 
     @Test
     @SneakyThrows
     public void getItemTest() {
-        ItemDto item = createPublicItem(new ItemInfo("title", List.of("media-0", "media-1"), "description", "clothes"));
+        ItemDto item = createPublicItem(new ItemInfo("title", List.of("media-0", "media-1"), "description", "clothes", 5L));
 
         mockMvc.perform(
                         get("/public/items/{itemId}", item.getId())
@@ -90,30 +110,41 @@ class PublicApiControllerTest extends BaseApiTest {
                 )
                 .andExpectAll(
                         status().isOk(),
-                        jsonPath("$.id").value(item.getId()),
-                        jsonPath("$.author.username").value("test-username"),
-                        jsonPath("$.author.contacts.size()").value(2),
-                        jsonPath("$.author.contacts[0]").value("test-contact-1"),
-                        jsonPath("$.author.contacts[1]").value("test-contact-2"),
-                        jsonPath("$.author.room").value("test-room"),
-                        jsonPath("$.title").value("title"),
-                        jsonPath("$.media").isArray(),
-                        jsonPath("$.media.size()").value(2),
-                        jsonPath("$.media[0].id").value("media-0"),
-                        jsonPath("$.media[1].id").value("media-1"),
-                        jsonPath("$.description").value("description"),
-                        jsonPath("$.category.id").value("clothes"),
-                        jsonPath("$.category.name").value("Одежда и обувь"),
-                        jsonPath("$.status").value("PUBLISHED"),
-                        jsonPath("$.isFavourite").value("false"),
-                        jsonPath("$.publishedAt").value("2024-05-20T12:30:02Z")
+                        content().json("""
+                        {
+                            "id": "20240520_123001000",
+                            "author": {
+                                "username": "test-username",
+                                "contacts": [ "test-contact-1", "test-contact-2" ],
+                                "room": "test-room"
+                            },
+                            "title": "title",
+                            "media": [
+                                {
+                                    "id": "media-0"
+                                },
+                                {
+                                    "id": "media-1"
+                                }
+                            ],
+                            "description": "description",
+                            "category": {
+                                "id": "clothes",
+                                "name": "Одежда и обувь"
+                            },
+                            "cost": 5,
+                            "status": "PUBLISHED",
+                            "isFavourite": false,
+                            "publishedAt": "2024-05-20T12:30:02Z"
+                        }
+                        """)
                 );
     }
 
     @Test
     @SneakyThrows
     public void bookItemTest() {
-        ItemDto item = createPublicItem(new ItemInfo("title", List.of("media-0", "media-1"), "description", "clothes"));
+        ItemDto item = createPublicItem(new ItemInfo("title", List.of("media-0", "media-1"), "description", "clothes", 10L));
 
         mockMvc.perform(
                         put("/public/items/{itemId}/status", item.getId())
@@ -128,25 +159,38 @@ class PublicApiControllerTest extends BaseApiTest {
                 )
                 .andExpectAll(
                         status().isOk(),
-                        jsonPath("$.items").isArray(),
-                        jsonPath("$.items.size()").value(1),
-                        jsonPath("$.items[0].id").value(item.getId()),
-                        jsonPath("$.items[0].author.username").value("test-username"),
-                        jsonPath("$.items[0].author.contacts.size()").value(2),
-                        jsonPath("$.items[0].author.contacts[0]").value("test-contact-1"),
-                        jsonPath("$.items[0].author.contacts[1]").value("test-contact-2"),
-                        jsonPath("$.items[0].author.room").value("test-room"),
-                        jsonPath("$.items[0].title").value("title"),
-                        jsonPath("$.items[0].media").isArray(),
-                        jsonPath("$.items[0].media.size()").value(2),
-                        jsonPath("$.items[0].media[0].id").value("media-0"),
-                        jsonPath("$.items[0].media[1].id").value("media-1"),
-                        jsonPath("$.items[0].description").value("description"),
-                        jsonPath("$.items[0].category.id").value("clothes"),
-                        jsonPath("$.items[0].category.name").value("Одежда и обувь"),
-                        jsonPath("$.items[0].status").value("BOOKED"),
-                        jsonPath("$.items[0].isFavourite").value("false"),
-                        jsonPath("$.items[0].publishedAt").value("2024-05-20T12:30:02Z")
+                        content().json("""
+                        {
+                            "items": [
+                                {
+                                    "id": "20240520_123001000",
+                                    "author": {
+                                        "username": "test-username",
+                                        "contacts": [ "test-contact-1", "test-contact-2" ],
+                                        "room": "test-room"
+                                    },
+                                    "title": "title",
+                                    "media": [
+                                        {
+                                            "id": "media-0"
+                                        },
+                                        {
+                                            "id": "media-1"
+                                        }
+                                    ],
+                                    "description": "description",
+                                    "category": {
+                                        "id": "clothes",
+                                        "name": "Одежда и обувь"
+                                    },
+                                    "cost": 10,
+                                    "status": "BOOKED",
+                                    "isFavourite": false,
+                                    "publishedAt": "2024-05-20T12:30:02Z"
+                                }
+                            ]
+                        }
+                        """)
                 );
 
         mockMvc.perform(
@@ -155,12 +199,16 @@ class PublicApiControllerTest extends BaseApiTest {
                 )
                 .andExpectAll(
                         status().isOk(),
-                        jsonPath("$.author.username").value("test-username"),
-                        jsonPath("$.author.contacts.size()").value(2),
-                        jsonPath("$.author.contacts[0]").value("test-contact-1"),
-                        jsonPath("$.author.contacts[1]").value("test-contact-2"),
-                        jsonPath("$.author.room").value("test-room"),
-                        jsonPath("$.bookedAt").value("2024-05-20T12:30:04Z")
+                        content().json("""
+                        {
+                            "author": {
+                                "username": "test-username",
+                                "contacts": [ "test-contact-1", "test-contact-2" ],
+                                "room": "test-room"
+                            },
+                            "bookedAt": "2024-05-20T12:30:04Z"
+                        }
+                        """)
                 );
     }
 

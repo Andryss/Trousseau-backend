@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class ConstantsApiControllerTest extends BaseApiTest {
@@ -19,10 +19,25 @@ class ConstantsApiControllerTest extends BaseApiTest {
                 )
                 .andExpectAll(
                         status().isOk(),
-                        jsonPath("$.root.id").value("all"),
-                        jsonPath("$.root.name").value("Все категории"),
-                        jsonPath("$.root.children").isArray(),
-                        jsonPath("$.root.children.size()").value(9)
+                        content().json("""
+                        {
+                            "root": {
+                                "id": "all",
+                                "name": "Все категории",
+                                "children": [
+                                    {},
+                                    {},
+                                    {},
+                                    {},
+                                    {},
+                                    {},
+                                    {},
+                                    {},
+                                    {}
+                                ]
+                            }
+                        }
+                        """)
                 );
     }
 

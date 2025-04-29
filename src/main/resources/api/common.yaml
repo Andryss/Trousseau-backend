@@ -39,6 +39,9 @@ components:
       type: string
     categoryId:
       type: string
+    cost:
+      type: integer
+      format: int64
     ItemInfoRequest:
       type: object
       properties:
@@ -50,6 +53,8 @@ components:
           $ref: "#/components/schemas/itemDescription"
         category:
           $ref: "#/components/schemas/categoryId"
+        cost:
+          $ref: "#/components/schemas/cost"
     url:
       type: string
     ItemMediaDto:
@@ -121,6 +126,8 @@ components:
           $ref: "#/components/schemas/itemDescription"
         category:
           $ref: "#/components/schemas/CategoryDto"
+        cost:
+          $ref: "#/components/schemas/cost"
         status:
           $ref: "#/components/schemas/itemStatus"
         isFavourite:
