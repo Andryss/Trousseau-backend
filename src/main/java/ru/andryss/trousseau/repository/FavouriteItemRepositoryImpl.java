@@ -38,13 +38,14 @@ public class FavouriteItemRepositoryImpl implements FavouriteItemRepository {
     }
 
     @Override
-    public List<String> existsByItemId(List<String> itemIds) {
+    public List<String> existsByUserIdAndItemIds(String userId, List<String> itemIds) {
         if (itemIds.isEmpty()) {
             return List.of();
         }
         return jdbcTemplate.queryForList("""
-                select item_id from favourites where item_id in (:itemIds)
+                select item_id from favourites where user_id = :userId and item_id in (:itemIds)
         """, new MapSqlParameterSource()
+                .addValue("userId", userId)
                 .addValue("itemIds", itemIds), String.class);
     }
 }

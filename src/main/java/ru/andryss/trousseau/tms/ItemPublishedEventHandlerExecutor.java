@@ -2,6 +2,7 @@ package ru.andryss.trousseau.tms;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.apache.commons.text.StringSubstitutor;
 import org.springframework.stereotype.Component;
@@ -66,6 +67,10 @@ public class ItemPublishedEventHandlerExecutor extends BaseEventHandlerExecutor 
         List<SubscriptionEntity> subscribed = subscriptionService.getSubscribedOnCategories(categories);
 
         for (SubscriptionEntity subscription : subscribed) {
+            if (Objects.equals(subscription.getOwner(), item.getOwner())) {
+                continue;
+            }
+
             Map<String, String> params = Map.of(
                     "itemTitle", item.getTitle(),
                     "subscriptionName", subscription.getName()

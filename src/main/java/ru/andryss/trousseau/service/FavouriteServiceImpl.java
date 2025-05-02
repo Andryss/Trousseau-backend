@@ -54,21 +54,21 @@ public class FavouriteServiceImpl implements FavouriteService {
     }
 
     @Override
-    public boolean checkFavourite(ItemEntity item) {
-        log.info("Checking favourite item {}", item.getId());
+    public boolean checkFavourite(UserData user, ItemEntity item) {
+        log.info("Checking favourite item {} as user {}", item.getId(), user.getId());
 
-        return favouriteItemRepository.existsByItemId(List.of(item.getId())).size() == 1;
+        return favouriteItemRepository.existsByUserIdAndItemIds(user.getId(), List.of(item.getId())).size() == 1;
     }
 
     @Override
-    public Map<String, Boolean> checkFavourite(List<ItemEntity> items) {
-        log.info("Checking favourite items {}", items.size());
+    public Map<String, Boolean> checkFavourite(UserData user, List<ItemEntity> items) {
+        log.info("Checking favourite items {} as user {}", items.size(), user.getId());
 
         List<String> itemIds = items.stream()
                 .map(ItemEntity::getId)
                 .toList();
 
-        List<String> existent = favouriteItemRepository.existsByItemId(itemIds);
+        List<String> existent = favouriteItemRepository.existsByUserIdAndItemIds(user.getId(), itemIds);
 
         return items.stream()
                 .collect(toMap(ItemEntity::getId, i -> existent.contains(i.getId())));

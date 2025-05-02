@@ -29,7 +29,7 @@ public abstract class ItemApiController extends BaseApiController {
                 .map(entity -> mapItemDtoCommon(entity, false))
                 .toList();
 
-        Map<String, Boolean> favouritesMap = favouriteService.checkFavourite(items);
+        Map<String, Boolean> favouritesMap = favouriteService.checkFavourite(getUser(), items);
         for (ItemDto itemDto : dtoList) {
             itemDto.isFavourite(favouritesMap.getOrDefault(itemDto.getId(), false));
         }
@@ -53,7 +53,7 @@ public abstract class ItemApiController extends BaseApiController {
                 .status(entity.getStatus().toOpenApi())
                 .publishedAt(toOffsetDateTime(entity.getPublishedAt()));
         if (enrichFavourite) {
-            dto.isFavourite(favouriteService.checkFavourite(entity));
+            dto.isFavourite(favouriteService.checkFavourite(getUser(), entity));
         }
         return dto;
     }
