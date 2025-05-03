@@ -149,7 +149,8 @@ components:
     sortField:
       type: string
       enum:
-        - created_at
+        - published_at
+        - cost
     sortOrder:
       type: string
       enum:

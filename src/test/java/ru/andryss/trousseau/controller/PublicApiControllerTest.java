@@ -27,7 +27,7 @@ class PublicApiControllerTest extends BaseApiTest {
                                 .content("""
                                 {
                                     "sort": {
-                                        "field": "created_at",
+                                        "field": "published_at",
                                         "order": "desc"
                                     },
                                     "filter": {

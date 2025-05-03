@@ -12,7 +12,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class SubscriptionApiControllerTest extends BaseApiTest {
@@ -34,12 +34,20 @@ class SubscriptionApiControllerTest extends BaseApiTest {
                 )
                 .andExpectAll(
                         status().isOk(),
-                        jsonPath("$.id").isNotEmpty(),
-                        jsonPath("$.name").value("some-name"),
-                        jsonPath("$.data.categories").isArray(),
-                        jsonPath("$.data.categories.size()").value(1),
-                        jsonPath("$.data.categories[0].id").value("all"),
-                        jsonPath("$.data.categories[0].name").value("Все категории")
+                        content().json("""
+                        {
+                            "id": "20240520_123001000",
+                            "name": "some-name",
+                            "data": {
+                                "categories": [
+                                    {
+                                        "id": "all",
+                                        "name": "Все категории"
+                                    }
+                                ]
+                            }
+                        }
+                        """)
                 );
 
         mockMvc.perform(
@@ -48,14 +56,24 @@ class SubscriptionApiControllerTest extends BaseApiTest {
                 )
                 .andExpectAll(
                         status().isOk(),
-                        jsonPath("$.subscriptions").isArray(),
-                        jsonPath("$.subscriptions.size()").value(1),
-                        jsonPath("$.subscriptions[0].id").isNotEmpty(),
-                        jsonPath("$.subscriptions[0].name").value("some-name"),
-                        jsonPath("$.subscriptions[0].data.categories").isArray(),
-                        jsonPath("$.subscriptions[0].data.categories.size()").value(1),
-                        jsonPath("$.subscriptions[0].data.categories[0].id").value("all"),
-                        jsonPath("$.subscriptions[0].data.categories[0].name").value("Все категории")
+                        content().json("""
+                        {
+                            "subscriptions": [
+                                {
+                                    "id": "20240520_123001000",
+                                    "name": "some-name",
+                                    "data": {
+                                        "categories": [
+                                            {
+                                                "id": "all",
+                                                "name": "Все категории"
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                        """)
                 );
     }
 
@@ -80,28 +98,36 @@ class SubscriptionApiControllerTest extends BaseApiTest {
                 )
                 .andExpectAll(
                         status().isOk(),
-                        jsonPath("$.id").value(subscription.getId()),
-                        jsonPath("$.name").value("another-name"),
-                        jsonPath("$.data.categories").isArray(),
-                        jsonPath("$.data.categories.size()").value(3),
-                        jsonPath("$.data.categories[0].id").value("all"),
-                        jsonPath("$.data.categories[0].name").value("Все категории"),
-                        jsonPath("$.data.categories[1].id").value("all"),
-                        jsonPath("$.data.categories[1].name").value("Все категории"),
-                        jsonPath("$.data.categories[2].id").value("all"),
-                        jsonPath("$.data.categories[2].name").value("Все категории")
+                        content().json("""
+                        {
+                            "id": "20240520_123001000",
+                            "name": "another-name",
+                            "data": {
+                                "categories": [
+                                    {
+                                        "id": "all",
+                                        "name": "Все категории"
+                                    },
+                                    {
+                                        "id": "all",
+                                        "name": "Все категории"
+                                    },
+                                    {
+                                        "id": "all",
+                                        "name": "Все категории"
+                                    }
+                                ]
+                            }
+                        }
+                        """)
                 );
     }
 
     @Test
     @SneakyThrows
     void getSubscriptionsTest() {
-        SubscriptionDto subscription0 = createSubscription(
-                new SubscriptionInfo("test-name-0", new SubscriptionDataInfo(List.of("all")))
-        );
-        SubscriptionDto subscription1 = createSubscription(
-                new SubscriptionInfo("test-name-1", new SubscriptionDataInfo(List.of("all", "all")))
-        );
+        createSubscription(new SubscriptionInfo("test-name-0", new SubscriptionDataInfo(List.of("all"))));
+        createSubscription(new SubscriptionInfo("test-name-1", new SubscriptionDataInfo(List.of("all", "all"))));
 
         mockMvc.perform(
                         get("/public/subscriptions")
@@ -109,22 +135,40 @@ class SubscriptionApiControllerTest extends BaseApiTest {
                 )
                 .andExpectAll(
                         status().isOk(),
-                        jsonPath("$.subscriptions").isArray(),
-                        jsonPath("$.subscriptions.size()").value(2),
-                        jsonPath("$.subscriptions[0].id").value(subscription0.getId()),
-                        jsonPath("$.subscriptions[0].name").value("test-name-0"),
-                        jsonPath("$.subscriptions[0].data.categories").isArray(),
-                        jsonPath("$.subscriptions[0].data.categories.size()").value(1),
-                        jsonPath("$.subscriptions[0].data.categories[0].id").value("all"),
-                        jsonPath("$.subscriptions[0].data.categories[0].name").value("Все категории"),
-                        jsonPath("$.subscriptions[1].id").value(subscription1.getId()),
-                        jsonPath("$.subscriptions[1].name").value("test-name-1"),
-                        jsonPath("$.subscriptions[1].data.categories").isArray(),
-                        jsonPath("$.subscriptions[1].data.categories.size()").value(2),
-                        jsonPath("$.subscriptions[1].data.categories[0].id").value("all"),
-                        jsonPath("$.subscriptions[1].data.categories[0].name").value("Все категории"),
-                        jsonPath("$.subscriptions[1].data.categories[1].id").value("all"),
-                        jsonPath("$.subscriptions[1].data.categories[1].name").value("Все категории")
+                        content().json("""
+                        {
+                            "subscriptions": [
+                                {
+                                    "id": "20240520_123001000",
+                                    "name": "test-name-0",
+                                    "data": {
+                                        "categories": [
+                                            {
+                                                "id": "all",
+                                                "name": "Все категории"
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "id": "20240520_123002000",
+                                    "name": "test-name-1",
+                                    "data": {
+                                        "categories": [
+                                            {
+                                                "id": "all",
+                                                "name": "Все категории"
+                                            },
+                                            {
+                                                "id": "all",
+                                                "name": "Все категории"
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                        """)
                 );
     }
 
@@ -147,8 +191,11 @@ class SubscriptionApiControllerTest extends BaseApiTest {
                 )
                 .andExpectAll(
                         status().isOk(),
-                        jsonPath("$.subscriptions").isArray(),
-                        jsonPath("$.subscriptions.size()").value(0)
+                        content().json("""
+                        {
+                            "subscriptions": [ ]
+                        }
+                        """)
                 );
     }
 

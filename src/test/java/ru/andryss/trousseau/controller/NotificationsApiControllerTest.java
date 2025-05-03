@@ -13,7 +13,7 @@ import ru.andryss.trousseau.service.NotificationService.NotificationInfo;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class NotificationsApiControllerTest extends BaseApiTest {
@@ -35,25 +35,33 @@ class NotificationsApiControllerTest extends BaseApiTest {
                 )
                 .andExpectAll(
                         status().isOk(),
-                        jsonPath("$.notifications").isArray(),
-                        jsonPath("$.notifications.size()").value(2),
-                        jsonPath("$.notifications[0].id").isNotEmpty(),
-                        jsonPath("$.notifications[0].title").value("test-title1"),
-                        jsonPath("$.notifications[0].content").value("test-content1"),
-                        jsonPath("$.notifications[0].links").isArray(),
-                        jsonPath("$.notifications[0].links.size()").value(2),
-                        jsonPath("$.notifications[0].links[0]").value("test-link10"),
-                        jsonPath("$.notifications[0].links[1]").value("test-link11"),
-                        jsonPath("$.notifications[0].isRead").value(false),
-                        jsonPath("$.notifications[0].timestamp").isNotEmpty(),
-                        jsonPath("$.notifications[1].id").isNotEmpty(),
-                        jsonPath("$.notifications[1].title").value("test-title0"),
-                        jsonPath("$.notifications[1].content").value("test-content0"),
-                        jsonPath("$.notifications[1].links").isArray(),
-                        jsonPath("$.notifications[1].links.size()").value(1),
-                        jsonPath("$.notifications[1].links[0]").value("test-link00"),
-                        jsonPath("$.notifications[1].isRead").value(false),
-                        jsonPath("$.notifications[1].timestamp").isNotEmpty()
+                        content().json("""
+                        {
+                            "notifications": [
+                                {
+                                    "id": "20240520_123002000",
+                                    "title": "test-title1",
+                                    "content": "test-content1",
+                                    "links": [
+                                        "test-link10",
+                                        "test-link11"
+                                    ],
+                                    "isRead": false,
+                                    "timestamp": "2024-05-20T12:30:02Z"
+                                },
+                                {
+                                    "id": "20240520_123001000",
+                                    "title": "test-title0",
+                                    "content": "test-content0",
+                                    "links": [
+                                        "test-link00"
+                                    ],
+                                    "isRead": false,
+                                    "timestamp": "2024-05-20T12:30:01Z"
+                                }
+                            ]
+                        }
+                        """)
                 );
     }
 
@@ -73,7 +81,11 @@ class NotificationsApiControllerTest extends BaseApiTest {
                 )
                 .andExpectAll(
                         status().isOk(),
-                        jsonPath("$.count").value(3)
+                        content().json("""
+                        {
+                            "count": 3
+                        }
+                        """)
                 );
     }
 
@@ -89,10 +101,22 @@ class NotificationsApiControllerTest extends BaseApiTest {
                 )
                 .andExpectAll(
                         status().isOk(),
-                        jsonPath("$.notifications").isArray(),
-                        jsonPath("$.notifications.size()").value(1),
-                        jsonPath("$.notifications[0].id").isNotEmpty(),
-                        jsonPath("$.notifications[0].isRead").value(false)
+                        content().json("""
+                        {
+                            "notifications": [
+                                {
+                                    "id": "20240520_123001000",
+                                    "title": "test-title",
+                                    "content": "test-content",
+                                    "links": [
+                                        "test-link"
+                                    ],
+                                    "isRead": false,
+                                    "timestamp": "2024-05-20T12:30:01Z"
+                                }
+                            ]
+                        }
+                        """)
                 )
                 .andReturn();
 
@@ -113,10 +137,22 @@ class NotificationsApiControllerTest extends BaseApiTest {
                 )
                 .andExpectAll(
                         status().isOk(),
-                        jsonPath("$.notifications").isArray(),
-                        jsonPath("$.notifications.size()").value(1),
-                        jsonPath("$.notifications[0].id").value(id),
-                        jsonPath("$.notifications[0].isRead").value(true)
+                        content().json("""
+                        {
+                            "notifications": [
+                                {
+                                    "id": "20240520_123001000",
+                                    "title": "test-title",
+                                    "content": "test-content",
+                                    "links": [
+                                        "test-link"
+                                    ],
+                                    "isRead": true,
+                                    "timestamp": "2024-05-20T12:30:01Z"
+                                }
+                            ]
+                        }
+                        """)
                 );
     }
 
