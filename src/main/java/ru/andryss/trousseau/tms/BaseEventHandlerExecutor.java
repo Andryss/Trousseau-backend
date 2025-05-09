@@ -19,7 +19,9 @@ public abstract class BaseEventHandlerExecutor extends BaseExecutor {
 
     @Override
     public void doJob(JobExecutionContext context) {
-        int batchSize = keyStorageService.get("eventHandlerExecutor.batchSize", 5);
+        int batchSize = keyStorageService.get(
+                String.format("eventHandlerExecutor.%s.batchSize", getEventType().getValue()), 5
+        );
 
         List<EventEntity> events;
         do {

@@ -1,16 +1,12 @@
 package ru.andryss.trousseau.service;
 
-import java.io.InputStream;
 import java.util.concurrent.TimeUnit;
 
 import io.minio.BucketExistsArgs;
-import io.minio.GetObjectArgs;
 import io.minio.GetPresignedObjectUrlArgs;
 import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
-import io.minio.StatObjectArgs;
-import io.minio.errors.ErrorResponseException;
 import io.minio.http.Method;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -85,38 +81,6 @@ public class S3ServiceImpl implements S3Service, InitializingBean, DisposableBea
             );
         } catch (Exception e) {
             log.error("Error while generating presigned url", e);
-            throw new RuntimeException(e);
-        }
-    }
-
-    public boolean exists(String path) {
-        try {
-            client.statObject(
-                    StatObjectArgs.builder()
-                            .bucket(properties.getBucket())
-                            .object(path)
-                            .build()
-            );
-            return true;
-        } catch (ErrorResponseException e) {
-            log.error("Catch ErrorResponseException", e);
-            return false;
-        } catch (Exception e) {
-            log.error("Error while uploading object", e);
-            throw new RuntimeException(e);
-        }
-    }
-
-    public byte[] get(String path) {
-        try (InputStream stream = client.getObject(
-                GetObjectArgs.builder()
-                        .bucket(properties.getBucket())
-                        .object(path)
-                        .build()
-        )) {
-            return stream.readAllBytes();
-        } catch (Exception e) {
-            log.error("Error while reading object", e);
             throw new RuntimeException(e);
         }
     }

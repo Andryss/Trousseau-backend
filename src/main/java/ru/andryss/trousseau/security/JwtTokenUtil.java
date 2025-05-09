@@ -20,6 +20,8 @@ import ru.andryss.trousseau.service.TimeService;
 @RequiredArgsConstructor
 public class JwtTokenUtil implements InitializingBean {
 
+    public static final String USER_DATA_KEY = "data";
+
     private final JwtProperties properties;
     private final TimeService timeService;
     private final ObjectMapperWrapper objectMapper;
@@ -38,7 +40,7 @@ public class JwtTokenUtil implements InitializingBean {
         Date expired = new Date(now.getTime() + properties.getTokenExpirationMillis());
         return Jwts.builder()
                 .setSubject(userData.getId())
-                .setClaims(Map.of("data", objectMapper.writeValueAsString(userData)))
+                .setClaims(Map.of(USER_DATA_KEY, objectMapper.writeValueAsString(userData)))
                 .setIssuedAt(now)
                 .setExpiration(expired)
                 .signWith(signingKey, SignatureAlgorithm.HS256)
@@ -58,7 +60,7 @@ public class JwtTokenUtil implements InitializingBean {
 
     public UserData extractUserData(String token) {
         Claims body = getTokenClaims(token);
-        String data = body.get("data", String.class);
+        String data = body.get(USER_DATA_KEY, String.class);
         return objectMapper.readValue(data, UserData.class);
     }
 
