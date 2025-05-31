@@ -1,5 +1,6 @@
 logs
 src/main/resources/application.properties
+**/*firebase*.json
 
 HELP.md
 target/

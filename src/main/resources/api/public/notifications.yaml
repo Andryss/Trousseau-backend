@@ -57,6 +57,27 @@ endpoints:
             application/json:
               schema:
                 $ref: "../common.yaml#/components/schemas/ErrorObject"
+  updateNotificationsToken:
+    post:
+      summary: Установить FCM токен для получения уведомлений
+      operationId: updateNotificationsToken
+      tags:
+        - notifications
+        - public
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateNotificationsTokenRequest"
+      responses:
+        200:
+          description: Успешная установка токена для получения уведомлений
+        500:
+          description: Сервис временно недоступен
+          content:
+            application/json:
+              schema:
+                $ref: "../common.yaml#/components/schemas/ErrorObject"
 
 components:
   parameters:
@@ -107,3 +128,8 @@ components:
       properties:
         count:
           type: integer
+    UpdateNotificationsTokenRequest:
+      type: object
+      properties:
+        token:
+          type: string

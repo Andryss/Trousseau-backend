@@ -8,9 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
 import ru.andryss.trousseau.generated.model.NotificationListResponse;
+import ru.andryss.trousseau.repository.NotificationSettingsRepository;
 import ru.andryss.trousseau.service.NotificationService;
 import ru.andryss.trousseau.service.NotificationService.NotificationInfo;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -20,6 +22,8 @@ class NotificationsApiControllerTest extends BaseApiTest {
 
     @Autowired
     NotificationService notificationService;
+    @Autowired
+    NotificationSettingsRepository notificationSettingsRepository;
 
     @Test
     @SneakyThrows
@@ -154,6 +158,25 @@ class NotificationsApiControllerTest extends BaseApiTest {
                         }
                         """)
                 );
+    }
+
+    @Test
+    @SneakyThrows
+    void updateNotificationsTokenTest() {
+        mockMvc.perform(
+                        post("/public/notifications/token")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content("""
+                                {
+                                    "token": "test-token"
+                                }
+                                """)
+                )
+                .andExpect(status().isOk());
+
+        assertThat(notificationSettingsRepository.findTokenByUserId("test-id"))
+                .isPresent()
+                .get().isEqualTo("test-token");
     }
 
     private void createNotification(NotificationInfo info) {

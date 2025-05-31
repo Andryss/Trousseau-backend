@@ -28,3 +28,7 @@ spring.quartz.properties.org.quartz.jobStore.driverDelegateClass=org.quartz.impl
 ### JWT config
 jwt.token.secret=your-super-secret-key
 jwt.token.token-expiration-millis=86400000
+
+### Messaging config
+messaging.enabled=false
+messaging.filepath=/path/to/messaging/config/file

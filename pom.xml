@@ -25,6 +25,7 @@
         <zonky.embedded-database.version>2.6.0</zonky.embedded-database.version>
         <zonky.embedded-postgres.version>2.1.0</zonky.embedded-postgres.version>
         <jjwt.version>0.11.5</jjwt.version>
+        <firebase-admin.version>9.5.0</firebase-admin.version>
     </properties>
 
     <dependencies>
@@ -142,6 +143,12 @@
             <artifactId>jjwt-jackson</artifactId>
             <version>${jjwt.version}</version>
             <scope>runtime</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.firebase</groupId>
+            <artifactId>firebase-admin</artifactId>
+            <version>${firebase-admin.version}</version>
         </dependency>
 
         <!-- TEST DEPENDENCIES -->

@@ -422,6 +422,8 @@ paths:
     $ref: "./public/notifications.yaml#/endpoints/getUnreadNotificationsCount"
   /public/notifications/{notificationId}/read:
     $ref: "./public/notifications.yaml#/endpoints/markNotificationRead"
+  /public/notifications/token:
+    $ref: "./public/notifications.yaml#/endpoints/updateNotificationsToken"
 
   /auth/signup:
     $ref: "./auth.yaml#/endpoints/signUp"

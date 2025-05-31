@@ -8,6 +8,7 @@ import ru.andryss.trousseau.generated.api.NotificationsApi;
 import ru.andryss.trousseau.generated.model.NotificationCountResponse;
 import ru.andryss.trousseau.generated.model.NotificationDto;
 import ru.andryss.trousseau.generated.model.NotificationListResponse;
+import ru.andryss.trousseau.generated.model.UpdateNotificationsTokenRequest;
 import ru.andryss.trousseau.model.NotificationEntity;
 import ru.andryss.trousseau.service.NotificationService;
 
@@ -49,5 +50,10 @@ public class NotificationsApiController extends BaseApiController implements Not
     @Override
     public void markNotificationRead(String notificationId) {
         notificationService.markRead(notificationId, getUser());
+    }
+
+    @Override
+    public void updateNotificationsToken(UpdateNotificationsTokenRequest request) {
+        notificationService.updateToken(request.getToken(), getUser());
     }
 }

@@ -11,6 +11,7 @@ public interface NotificationService {
     List<NotificationEntity> getAll(UserData user);
     int getUnreadCount(UserData user);
     void markRead(String id, UserData user);
+    void updateToken(String token, UserData user);
     void sendNotification(NotificationInfo info);
 
     record NotificationInfo(String receiver, String title, String content, List<String> links) {
