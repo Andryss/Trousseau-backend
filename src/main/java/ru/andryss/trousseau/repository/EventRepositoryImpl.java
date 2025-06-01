@@ -2,6 +2,7 @@ package ru.andryss.trousseau.repository;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Optional;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.InitializingBean;
@@ -47,15 +48,20 @@ public class EventRepositoryImpl implements EventRepository, InitializingBean {
     }
 
     @Override
-    public List<EventEntity> findAllByTypeOrderByCreatedAt(EventType type, int limit) {
-        return jdbcTemplate.query("""
+    public Optional<EventEntity> findByType(EventType type) {
+        List<EventEntity> events = jdbcTemplate.query("""
                         select * from events
                         where type = :type
                         order by created_at
-                        limit :limit
+                        limit 1
                 """, new MapSqlParameterSource()
-                        .addValue("type", type.getValue())
-                        .addValue("limit", limit), rowMapper);
+                        .addValue("type", type.getValue()), rowMapper);
+
+        if (events.isEmpty()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(events.get(0));
     }
 
     @Override

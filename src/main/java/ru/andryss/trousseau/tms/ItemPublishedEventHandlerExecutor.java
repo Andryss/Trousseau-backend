@@ -13,7 +13,6 @@ import ru.andryss.trousseau.model.SubscriptionEntity;
 import ru.andryss.trousseau.service.CategoryService;
 import ru.andryss.trousseau.service.EventService;
 import ru.andryss.trousseau.service.ItemService;
-import ru.andryss.trousseau.service.KeyStorageService;
 import ru.andryss.trousseau.service.NotificationService;
 import ru.andryss.trousseau.service.NotificationService.NotificationInfo;
 import ru.andryss.trousseau.service.SubscriptionService;
@@ -34,13 +33,12 @@ public class ItemPublishedEventHandlerExecutor extends BaseEventHandlerExecutor 
     private final NotificationService notificationService;
 
     public ItemPublishedEventHandlerExecutor(
-            KeyStorageService keyStorageService,
             EventService eventService,
             ItemService itemService,
             CategoryService categoryService,
             SubscriptionService subscriptionService,
             NotificationService notificationService) {
-        super(keyStorageService, eventService);
+        super(eventService);
         this.itemService = itemService;
         this.categoryService = categoryService;
         this.subscriptionService = subscriptionService;

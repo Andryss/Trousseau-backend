@@ -4,6 +4,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -34,8 +35,8 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<EventEntity> readBatch(EventType type, int limit) {
-        return eventRepository.findAllByTypeOrderByCreatedAt(type, limit);
+    public Optional<EventEntity> readNextEvent(EventType type) {
+        return eventRepository.findByType(type);
     }
 
     @Override

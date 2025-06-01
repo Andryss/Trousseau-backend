@@ -10,7 +10,6 @@ import ru.andryss.trousseau.model.EventEntity.EventType;
 import ru.andryss.trousseau.model.ItemEntity;
 import ru.andryss.trousseau.service.EventService;
 import ru.andryss.trousseau.service.ItemService;
-import ru.andryss.trousseau.service.KeyStorageService;
 import ru.andryss.trousseau.service.NotificationService;
 import ru.andryss.trousseau.service.NotificationService.NotificationInfo;
 
@@ -26,11 +25,10 @@ public class ItemBookedEventHandlerExecutor extends BaseEventHandlerExecutor {
     private final NotificationService notificationService;
 
     public ItemBookedEventHandlerExecutor(
-            KeyStorageService keyStorageService,
             EventService eventService,
             ItemService itemService,
             NotificationService notificationService) {
-        super(keyStorageService, eventService);
+        super(eventService);
         this.itemService = itemService;
         this.notificationService = notificationService;
     }

@@ -2,6 +2,7 @@ package ru.andryss.trousseau.service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import ru.andryss.trousseau.model.EventEntity;
 import ru.andryss.trousseau.model.EventEntity.EventType;
@@ -16,9 +17,9 @@ public interface EventService {
     void push(EventType type, Map<String, Object> payload);
 
     /**
-     * Прочитать группу событий заданного типа
+     * Прочитать событие заданного типа
      */
-    List<EventEntity> readBatch(EventType type, int limit);
+    Optional<EventEntity> readNextEvent(EventType type);
 
     /**
      * Удалить группу событий

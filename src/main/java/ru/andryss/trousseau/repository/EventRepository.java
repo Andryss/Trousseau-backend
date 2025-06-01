@@ -1,6 +1,7 @@
 package ru.andryss.trousseau.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import ru.andryss.trousseau.model.EventEntity;
 import ru.andryss.trousseau.model.EventEntity.EventType;
@@ -15,9 +16,9 @@ public interface EventRepository {
     void save(EventEntity event);
 
     /**
-     * Найти события по типу
+     * Найти событие по типу
      */
-    List<EventEntity> findAllByTypeOrderByCreatedAt(EventType type, int limit);
+    Optional<EventEntity> findByType(EventType type);
 
     /**
      * Удалить события по идентификаторам
