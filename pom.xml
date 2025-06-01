@@ -24,6 +24,7 @@
         <jjwt.version>0.11.5</jjwt.version>
         <firebase-admin.version>9.5.0</firebase-admin.version>
         <openapi-generator-plugin.version>7.8.0</openapi-generator-plugin.version>
+        <checkstyle-plugin.version>3.6.0</checkstyle-plugin.version>
         <jacoco-plugin.version>0.8.12</jacoco-plugin.version>
     </properties>
 
@@ -193,6 +194,27 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>${checkstyle-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>validate</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <configLocation>checkstyle/checkstyle.xml</configLocation>
+                    <encoding>UTF-8</encoding>
+                    <consoleOutput>true</consoleOutput>
+                    <failsOnError>true</failsOnError>
+                    <linkXRef>false</linkXRef>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>

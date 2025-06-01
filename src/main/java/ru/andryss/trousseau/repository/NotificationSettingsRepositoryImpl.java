@@ -19,22 +19,22 @@ public class NotificationSettingsRepositoryImpl implements NotificationSettingsR
     @Override
     public void upsert(NotificationSettingsEntity entity) {
         jdbcTemplate.update("""
-                insert into notifications_settings(user_id, token, updated_at, created_at)
-                    values (:userId, :token, :updatedAt, :createdAt)
-                on conflict (user_id) do update set token = excluded.token, updated_at = excluded.updated_at
-        """, new MapSqlParameterSource()
-                .addValue("userId", entity.getUserId())
-                .addValue("token", entity.getToken())
-                .addValue("updatedAt", Timestamp.from(entity.getUpdatedAt()))
-                .addValue("createdAt", Timestamp.from(entity.getCreatedAt())));
+                        insert into notifications_settings(user_id, token, updated_at, created_at)
+                            values (:userId, :token, :updatedAt, :createdAt)
+                        on conflict (user_id) do update set token = excluded.token, updated_at = excluded.updated_at
+                """, new MapSqlParameterSource()
+                        .addValue("userId", entity.getUserId())
+                        .addValue("token", entity.getToken())
+                        .addValue("updatedAt", Timestamp.from(entity.getUpdatedAt()))
+                        .addValue("createdAt", Timestamp.from(entity.getCreatedAt())));
     }
 
     @Override
     public Optional<String> findTokenByUserId(String userId) {
         List<String> settings = jdbcTemplate.queryForList("""
-                select token from notifications_settings where user_id = :userId
-        """, new MapSqlParameterSource()
-                .addValue("userId", userId), String.class);
+                        select token from notifications_settings where user_id = :userId
+                """, new MapSqlParameterSource()
+                        .addValue("userId", userId), String.class);
 
         if (settings.isEmpty()) {
             return Optional.empty();

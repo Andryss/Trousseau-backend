@@ -40,9 +40,9 @@ public class SubscriptionRepositoryImpl implements SubscriptionRepository, Initi
     @Override
     public SubscriptionEntity save(SubscriptionEntity subscription) {
         jdbcTemplate.update("""
-                insert into subscriptions(id, owner, name, data, created_at)
-                    values (:id, :owner, :name, :data::jsonb, :createdAt)
-        """, getParameterSource(subscription));
+                        insert into subscriptions(id, owner, name, data, created_at)
+                            values (:id, :owner, :name, :data::jsonb, :createdAt)
+                """, getParameterSource(subscription));
 
         return subscription;
     }
@@ -50,9 +50,9 @@ public class SubscriptionRepositoryImpl implements SubscriptionRepository, Initi
     @Override
     public Optional<SubscriptionEntity> findById(String id) {
         List<SubscriptionEntity> result = jdbcTemplate.query("""
-                select * from subscriptions where id = :id
-        """, new MapSqlParameterSource()
-                .addValue("id", id), rowMapper);
+                        select * from subscriptions where id = :id
+                """, new MapSqlParameterSource()
+                        .addValue("id", id), rowMapper);
 
         if (result.isEmpty()) {
             return Optional.empty();
@@ -64,10 +64,10 @@ public class SubscriptionRepositoryImpl implements SubscriptionRepository, Initi
     @Override
     public Optional<SubscriptionEntity> findByIdAndOwner(String id, String owner) {
         List<SubscriptionEntity> result = jdbcTemplate.query("""
-                select * from subscriptions where id = :id and owner = :owner
-        """, new MapSqlParameterSource()
-                .addValue("id", id)
-                .addValue("owner", owner), rowMapper);
+                        select * from subscriptions where id = :id and owner = :owner
+                """, new MapSqlParameterSource()
+                        .addValue("id", id)
+                        .addValue("owner", owner), rowMapper);
 
         if (result.isEmpty()) {
             return Optional.empty();
@@ -79,10 +79,10 @@ public class SubscriptionRepositoryImpl implements SubscriptionRepository, Initi
     @Override
     public SubscriptionEntity update(SubscriptionEntity subscription) {
         jdbcTemplate.update("""
-                update subscriptions
-                    set name = :name, data = :data::jsonb, created_at = :createdAt
-                    where id = :id
-        """, getParameterSource(subscription));
+                        update subscriptions
+                            set name = :name, data = :data::jsonb, created_at = :createdAt
+                            where id = :id
+                """, getParameterSource(subscription));
 
         return subscription;
     }
@@ -90,18 +90,18 @@ public class SubscriptionRepositoryImpl implements SubscriptionRepository, Initi
     @Override
     public List<SubscriptionEntity> findAllByOwnerOrderByCreatedAt(String owner) {
         return jdbcTemplate.query("""
-                select * from subscriptions where owner = :owner order by created_at
-        """, new MapSqlParameterSource()
-                .addValue("owner", owner), rowMapper);
+                        select * from subscriptions where owner = :owner order by created_at
+                """, new MapSqlParameterSource()
+                        .addValue("owner", owner), rowMapper);
     }
 
     @Override
     public void deleteByIdAndOwner(String id, String owner) {
         jdbcTemplate.update("""
-                delete from subscriptions where id = :id and owner = :owner
-        """, new MapSqlParameterSource()
-                .addValue("id", id)
-                .addValue("owner", owner));
+                            delete from subscriptions where id = :id and owner = :owner
+                    """, new MapSqlParameterSource()
+                            .addValue("id", id)
+                            .addValue("owner", owner));
     }
 
     @Override

@@ -27,8 +27,8 @@ public class CategoryRepositoryImpl implements CategoryRepository {
     @Override
     public List<CategoryEntity> findAll() {
         return jdbcTemplate.query("""
-                select * from categories
-        """, rowMapper);
+                        select * from categories
+                """, rowMapper);
     }
 
     @Override
@@ -48,17 +48,17 @@ public class CategoryRepositoryImpl implements CategoryRepository {
     @Override
     public List<String> findPathToRoot(String id) {
         return jdbcTemplate.queryForList("""
-                with recursive flat_categories as (
-                    select c.id, c.parent
-                        from categories c
-                            where c.id = :id
-                    union
-                    select c.id, c.parent
-                        from categories c
-                            join flat_categories fc on c.id = fc.parent
-                )
-                select fc.id from flat_categories fc
-        """, new MapSqlParameterSource()
-                .addValue("id", id), String.class);
+                        with recursive flat_categories as (
+                            select c.id, c.parent
+                                from categories c
+                                    where c.id = :id
+                            union
+                            select c.id, c.parent
+                                from categories c
+                                    join flat_categories fc on c.id = fc.parent
+                        )
+                        select fc.id from flat_categories fc
+                """, new MapSqlParameterSource()
+                        .addValue("id", id), String.class);
     }
 }

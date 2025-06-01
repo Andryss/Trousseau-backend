@@ -26,7 +26,7 @@ public abstract class BaseExecutor extends QuartzJobBean implements BeanNameAwar
     }
 
     @Override
-    protected void executeInternal(@NotNull JobExecutionContext context) throws JobExecutionException {
+    protected void executeInternal(@NotNull JobExecutionContext context) {
         try {
             log.info("Job {} started", jobName);
             doJob(context);
@@ -36,6 +36,13 @@ public abstract class BaseExecutor extends QuartzJobBean implements BeanNameAwar
         }
     }
 
+    /**
+     * CRON-выражение, описывающее периодичность запуска исполнителя
+     */
     public abstract String cronExpression();
-    public abstract void doJob(JobExecutionContext context);
+
+    /**
+     * Выполнить работу исполнителя
+     */
+    public abstract void doJob(JobExecutionContext context) throws JobExecutionException;
 }

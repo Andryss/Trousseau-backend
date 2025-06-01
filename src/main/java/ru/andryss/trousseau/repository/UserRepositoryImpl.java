@@ -39,33 +39,33 @@ public class UserRepositoryImpl implements UserRepository, InitializingBean {
     @Override
     public void save(UserEntity user) {
         jdbcTemplate.update("""
-                insert into users(id, username, password_hash, contacts, room, created_at)
-                    values (:id, :username, :passwordHash, :contacts::jsonb, :room, :createdAt)
-        """, new MapSqlParameterSource()
-                .addValue("id", user.getId())
-                .addValue("username", user.getUsername())
-                .addValue("passwordHash", user.getPasswordHash())
-                .addValue("contacts", objectMapper.writeValueAsString(user.getContacts()))
-                .addValue("room", user.getRoom())
-                .addValue("createdAt", Timestamp.from(user.getCreatedAt())));
+                        insert into users(id, username, password_hash, contacts, room, created_at)
+                            values (:id, :username, :passwordHash, :contacts::jsonb, :room, :createdAt)
+                """, new MapSqlParameterSource()
+                        .addValue("id", user.getId())
+                        .addValue("username", user.getUsername())
+                        .addValue("passwordHash", user.getPasswordHash())
+                        .addValue("contacts", objectMapper.writeValueAsString(user.getContacts()))
+                        .addValue("room", user.getRoom())
+                        .addValue("createdAt", Timestamp.from(user.getCreatedAt())));
     }
 
     @Override
     public void saveUserRoles(String userId, List<String> roleIds) {
         jdbcTemplate.update("""
-                insert into user_roles(user_id, role_id) select :userId, unnest(array[:roleIds])
-        """, new MapSqlParameterSource()
-                .addValue("userId", userId)
-                .addValue("roleIds", roleIds));
+                        insert into user_roles(user_id, role_id) select :userId, unnest(array[:roleIds])
+                """, new MapSqlParameterSource()
+                        .addValue("userId", userId)
+                        .addValue("roleIds", roleIds));
     }
 
     @Override
     public Optional<UserEntity> findById(String id) {
         List<UserEntity> result = jdbcTemplate.query("""
-                select * from users
-                where id = :id
-        """, new MapSqlParameterSource()
-                .addValue("id", id), rowMapper);
+                        select * from users
+                        where id = :id
+                """, new MapSqlParameterSource()
+                        .addValue("id", id), rowMapper);
 
         if (result.isEmpty()) {
             return Optional.empty();
@@ -78,10 +78,10 @@ public class UserRepositoryImpl implements UserRepository, InitializingBean {
     @Override
     public Optional<UserEntity> findByUsername(String username) {
         List<UserEntity> result = jdbcTemplate.query("""
-                select * from users
-                where username = :username
-        """, new MapSqlParameterSource()
-                .addValue("username", username), rowMapper);
+                        select * from users
+                        where username = :username
+                """, new MapSqlParameterSource()
+                        .addValue("username", username), rowMapper);
 
         if (result.isEmpty()) {
             return Optional.empty();
@@ -94,24 +94,24 @@ public class UserRepositoryImpl implements UserRepository, InitializingBean {
     @Override
     public List<String> findUserRoles(String userId) {
         return jdbcTemplate.queryForList("""
-                select r.role
-                from users u
-                    join user_roles ur on ur.user_id = u.id
-                    join roles r on ur.role_id = r.id
-                where u.id = :userId
-        """, new MapSqlParameterSource()
-                .addValue("userId", userId), String.class);
+                        select r.role
+                        from users u
+                            join user_roles ur on ur.user_id = u.id
+                            join roles r on ur.role_id = r.id
+                        where u.id = :userId
+                """, new MapSqlParameterSource()
+                        .addValue("userId", userId), String.class);
     }
 
     @Override
     public List<String> findRolesPrivileges(List<String> roles) {
         return jdbcTemplate.queryForList("""
-                select p.privilege
-                from roles r
-                    join role_privileges rp on rp.role_id = r.id
-                    join privileges p on rp.privilege_id = p.id
-                where r.role in (:roles)
-        """, new MapSqlParameterSource()
-                .addValue("roles", roles), String.class);
+                        select p.privilege
+                        from roles r
+                            join role_privileges rp on rp.role_id = r.id
+                            join privileges p on rp.privilege_id = p.id
+                        where r.role in (:roles)
+                """, new MapSqlParameterSource()
+                        .addValue("roles", roles), String.class);
     }
 }

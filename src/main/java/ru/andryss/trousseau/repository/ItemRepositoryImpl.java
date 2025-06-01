@@ -48,11 +48,11 @@ public class ItemRepositoryImpl implements ItemRepository, InitializingBean {
     @Transactional
     public ItemEntity save(ItemEntity item) {
         jdbcTemplate.update("""
-            insert into items(id, owner, title, media_ids, description, category_id,
-                              cost, status, published_at, created_at)
-                values(:id, :owner, :title, :mediaIds::jsonb, :description, :categoryId,
-                       :cost, :status, :publishedAt, :createdAt)
-        """, getParameterSource(item));
+                    insert into items(id, owner, title, media_ids, description, category_id,
+                                      cost, status, published_at, created_at)
+                        values(:id, :owner, :title, :mediaIds::jsonb, :description, :categoryId,
+                               :cost, :status, :publishedAt, :createdAt)
+                """, getParameterSource(item));
 
         return item;
     }
@@ -60,11 +60,11 @@ public class ItemRepositoryImpl implements ItemRepository, InitializingBean {
     @Override
     public ItemEntity update(ItemEntity item) {
         jdbcTemplate.update("""
-            update items
-                set title = :title, media_ids = :mediaIds::jsonb, description = :description,
-                    category_id = :categoryId, cost = :cost, status = :status, published_at = :publishedAt
-                where id = :id
-        """, getParameterSource(item));
+                    update items
+                        set title = :title, media_ids = :mediaIds::jsonb, description = :description,
+                            category_id = :categoryId, cost = :cost, status = :status, published_at = :publishedAt
+                        where id = :id
+                """, getParameterSource(item));
 
         return item;
     }
@@ -73,9 +73,9 @@ public class ItemRepositoryImpl implements ItemRepository, InitializingBean {
     @Transactional
     public Optional<ItemEntity> findById(String id) {
         List<ItemEntity> result = jdbcTemplate.query("""
-                select * from items where id = :id
-        """, new MapSqlParameterSource()
-                .addValue("id", id), rowMapper);
+                        select * from items where id = :id
+                """, new MapSqlParameterSource()
+                        .addValue("id", id), rowMapper);
 
         if (result.isEmpty()) {
             return Optional.empty();
@@ -87,10 +87,10 @@ public class ItemRepositoryImpl implements ItemRepository, InitializingBean {
     @Override
     public Optional<ItemEntity> findByIdAndOwner(String id, String owner) {
         List<ItemEntity> result = jdbcTemplate.query("""
-                select * from items where id = :id and owner = :owner
-        """, new MapSqlParameterSource()
-                .addValue("id", id)
-                .addValue("owner", owner), rowMapper);
+                        select * from items where id = :id and owner = :owner
+                """, new MapSqlParameterSource()
+                        .addValue("id", id)
+                        .addValue("owner", owner), rowMapper);
 
         if (result.isEmpty()) {
             return Optional.empty();
@@ -110,25 +110,25 @@ public class ItemRepositoryImpl implements ItemRepository, InitializingBean {
     @Override
     public List<ItemEntity> findAllBookedBy(String userId) {
         return jdbcTemplate.query("""
-                select i.id, i.owner, i.title, i.media_ids, i.description, i.category_id, i.cost,
-                        i.status, i.published_at, i.created_at
-                    from items i join bookings b on b.item_id = i.id
-                where b.user_id = :userId
-                order by b.booked_at desc
-        """, new MapSqlParameterSource()
-                .addValue("userId", userId), rowMapper);
+                        select i.id, i.owner, i.title, i.media_ids, i.description, i.category_id, i.cost,
+                                i.status, i.published_at, i.created_at
+                            from items i join bookings b on b.item_id = i.id
+                        where b.user_id = :userId
+                        order by b.booked_at desc
+                """, new MapSqlParameterSource()
+                        .addValue("userId", userId), rowMapper);
     }
 
     @Override
     public List<ItemEntity> findFavouritesOf(String userId) {
         return jdbcTemplate.query("""
-                select i.id, i.owner, i.title, i.media_ids, i.description, i.category_id, i.cost,
-                        i.status, i.published_at, i.created_at
-                    from items i join favourites f on i.id = f.item_id
-                where f.user_id = :userId
-                order by f.created_at desc
-        """, new MapSqlParameterSource()
-                .addValue("userId", userId), rowMapper);
+                        select i.id, i.owner, i.title, i.media_ids, i.description, i.category_id, i.cost,
+                                i.status, i.published_at, i.created_at
+                            from items i join favourites f on i.id = f.item_id
+                        where f.user_id = :userId
+                        order by f.created_at desc
+                """, new MapSqlParameterSource()
+                        .addValue("userId", userId), rowMapper);
     }
 
     @Override

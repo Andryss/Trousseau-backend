@@ -37,25 +37,25 @@ public class EventRepositoryImpl implements EventRepository, InitializingBean {
     @Override
     public void save(EventEntity event) {
         jdbcTemplate.update("""
-                insert into events(id, type, payload, created_at)
-                    values (:id, :type, :payload::jsonb, :createdAt)
-        """, new MapSqlParameterSource()
-                .addValue("id", event.getId())
-                .addValue("type", event.getType().getValue())
-                .addValue("payload", objectMapper.writeValueAsString(event.getPayload()))
-                .addValue("createdAt", Timestamp.from(event.getCreatedAt())));
+                        insert into events(id, type, payload, created_at)
+                            values (:id, :type, :payload::jsonb, :createdAt)
+                """, new MapSqlParameterSource()
+                        .addValue("id", event.getId())
+                        .addValue("type", event.getType().getValue())
+                        .addValue("payload", objectMapper.writeValueAsString(event.getPayload()))
+                        .addValue("createdAt", Timestamp.from(event.getCreatedAt())));
     }
 
     @Override
     public List<EventEntity> findAllByTypeOrderByCreatedAt(EventType type, int limit) {
         return jdbcTemplate.query("""
-                select * from events
-                where type = :type
-                order by created_at
-                limit :limit
-        """, new MapSqlParameterSource()
-                .addValue("type", type.getValue())
-                .addValue("limit", limit), rowMapper);
+                        select * from events
+                        where type = :type
+                        order by created_at
+                        limit :limit
+                """, new MapSqlParameterSource()
+                        .addValue("type", type.getValue())
+                        .addValue("limit", limit), rowMapper);
     }
 
     @Override
@@ -64,9 +64,9 @@ public class EventRepositoryImpl implements EventRepository, InitializingBean {
             return;
         }
         jdbcTemplate.update("""
-                delete from events
-                where id in (:ids)
-        """, new MapSqlParameterSource()
-                .addValue("ids", ids));
+                        delete from events
+                        where id in (:ids)
+                """, new MapSqlParameterSource()
+                        .addValue("ids", ids));
     }
 }

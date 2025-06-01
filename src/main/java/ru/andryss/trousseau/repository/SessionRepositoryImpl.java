@@ -23,7 +23,7 @@ public class SessionRepositoryImpl implements SessionRepository, InitializingBea
     private RowMapper<SessionEntity> rowMapper;
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         rowMapper = (rs, rowNum) -> {
             SessionEntity session = new SessionEntity();
             session.setId(rs.getString("id"));
@@ -37,21 +37,21 @@ public class SessionRepositoryImpl implements SessionRepository, InitializingBea
     @Override
     public void save(SessionEntity session) {
         jdbcTemplate.update("""
-                insert into sessions(id, user_id, meta, created_at)
-                    values (:id, :userId, :meta::jsonb, :createdAt)
-        """, new MapSqlParameterSource()
-                .addValue("id", session.getId())
-                .addValue("userId", session.getUserId())
-                .addValue("meta", objectMapper.writeValueAsString(session.getMeta()))
-                .addValue("createdAt", Timestamp.from(session.getCreatedAt())));
+                        insert into sessions(id, user_id, meta, created_at)
+                            values (:id, :userId, :meta::jsonb, :createdAt)
+                """, new MapSqlParameterSource()
+                        .addValue("id", session.getId())
+                        .addValue("userId", session.getUserId())
+                        .addValue("meta", objectMapper.writeValueAsString(session.getMeta()))
+                        .addValue("createdAt", Timestamp.from(session.getCreatedAt())));
     }
 
     @Override
     public Optional<SessionEntity> findById(String id) {
         List<SessionEntity> result = jdbcTemplate.query("""
-                select * from sessions where id = :id
-        """, new MapSqlParameterSource()
-                .addValue("id", id), rowMapper);
+                        select * from sessions where id = :id
+                """, new MapSqlParameterSource()
+                        .addValue("id", id), rowMapper);
 
         if (result.isEmpty()) {
             return Optional.empty();
@@ -63,8 +63,8 @@ public class SessionRepositoryImpl implements SessionRepository, InitializingBea
     @Override
     public void removeById(String id) {
         jdbcTemplate.update("""
-                delete from sessions where id = :id
-        """, new MapSqlParameterSource()
-                .addValue("id", id));
+                        delete from sessions where id = :id
+                """, new MapSqlParameterSource()
+                        .addValue("id", id));
     }
 }

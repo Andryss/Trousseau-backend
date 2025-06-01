@@ -18,21 +18,21 @@ public class KeyStorageRepositoryImpl implements KeyStorageRepository {
     @Override
     public void upsert(String key, String value) {
         jdbcTemplate.update("""
-                insert into key_storage(key, value)
-                    values (:key, :value)
-                on conflict (key) do update set value = excluded.value
-        """, new MapSqlParameterSource()
-                .addValue("key", key)
-                .addValue("value", value));
+                        insert into key_storage(key, value)
+                            values (:key, :value)
+                        on conflict (key) do update set value = excluded.value
+                """, new MapSqlParameterSource()
+                        .addValue("key", key)
+                        .addValue("value", value));
     }
 
     @Override
     public Optional<String> get(String key) {
         List<String> result = jdbcTemplate.queryForList("""
-                select value from key_storage
-                where key = :key
-        """, new MapSqlParameterSource()
-                .addValue("key", key), String.class);
+                        select value from key_storage
+                        where key = :key
+                """, new MapSqlParameterSource()
+                        .addValue("key", key), String.class);
 
         if (result.isEmpty()) {
             return Optional.empty();

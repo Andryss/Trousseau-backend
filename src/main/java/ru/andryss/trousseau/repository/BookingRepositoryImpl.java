@@ -37,12 +37,12 @@ public class BookingRepositoryImpl implements BookingRepository {
     @Override
     public Optional<BookingEntity> findByItemIdAndOwner(String itemId, String owner) {
         List<BookingEntity> result = jdbcTemplate.query("""
-                select b.id, b.user_id, b.item_id, b.booked_at
-                from bookings b join items i on b.item_id = i.id
-                where b.item_id = :itemId and i.owner = :owner
-        """, new MapSqlParameterSource()
-                .addValue("itemId", itemId)
-                .addValue("owner", owner), rowMapper);
+                        select b.id, b.user_id, b.item_id, b.booked_at
+                        from bookings b join items i on b.item_id = i.id
+                        where b.item_id = :itemId and i.owner = :owner
+                """, new MapSqlParameterSource()
+                        .addValue("itemId", itemId)
+                        .addValue("owner", owner), rowMapper);
 
         if (result.isEmpty()) {
             return Optional.empty();
@@ -54,29 +54,29 @@ public class BookingRepositoryImpl implements BookingRepository {
     @Override
     public void save(BookingEntity booking) {
         jdbcTemplate.update("""
-                insert into bookings(id, item_id, user_id, booked_at)
-                    values(:id, :itemId, :userId, :bookedAt)
-        """, new MapSqlParameterSource()
-                .addValue("id", booking.getId())
-                .addValue("itemId", booking.getItemId())
-                .addValue("userId", booking.getUserId())
-                .addValue("bookedAt", Timestamp.from(booking.getBookedAt())));
+                        insert into bookings(id, item_id, user_id, booked_at)
+                            values(:id, :itemId, :userId, :bookedAt)
+                """, new MapSqlParameterSource()
+                        .addValue("id", booking.getId())
+                        .addValue("itemId", booking.getItemId())
+                        .addValue("userId", booking.getUserId())
+                        .addValue("bookedAt", Timestamp.from(booking.getBookedAt())));
     }
 
     @Override
     public int deleteByItemId(String itemId) {
         return jdbcTemplate.update("""
-                delete from bookings where item_id = :itemId
-        """, new MapSqlParameterSource()
-                .addValue("itemId", itemId));
+                        delete from bookings where item_id = :itemId
+                """, new MapSqlParameterSource()
+                        .addValue("itemId", itemId));
     }
 
     @Override
     public int deleteByItemIdAndUserId(String itemId, String userId) {
         return jdbcTemplate.update("""
-                delete from bookings where item_id = :itemId and user_id = :userId
-        """, new MapSqlParameterSource()
-                .addValue("itemId", itemId)
-                .addValue("userId", userId));
+                        delete from bookings where item_id = :itemId and user_id = :userId
+                """, new MapSqlParameterSource()
+                        .addValue("itemId", itemId)
+                        .addValue("userId", userId));
     }
 }

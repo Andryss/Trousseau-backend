@@ -9,6 +9,9 @@ import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServic
 )
 public class TrousseauApplication {
 
+    /**
+     * Точка входа в приложение
+     */
     public static void main(String[] args) {
         SpringApplication.run(TrousseauApplication.class, args);
     }

@@ -14,6 +14,9 @@ public enum ItemStatus {
 
     private final String value;
 
+    /**
+     * Получить значение перечисление из строки
+     */
     public static ItemStatus fromValue(String value) {
         for (ItemStatus status : values()) {
             if (status.value.equals(value)) {
@@ -23,6 +26,9 @@ public enum ItemStatus {
         throw new IllegalArgumentException("Unknown item status value: " + value);
     }
 
+    /**
+     * Маппинг значение OpenAPI на значение перечисление
+     */
     public static ItemStatus fromOpenApi(ru.andryss.trousseau.generated.model.ItemStatus status) {
         return switch (status) {
             case DRAFT -> DRAFT;
@@ -33,6 +39,9 @@ public enum ItemStatus {
         };
     }
 
+    /**
+     * Маппинг значение перечисление на значение OpenAPI
+     */
     public ru.andryss.trousseau.generated.model.ItemStatus toOpenApi() {
         return switch (this) {
             case DRAFT -> ru.andryss.trousseau.generated.model.ItemStatus.DRAFT;

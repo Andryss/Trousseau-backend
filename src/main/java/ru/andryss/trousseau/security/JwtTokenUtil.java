@@ -35,6 +35,9 @@ public class JwtTokenUtil implements InitializingBean {
         properties.setSecret(null);
     }
 
+    /**
+     * Сгенерировать JWT-токен по информации о пользователе
+     */
     public String generateAccessToken(UserData userData) {
         Date now = new Date(timeService.epochMillis());
         Date expired = new Date(now.getTime() + properties.getTokenExpirationMillis());
@@ -47,6 +50,9 @@ public class JwtTokenUtil implements InitializingBean {
                 .compact();
     }
 
+    /**
+     * Провалидировать заданный токен (корректно сформирован + срок действия не истек)
+     */
     public boolean isTokenValid(String token) {
         try {
             Claims claims = getTokenClaims(token);
@@ -58,6 +64,9 @@ public class JwtTokenUtil implements InitializingBean {
         }
     }
 
+    /**
+     * Извлечь данные пользователя из токена
+     */
     public UserData extractUserData(String token) {
         Claims body = getTokenClaims(token);
         String data = body.get(USER_DATA_KEY, String.class);

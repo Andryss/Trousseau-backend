@@ -51,13 +51,8 @@ public class ItemServiceImpl implements ItemService {
 
     private final DateTimeFormatter itemIdFormatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmssSSS");
 
-    private final List<ItemStatus> ITEM_EDITABLE_STATUSES = List.of(
-            DRAFT, READY
-    );
-
-    private final List<ItemStatus> ITEM_READABLE_PUBLIC_STATUSES = List.of(
-            PUBLISHED, BOOKED, ARCHIVED
-    );
+    private static final List<ItemStatus> ITEM_EDITABLE_STATUSES = List.of(DRAFT, READY);
+    private static final List<ItemStatus> ITEM_READABLE_PUBLIC_STATUSES = List.of(PUBLISHED, BOOKED, ARCHIVED);
 
     private final Table<ItemStatus, ItemStatus, Transit> sellerTransitions =
             ImmutableTable.<ItemStatus, ItemStatus, Transit>builder()
