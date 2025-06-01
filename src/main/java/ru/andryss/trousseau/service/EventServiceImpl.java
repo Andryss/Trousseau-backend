@@ -27,7 +27,7 @@ public class EventServiceImpl implements EventService {
         event.setType(type);
         event.setPayload(payload);
 
-        ZonedDateTime now = timeService.now();
+        ZonedDateTime now = timeService.nowWithZone();
         event.setId(idFormatter.format(now));
         event.setCreatedAt(now.toInstant());
 

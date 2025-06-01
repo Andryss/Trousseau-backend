@@ -50,7 +50,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public void updateToken(String token, UserData user) {
-        Instant now = timeService.now().toInstant();
+        Instant now = timeService.nowWithZone().toInstant();
 
         NotificationSettingsEntity entity = new NotificationSettingsEntity();
         entity.setUserId(user.getId());
@@ -63,7 +63,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public void sendNotification(NotificationInfo info) {
-        ZonedDateTime now = timeService.now();
+        ZonedDateTime now = timeService.nowWithZone();
 
         NotificationEntity entity = new NotificationEntity();
         entity.setId(idFormatter.format(now));

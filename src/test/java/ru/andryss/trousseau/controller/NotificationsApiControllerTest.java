@@ -3,6 +3,7 @@ package ru.andryss.trousseau.controller;
 import java.util.List;
 
 import lombok.SneakyThrows;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -25,25 +26,33 @@ class NotificationsApiControllerTest extends BaseApiTest {
     @Autowired
     NotificationSettingsRepository notificationSettingsRepository;
 
+    @BeforeEach
+    void before() {
+        registerUser();
+    }
+
     @Test
     @SneakyThrows
     void getNotificationsTest() {
-        createNotification(new NotificationInfo("test-id", "test-title0", "test-content0",
+        createNotification(new NotificationInfo("20240520_123001000", "test-title0", "test-content0",
                 List.of("test-link00")));
-        createNotification(new NotificationInfo("test-id", "test-title1", "test-content1",
+        createNotification(new NotificationInfo("20240520_123001000", "test-title1", "test-content1",
                 List.of("test-link10", "test-link11")));
 
-        mockMvc.perform(
+        String token = loginAsUser();
+
+        mockMvc.perform(addAuthorization(
                         get("/public/notifications")
-                                .contentType(MediaType.APPLICATION_JSON)
-                )
+                                .contentType(MediaType.APPLICATION_JSON),
+                        token
+                ))
                 .andExpectAll(
                         status().isOk(),
                         content().json("""
                         {
                             "notifications": [
                                 {
-                                    "id": "20240520_123002000",
+                                    "id": "20240520_123005000",
                                     "title": "test-title1",
                                     "content": "test-content1",
                                     "links": [
@@ -51,17 +60,17 @@ class NotificationsApiControllerTest extends BaseApiTest {
                                         "test-link11"
                                     ],
                                     "isRead": false,
-                                    "timestamp": "2024-05-20T12:30:02Z"
+                                    "timestamp": "2024-05-20T12:30:05Z"
                                 },
                                 {
-                                    "id": "20240520_123001000",
+                                    "id": "20240520_123004000",
                                     "title": "test-title0",
                                     "content": "test-content0",
                                     "links": [
                                         "test-link00"
                                     ],
                                     "isRead": false,
-                                    "timestamp": "2024-05-20T12:30:01Z"
+                                    "timestamp": "2024-05-20T12:30:04Z"
                                 }
                             ]
                         }
@@ -72,17 +81,20 @@ class NotificationsApiControllerTest extends BaseApiTest {
     @Test
     @SneakyThrows
     void getUnreadCountTest() {
-        createNotification(new NotificationInfo("test-id", "test-title0", "test-content0",
+        createNotification(new NotificationInfo("20240520_123001000", "test-title0", "test-content0",
                 List.of("test-link00")));
-        createNotification(new NotificationInfo("test-id", "test-title1", "test-content1",
+        createNotification(new NotificationInfo("20240520_123001000", "test-title1", "test-content1",
                 List.of("test-link10", "test-link11")));
-        createNotification(new NotificationInfo("test-id", "test-title2", "test-content2",
+        createNotification(new NotificationInfo("20240520_123001000", "test-title2", "test-content2",
                 List.of()));
 
-        mockMvc.perform(
+        String token = loginAsUser();
+
+        mockMvc.perform(addAuthorization(
                         get("/public/notifications/unread/count")
-                                .contentType(MediaType.APPLICATION_JSON)
-                )
+                                .contentType(MediaType.APPLICATION_JSON),
+                        token
+                ))
                 .andExpectAll(
                         status().isOk(),
                         content().json("""
@@ -96,27 +108,30 @@ class NotificationsApiControllerTest extends BaseApiTest {
     @Test
     @SneakyThrows
     void markNotificationReadTest() {
-        createNotification(new NotificationInfo("test-id", "test-title", "test-content",
+        createNotification(new NotificationInfo("20240520_123001000", "test-title", "test-content",
                 List.of("test-link")));
 
-        MvcResult result = mockMvc.perform(
+        String token = loginAsUser();
+
+        MvcResult result = mockMvc.perform(addAuthorization(
                         get("/public/notifications")
-                                .contentType(MediaType.APPLICATION_JSON)
-                )
+                                .contentType(MediaType.APPLICATION_JSON),
+                        token
+                ))
                 .andExpectAll(
                         status().isOk(),
                         content().json("""
                         {
                             "notifications": [
                                 {
-                                    "id": "20240520_123001000",
+                                    "id": "20240520_123004000",
                                     "title": "test-title",
                                     "content": "test-content",
                                     "links": [
                                         "test-link"
                                     ],
                                     "isRead": false,
-                                    "timestamp": "2024-05-20T12:30:01Z"
+                                    "timestamp": "2024-05-20T12:30:04Z"
                                 }
                             ]
                         }
@@ -129,30 +144,32 @@ class NotificationsApiControllerTest extends BaseApiTest {
 
         String id = response.getNotifications().get(0).getId();
 
-        mockMvc.perform(
+        mockMvc.perform(addAuthorization(
                         post("/public/notifications/{notificationId}/read", id)
-                                .contentType(MediaType.APPLICATION_JSON)
-                )
+                                .contentType(MediaType.APPLICATION_JSON),
+                        token
+                ))
                 .andExpect(status().isOk());
 
-        mockMvc.perform(
+        mockMvc.perform(addAuthorization(
                         get("/public/notifications")
-                                .contentType(MediaType.APPLICATION_JSON)
-                )
+                                .contentType(MediaType.APPLICATION_JSON),
+                        token
+                ))
                 .andExpectAll(
                         status().isOk(),
                         content().json("""
                         {
                             "notifications": [
                                 {
-                                    "id": "20240520_123001000",
+                                    "id": "20240520_123004000",
                                     "title": "test-title",
                                     "content": "test-content",
                                     "links": [
                                         "test-link"
                                     ],
                                     "isRead": true,
-                                    "timestamp": "2024-05-20T12:30:01Z"
+                                    "timestamp": "2024-05-20T12:30:04Z"
                                 }
                             ]
                         }
@@ -163,18 +180,21 @@ class NotificationsApiControllerTest extends BaseApiTest {
     @Test
     @SneakyThrows
     void updateNotificationsTokenTest() {
-        mockMvc.perform(
+        String token = loginAsUser();
+
+        mockMvc.perform(addAuthorization(
                         post("/public/notifications/token")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content("""
                                 {
                                     "token": "test-token"
                                 }
-                                """)
-                )
+                                """),
+                        token
+                ))
                 .andExpect(status().isOk());
 
-        assertThat(notificationSettingsRepository.findTokenByUserId("test-id"))
+        assertThat(notificationSettingsRepository.findTokenByUserId("20240520_123001000"))
                 .isPresent()
                 .get().isEqualTo("test-token");
     }

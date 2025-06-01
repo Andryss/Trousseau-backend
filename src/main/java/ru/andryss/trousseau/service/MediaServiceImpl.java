@@ -27,7 +27,7 @@ public class MediaServiceImpl implements MediaService {
     public String saveMedia(MultipartFile media) {
         log.info("Saving media {} name {} bytes {}", media.getContentType(), media.getName(), media.getSize());
 
-        ZonedDateTime now = timeService.now();
+        ZonedDateTime now = timeService.nowWithZone();
         String id = mediaIdFormatter.format(now);
         try {
             s3Service.put(id, media);

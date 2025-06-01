@@ -35,7 +35,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         SubscriptionEntity subscription = new SubscriptionEntity();
         patch(subscription, request);
 
-        ZonedDateTime now = timeService.now();
+        ZonedDateTime now = timeService.nowWithZone();
         subscription.setId(idFormatter.format(now));
         subscription.setOwner(user.getId());
         subscription.setCreatedAt(now.toInstant());

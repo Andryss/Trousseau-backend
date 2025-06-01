@@ -3,6 +3,7 @@ package ru.andryss.trousseau.controller;
 import java.util.List;
 
 import lombok.SneakyThrows;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import ru.andryss.trousseau.generated.model.ItemDto;
@@ -15,13 +16,23 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 class PublicApiControllerTest extends BaseApiTest {
 
+    @BeforeEach
+    void before() {
+        registerUser();
+        registerSeller();
+    }
+
     @Test
     @SneakyThrows
     public void searchItemsTest() {
-        createPublicItem(new ItemInfo("title-0", List.of("media-00"), "description-0", "clothes", 1L));
-        createPublicItem(new ItemInfo("title-1", List.of("media-10", "media-11"), "description-1", "clothes", 2L));
+        String sellerToken = loginAsSeller();
 
-        mockMvc.perform(
+        createPublicItem(sellerToken, new ItemInfo("title-0", List.of("media-00"), "description-0", "clothes", 1L));
+        createPublicItem(sellerToken, new ItemInfo("title-1", List.of("media-10", "media-11"), "description-1", "clothes", 2L));
+
+        String token = loginAsUser();
+
+        mockMvc.perform(addAuthorization(
                         post("/public/items:search")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content("""
@@ -37,18 +48,19 @@ class PublicApiControllerTest extends BaseApiTest {
                                         "size": 2
                                     }
                                 }
-                                """)
-                )
+                                """),
+                        token
+                ))
                 .andExpectAll(
                         status().isOk(),
                         content().json("""
                         {
                             "items": [
                                 {
-                                    "id": "20240520_123004000",
+                                    "id": "20240520_123024000",
                                     "author": {
-                                        "username": "test-username",
-                                        "contacts": [ "test-contact-1", "test-contact-2" ],
+                                        "username": "test-seller",
+                                        "contacts": [ "test-contact-0", "test-contact-1" ],
                                         "room": "test-room"
                                     },
                                     "title": "title-1",
@@ -68,13 +80,13 @@ class PublicApiControllerTest extends BaseApiTest {
                                     "cost": 2,
                                     "status": "PUBLISHED",
                                     "isFavourite": false,
-                                    "publishedAt": "2024-05-20T12:30:05Z"
+                                    "publishedAt": "2024-05-20T12:30:31Z"
                                 },
                                 {
-                                    "id": "20240520_123001000",
+                                    "id": "20240520_123012000",
                                     "author": {
-                                        "username": "test-username",
-                                        "contacts": [ "test-contact-1", "test-contact-2" ],
+                                        "username": "test-seller",
+                                        "contacts": [ "test-contact-0", "test-contact-1" ],
                                         "room": "test-room"
                                     },
                                     "title": "title-0",
@@ -91,7 +103,7 @@ class PublicApiControllerTest extends BaseApiTest {
                                     "cost": 1,
                                     "status": "PUBLISHED",
                                     "isFavourite": false,
-                                    "publishedAt": "2024-05-20T12:30:02Z"
+                                    "publishedAt": "2024-05-20T12:30:19Z"
                                 }
                             ]
                         }
@@ -102,20 +114,25 @@ class PublicApiControllerTest extends BaseApiTest {
     @Test
     @SneakyThrows
     public void getItemTest() {
-        ItemDto item = createPublicItem(new ItemInfo("title", List.of("media-0", "media-1"), "description", "clothes", 5L));
+        String sellerToken = loginAsSeller();
 
-        mockMvc.perform(
+        ItemDto item = createPublicItem(sellerToken, new ItemInfo("title", List.of("media-0", "media-1"), "description", "clothes", 5L));
+
+        String token = loginAsUser();
+
+        mockMvc.perform(addAuthorization(
                         get("/public/items/{itemId}", item.getId())
-                                .contentType(MediaType.APPLICATION_JSON)
-                )
+                                .contentType(MediaType.APPLICATION_JSON),
+                        token
+                ))
                 .andExpectAll(
                         status().isOk(),
                         content().json("""
                         {
-                            "id": "20240520_123001000",
+                            "id": "20240520_123012000",
                             "author": {
-                                "username": "test-username",
-                                "contacts": [ "test-contact-1", "test-contact-2" ],
+                                "username": "test-seller",
+                                "contacts": [ "test-contact-0", "test-contact-1" ],
                                 "room": "test-room"
                             },
                             "title": "title",
@@ -135,7 +152,7 @@ class PublicApiControllerTest extends BaseApiTest {
                             "cost": 5,
                             "status": "PUBLISHED",
                             "isFavourite": false,
-                            "publishedAt": "2024-05-20T12:30:02Z"
+                            "publishedAt": "2024-05-20T12:30:19Z"
                         }
                         """)
                 );
@@ -144,29 +161,35 @@ class PublicApiControllerTest extends BaseApiTest {
     @Test
     @SneakyThrows
     public void bookItemTest() {
-        ItemDto item = createPublicItem(new ItemInfo("title", List.of("media-0", "media-1"), "description", "clothes", 10L));
+        String sellerToken = loginAsSeller();
 
-        mockMvc.perform(
+        ItemDto item = createPublicItem(sellerToken, new ItemInfo("title", List.of("media-0", "media-1"), "description", "clothes", 10L));
+
+        String token = loginAsUser();
+
+        mockMvc.perform(addAuthorization(
                         put("/public/items/{itemId}/status", item.getId())
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content("{ \"status\": \"BOOKED\" }")
-                )
+                                .content("{ \"status\": \"BOOKED\" }"),
+                        token
+                ))
                 .andExpect(status().isOk());
 
-        mockMvc.perform(
+        mockMvc.perform(addAuthorization(
                         get("/public/items/bookings")
-                                .contentType(MediaType.APPLICATION_JSON)
-                )
+                                .contentType(MediaType.APPLICATION_JSON),
+                        token
+                ))
                 .andExpectAll(
                         status().isOk(),
                         content().json("""
                         {
                             "items": [
                                 {
-                                    "id": "20240520_123001000",
+                                    "id": "20240520_123012000",
                                     "author": {
-                                        "username": "test-username",
-                                        "contacts": [ "test-contact-1", "test-contact-2" ],
+                                        "username": "test-seller",
+                                        "contacts": [ "test-contact-0", "test-contact-1" ],
                                         "room": "test-room"
                                     },
                                     "title": "title",
@@ -186,27 +209,28 @@ class PublicApiControllerTest extends BaseApiTest {
                                     "cost": 10,
                                     "status": "BOOKED",
                                     "isFavourite": false,
-                                    "publishedAt": "2024-05-20T12:30:02Z"
+                                    "publishedAt": "2024-05-20T12:30:19Z"
                                 }
                             ]
                         }
                         """)
                 );
 
-        mockMvc.perform(
+        mockMvc.perform(addAuthorization(
                         get("/seller/items/{itemId}/booking", item.getId())
-                                .contentType(MediaType.APPLICATION_JSON)
-                )
+                                .contentType(MediaType.APPLICATION_JSON),
+                        sellerToken
+                ))
                 .andExpectAll(
                         status().isOk(),
                         content().json("""
                         {
                             "author": {
-                                "username": "test-username",
-                                "contacts": [ "test-contact-1", "test-contact-2" ],
-                                "room": "test-room"
+                                "username": "test-user",
+                                "contacts": [ "test-contact-0" ],
+                                "room": null
                             },
-                            "bookedAt": "2024-05-20T12:30:04Z"
+                            "bookedAt": "2024-05-20T12:30:26Z"
                         }
                         """)
                 );

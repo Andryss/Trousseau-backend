@@ -54,7 +54,7 @@ public class AuthServiceImpl implements AuthService {
         user.setContacts(request.getContacts());
         user.setRoom(request.getRoom());
 
-        ZonedDateTime now = timeService.now();
+        ZonedDateTime now = timeService.nowWithZone();
         user.setId(idFormatter.format(now));
         user.setCreatedAt(now.toInstant());
 
@@ -128,7 +128,7 @@ public class AuthServiceImpl implements AuthService {
         session.setId(accessToken);
         session.setUserId(user.getId());
         session.setMeta(Map.of());
-        session.setCreatedAt(timeService.now().toInstant());
+        session.setCreatedAt(timeService.nowWithZone().toInstant());
 
         sessionService.newSession(session);
 

@@ -3,6 +3,7 @@ package ru.andryss.trousseau.controller;
 import java.util.List;
 
 import lombok.SneakyThrows;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import ru.andryss.trousseau.generated.model.ItemDto;
@@ -14,15 +15,26 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 class FavouritesApiControllerTest extends BaseApiTest {
 
+    @BeforeEach
+    void before() {
+        registerUser();
+        registerSeller();
+    }
+
     @Test
     @SneakyThrows
     public void addFavouriteTest() {
-        ItemDto item = createPublicItem(new BaseApiTest.ItemInfo("title", List.of("media-0", "media-1"), "description", "clothes", 4L));
+        String sellerToken = loginAsSeller();
 
-        mockMvc.perform(
+        ItemDto item = createPublicItem(sellerToken, new ItemInfo("title", List.of("media-0", "media-1"), "description", "clothes", 4L));
+
+        String token = loginAsUser();
+
+        mockMvc.perform(addAuthorization(
                         get("/public/items/favourites")
-                                .contentType(MediaType.APPLICATION_JSON)
-                )
+                                .contentType(MediaType.APPLICATION_JSON),
+                        token
+                ))
                 .andExpectAll(
                         status().isOk(),
                         content().json("""
@@ -32,27 +44,29 @@ class FavouritesApiControllerTest extends BaseApiTest {
                         """)
                 );
 
-        mockMvc.perform(
+        mockMvc.perform(addAuthorization(
                         post("/public/items/" + item.getId() + "/favourite")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content("{ \"isFavourite\": \"true\" }")
-                )
+                                .content("{ \"isFavourite\": \"true\" }"),
+                        token
+                ))
                 .andExpect(status().isOk());
 
-        mockMvc.perform(
+        mockMvc.perform(addAuthorization(
                         get("/public/items/favourites")
-                                .contentType(MediaType.APPLICATION_JSON)
-                )
+                                .contentType(MediaType.APPLICATION_JSON),
+                        token
+                ))
                 .andExpectAll(
                         status().isOk(),
                         content().json("""
                         {
                             "items": [
                                 {
-                                    "id": "20240520_123001000",
+                                    "id": "20240520_123012000",
                                     "author": {
-                                        "username": "test-username",
-                                        "contacts": [ "test-contact-1", "test-contact-2" ],
+                                        "username": "test-seller",
+                                        "contacts": [ "test-contact-0", "test-contact-1" ],
                                         "room": "test-room"
                                     },
                                     "title": "title",
@@ -72,24 +86,26 @@ class FavouritesApiControllerTest extends BaseApiTest {
                                     "cost": 4,
                                     "status": "PUBLISHED",
                                     "isFavourite": true,
-                                    "publishedAt": "2024-05-20T12:30:02Z"
+                                    "publishedAt": "2024-05-20T12:30:19Z"
                                 }
                             ]
                         }
                         """)
                 );
 
-        mockMvc.perform(
+        mockMvc.perform(addAuthorization(
                         post("/public/items/" + item.getId() + "/favourite")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content("{ \"isFavourite\": \"false\" }")
-                )
+                                .content("{ \"isFavourite\": \"false\" }"),
+                        token
+                ))
                 .andExpect(status().isOk());
 
-        mockMvc.perform(
+        mockMvc.perform(addAuthorization(
                         get("/public/items/favourites")
-                                .contentType(MediaType.APPLICATION_JSON)
-                )
+                                .contentType(MediaType.APPLICATION_JSON),
+                        token
+                ))
                 .andExpectAll(
                         status().isOk(),
                         content().json("""

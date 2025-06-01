@@ -3,6 +3,7 @@ package ru.andryss.trousseau.controller;
 import java.util.List;
 
 import lombok.SneakyThrows;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
@@ -17,10 +18,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 class SubscriptionApiControllerTest extends BaseApiTest {
 
+    @BeforeEach
+    void before() {
+        registerUser();
+    }
+
     @Test
     @SneakyThrows
     void createSubscriptionTest() {
-        mockMvc.perform(
+        String token = loginAsUser();
+
+        mockMvc.perform(addAuthorization(
                         post("/public/subscriptions")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content("""
@@ -30,13 +38,14 @@ class SubscriptionApiControllerTest extends BaseApiTest {
                                         "categoryIds": ["all"]
                                     }
                                 }
-                                """)
-                )
+                                """),
+                        token
+                ))
                 .andExpectAll(
                         status().isOk(),
                         content().json("""
                         {
-                            "id": "20240520_123001000",
+                            "id": "20240520_123009000",
                             "name": "some-name",
                             "data": {
                                 "categories": [
@@ -50,17 +59,18 @@ class SubscriptionApiControllerTest extends BaseApiTest {
                         """)
                 );
 
-        mockMvc.perform(
+        mockMvc.perform(addAuthorization(
                         get("/public/subscriptions")
-                                .contentType(MediaType.APPLICATION_JSON)
-                )
+                                .contentType(MediaType.APPLICATION_JSON),
+                        token
+                ))
                 .andExpectAll(
                         status().isOk(),
                         content().json("""
                         {
                             "subscriptions": [
                                 {
-                                    "id": "20240520_123001000",
+                                    "id": "20240520_123009000",
                                     "name": "some-name",
                                     "data": {
                                         "categories": [
@@ -80,11 +90,11 @@ class SubscriptionApiControllerTest extends BaseApiTest {
     @Test
     @SneakyThrows
     void updateSubscriptionTest() {
-        SubscriptionDto subscription = createSubscription(
-                new SubscriptionInfo("test-name", new SubscriptionDataInfo(List.of("all")))
-        );
+        String token = loginAsUser();
 
-        mockMvc.perform(
+        SubscriptionDto subscription = createSubscription(token, new SubscriptionInfo("test-name", new SubscriptionDataInfo(List.of("all"))));
+
+        mockMvc.perform(addAuthorization(
                         put("/public/subscriptions/{subscriptionId}", subscription.getId())
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content("""
@@ -94,13 +104,14 @@ class SubscriptionApiControllerTest extends BaseApiTest {
                                         "categoryIds": ["all", "all", "all"]
                                     }
                                 }
-                                """)
-                )
+                                """),
+                        token
+                ))
                 .andExpectAll(
                         status().isOk(),
                         content().json("""
                         {
-                            "id": "20240520_123001000",
+                            "id": "20240520_123009000",
                             "name": "another-name",
                             "data": {
                                 "categories": [
@@ -126,20 +137,23 @@ class SubscriptionApiControllerTest extends BaseApiTest {
     @Test
     @SneakyThrows
     void getSubscriptionsTest() {
-        createSubscription(new SubscriptionInfo("test-name-0", new SubscriptionDataInfo(List.of("all"))));
-        createSubscription(new SubscriptionInfo("test-name-1", new SubscriptionDataInfo(List.of("all", "all"))));
+        String token = loginAsUser();
 
-        mockMvc.perform(
+        createSubscription(token, new SubscriptionInfo("test-name-0", new SubscriptionDataInfo(List.of("all"))));
+        createSubscription(token, new SubscriptionInfo("test-name-1", new SubscriptionDataInfo(List.of("all", "all"))));
+
+        mockMvc.perform(addAuthorization(
                         get("/public/subscriptions")
-                                .contentType(MediaType.APPLICATION_JSON)
-                )
+                                .contentType(MediaType.APPLICATION_JSON),
+                        token
+                ))
                 .andExpectAll(
                         status().isOk(),
                         content().json("""
                         {
                             "subscriptions": [
                                 {
-                                    "id": "20240520_123001000",
+                                    "id": "20240520_123009000",
                                     "name": "test-name-0",
                                     "data": {
                                         "categories": [
@@ -151,7 +165,7 @@ class SubscriptionApiControllerTest extends BaseApiTest {
                                     }
                                 },
                                 {
-                                    "id": "20240520_123002000",
+                                    "id": "20240520_123013000",
                                     "name": "test-name-1",
                                     "data": {
                                         "categories": [
@@ -175,20 +189,22 @@ class SubscriptionApiControllerTest extends BaseApiTest {
     @Test
     @SneakyThrows
     void deleteSubscriptionTest() {
-        SubscriptionDto subscription = createSubscription(
-                new SubscriptionInfo("test-name", new SubscriptionDataInfo(List.of("all")))
-        );
+        String token = loginAsUser();
 
-        mockMvc.perform(
+        SubscriptionDto subscription = createSubscription(token, new SubscriptionInfo("test-name", new SubscriptionDataInfo(List.of("all"))));
+
+        mockMvc.perform(addAuthorization(
                         delete("/public/subscriptions/{subscriptionId}", subscription.getId())
-                                .contentType(MediaType.APPLICATION_JSON)
-                )
+                                .contentType(MediaType.APPLICATION_JSON),
+                        token
+                ))
                 .andExpect(status().isOk());
 
-        mockMvc.perform(
+        mockMvc.perform(addAuthorization(
                         get("/public/subscriptions")
-                                .contentType(MediaType.APPLICATION_JSON)
-                )
+                                .contentType(MediaType.APPLICATION_JSON),
+                        token
+                ))
                 .andExpectAll(
                         status().isOk(),
                         content().json("""
@@ -200,12 +216,14 @@ class SubscriptionApiControllerTest extends BaseApiTest {
     }
 
     @SneakyThrows
-    private SubscriptionDto createSubscription(SubscriptionInfo info) {
-        MvcResult result = mockMvc.perform(
+    private SubscriptionDto createSubscription(String token, SubscriptionInfo info) {
+        MvcResult result = mockMvc.perform(addAuthorization(
                         post("/public/subscriptions")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(info))
-                )
+                                .content(objectMapper.writeValueAsString(info)),
+                        token
+                ))
+                .andExpect(status().isOk())
                 .andReturn();
 
         return objectMapper.readValue(result.getResponse().getContentAsByteArray(), SubscriptionDto.class);

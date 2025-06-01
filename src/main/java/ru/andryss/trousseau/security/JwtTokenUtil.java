@@ -74,7 +74,10 @@ public class JwtTokenUtil implements InitializingBean {
     }
 
     private Claims getTokenClaims(String token) throws JwtException {
-        JwtParser jwtParser = Jwts.parserBuilder().setSigningKey(signingKey).build();
+        JwtParser jwtParser = Jwts.parserBuilder()
+                .setSigningKey(signingKey)
+                .setClock(timeService)
+                .build();
         return jwtParser.parseClaimsJws(token).getBody();
     }
 }

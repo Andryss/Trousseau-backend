@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -32,7 +31,6 @@ import static org.springframework.http.HttpMethod.PUT;
 
 @Slf4j
 @Configuration
-@Profile("!functionalTest")
 @RequiredArgsConstructor
 public class SecurityConfig {
 

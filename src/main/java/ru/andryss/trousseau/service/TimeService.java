@@ -5,11 +5,11 @@ import java.time.ZonedDateTime;
 /**
  * Сервис для получения текущего времени
  */
-public interface TimeService {
+public interface TimeService extends io.jsonwebtoken.Clock {
     /**
      * Получить текущее время по Гринвичу
      */
-    ZonedDateTime now();
+    ZonedDateTime nowWithZone();
 
     /**
      * Получить текущее количество миллисекунд от начала отсчета времени

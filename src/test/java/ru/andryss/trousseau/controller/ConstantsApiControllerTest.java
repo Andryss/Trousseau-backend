@@ -1,6 +1,7 @@
 package ru.andryss.trousseau.controller;
 
 import lombok.SneakyThrows;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 
@@ -10,13 +11,21 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 class ConstantsApiControllerTest extends BaseApiTest {
 
+    @BeforeEach
+    void before() {
+        registerUser();
+    }
+
     @Test
     @SneakyThrows
     public void getCategoryTreeTest() {
-        mockMvc.perform(
+        String token = loginAsUser();
+
+        mockMvc.perform(addAuthorization(
                         get("/public/categories/tree")
-                                .contentType(MediaType.APPLICATION_JSON)
-                )
+                                .contentType(MediaType.APPLICATION_JSON),
+                        token
+                ))
                 .andExpectAll(
                         status().isOk(),
                         content().json("""

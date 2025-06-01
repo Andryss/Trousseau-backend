@@ -32,7 +32,7 @@ public class FavouriteServiceImpl implements FavouriteService {
         log.info("Changing isFavourite of item {} of user {} to {}", itemId, user.getId(), isFavourite);
 
         if (isFavourite) {
-            ZonedDateTime now = timeService.now();
+            ZonedDateTime now = timeService.nowWithZone();
 
             FavouriteItemEntity favourite = new FavouriteItemEntity();
             favourite.setId(favouriteIdFormatter.format(now));

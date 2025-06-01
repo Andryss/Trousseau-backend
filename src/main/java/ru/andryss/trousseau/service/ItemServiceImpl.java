@@ -77,7 +77,7 @@ public class ItemServiceImpl implements ItemService {
         ItemEntity item = new ItemEntity();
         patchItem(item, info);
 
-        ZonedDateTime now = timeService.now();
+        ZonedDateTime now = timeService.nowWithZone();
         item.setId(itemIdFormatter.format(now));
         item.setOwner(user.getId());
         item.setCreatedAt(now.toInstant());
@@ -220,7 +220,7 @@ public class ItemServiceImpl implements ItemService {
             if (!Objects.equals(item.getOwner(), user.getId())) {
                 throw Errors.itemNotFound(item.getId());
             }
-            item.setPublishedAt(timeService.now().toInstant());
+            item.setPublishedAt(timeService.nowWithZone().toInstant());
             eventService.push(EventType.ITEM_PUBLISHED, Map.of("itemId", item.getId()));
         };
     }
@@ -241,7 +241,7 @@ public class ItemServiceImpl implements ItemService {
                 throw Errors.maximumBookingsCountReached(MAX_BOOKINGS_PER_USER);
             }
 
-            ZonedDateTime now = timeService.now();
+            ZonedDateTime now = timeService.nowWithZone();
 
             BookingEntity booking = new BookingEntity();
             booking.setId(itemIdFormatter.format(now));

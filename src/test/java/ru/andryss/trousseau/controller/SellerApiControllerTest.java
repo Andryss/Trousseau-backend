@@ -4,6 +4,7 @@ import java.util.List;
 
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -20,20 +21,28 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class SellerApiControllerTest extends BaseApiTest {
 
+    @BeforeEach
+    void before() {
+        registerSeller();
+    }
+
     @ParameterizedTest
     @MethodSource("createItemData")
     @SneakyThrows
     public void createItemTest(String content, String expectedStatus) {
-        mockMvc.perform(
+        String token = loginAsSeller();
+
+        mockMvc.perform(addAuthorization(
                         post("/seller/items")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(content)
-                )
+                                .content(content),
+                        token
+                ))
                 .andExpectAll(
                         status().isOk(),
                         content().json("""
                         {
-                            "id": "20240520_123001000",
+                            "id": "20240520_123009000",
                             "status": "%s"
                         }
                         """.formatted(expectedStatus))
@@ -44,20 +53,23 @@ public class SellerApiControllerTest extends BaseApiTest {
     @MethodSource("updateItemData")
     @SneakyThrows
     public void updateItemTest(String content, String expectedStatus) {
-        ItemDto response = createEmptyItem();
+        String token = loginAsSeller();
+
+        ItemDto response = createEmptyItem(token);
 
         String itemId = response.getId();
 
-        mockMvc.perform(
+        mockMvc.perform(addAuthorization(
                         put("/seller/items/{itemId}", itemId)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(content)
-                )
+                                .content(content),
+                        token
+                ))
                 .andExpectAll(
                         status().isOk(),
                         content().json("""
                         {
-                            "id": "20240520_123001000",
+                            "id": "20240520_123009000",
                             "status": "%s"
                         }
                         """.formatted(expectedStatus))
@@ -67,24 +79,26 @@ public class SellerApiControllerTest extends BaseApiTest {
     @Test
     @SneakyThrows
     public void getItemsTest() {
-        createEmptyItem();
-        createEmptyItem();
+        String token = loginAsSeller();
+        createEmptyItem(token);
+        createEmptyItem(token);
 
-        mockMvc.perform(
+        mockMvc.perform(addAuthorization(
                         get("/seller/items")
-                                .contentType(MediaType.APPLICATION_JSON)
-                )
+                                .contentType(MediaType.APPLICATION_JSON),
+                        token
+                ))
                 .andExpectAll(
                         status().isOk(),
                         content().json("""
                         {
                             "items": [
                                 {
-                                    "id": "20240520_123002000",
+                                    "id": "20240520_123013000",
                                     "status": "DRAFT"
                                 },
                                 {
-                                    "id": "20240520_123001000",
+                                    "id": "20240520_123009000",
                                     "status": "DRAFT"
                                 }
                             ]
@@ -96,19 +110,22 @@ public class SellerApiControllerTest extends BaseApiTest {
     @Test
     @SneakyThrows
     public void getItemTest() {
-        ItemDto response = createEmptyItem();
+        String token = loginAsSeller();
+
+        ItemDto response = createEmptyItem(token);
 
         String id = response.getId();
 
-        mockMvc.perform(
+        mockMvc.perform(addAuthorization(
                         get("/seller/items/{itemId}", id)
-                                .contentType(MediaType.APPLICATION_JSON)
-                )
+                                .contentType(MediaType.APPLICATION_JSON),
+                        token
+                ))
                 .andExpectAll(
                         status().isOk(),
                         content().json("""
                         {
-                            "id": "20240520_123001000",
+                            "id": "20240520_123009000",
                             "title": null,
                             "media": [],
                             "description": null,
@@ -123,10 +140,11 @@ public class SellerApiControllerTest extends BaseApiTest {
     @Test
     @SneakyThrows
     public void changeItemStatus() {
-        ItemDto response = createEmptyItem();
+        String token = loginAsSeller();
+        ItemDto response = createEmptyItem(token);
         String id = response.getId();
 
-        ItemDto updated = updateItem(id, new ItemInfo(
+        ItemDto updated = updateItem(token, id, new ItemInfo(
                 "some-title",
                 List.of("media-1"),
                 "some-description",
@@ -136,18 +154,20 @@ public class SellerApiControllerTest extends BaseApiTest {
 
         Assertions.assertEquals(ItemStatus.READY, updated.getStatus());
 
-        mockMvc.perform(
+        mockMvc.perform(addAuthorization(
                         put("/seller/items/{itemId}/status", id)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content("{ \"status\": \"PUBLISHED\" }")
-                )
+                                .content("{ \"status\": \"PUBLISHED\" }"),
+                        token
+                ))
                 .andExpect(status().isOk());
 
-        mockMvc.perform(
+        mockMvc.perform(addAuthorization(
                         put("/seller/items/{itemId}/status", id)
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content("{ \"status\": \"READY\" }")
-                )
+                                .content("{ \"status\": \"READY\" }"),
+                        token
+                ))
                 .andExpect(status().isOk());
     }
 

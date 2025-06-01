@@ -94,7 +94,7 @@ public class UserRepositoryImpl implements UserRepository, InitializingBean {
     @Override
     public List<String> findUserRoles(String userId) {
         return jdbcTemplate.queryForList("""
-                        select r.role
+                        select distinct r.role
                         from users u
                             join user_roles ur on ur.user_id = u.id
                             join roles r on ur.role_id = r.id
@@ -106,7 +106,7 @@ public class UserRepositoryImpl implements UserRepository, InitializingBean {
     @Override
     public List<String> findRolesPrivileges(List<String> roles) {
         return jdbcTemplate.queryForList("""
-                        select p.privilege
+                        select distinct p.privilege
                         from roles r
                             join role_privileges rp on rp.role_id = r.id
                             join privileges p on rp.privilege_id = p.id

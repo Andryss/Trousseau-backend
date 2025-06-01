@@ -3,6 +3,7 @@ package ru.andryss.trousseau.service;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.util.Date;
 
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
@@ -19,7 +20,7 @@ public class MockTimeService implements TimeService {
     }
 
     @Override
-    public ZonedDateTime now() {
+    public ZonedDateTime nowWithZone() {
         epochMillis += 1000;
         return Instant.ofEpochMilli(epochMillis).atZone(ZoneOffset.UTC);
     }
@@ -28,5 +29,11 @@ public class MockTimeService implements TimeService {
     public long epochMillis() {
         epochMillis += 1000;
         return epochMillis;
+    }
+
+    @Override
+    public Date now() {
+        epochMillis += 1000;
+        return new Date(epochMillis);
     }
 }
