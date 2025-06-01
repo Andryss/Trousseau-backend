@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.4.2</version>
+        <version>3.5.0</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
@@ -19,13 +19,12 @@
         <java.version>17</java.version>
         <minio.version>8.5.14</minio.version>
         <swagger-annotations.version>2.2.23</swagger-annotations.version>
-        <json-smart.version>2.5.2</json-smart.version>
-        <tomcat-embed-core.version>10.1.39</tomcat-embed-core.version>
-        <spring-security.version>6.4.4</spring-security.version>
         <zonky.embedded-database.version>2.6.0</zonky.embedded-database.version>
         <zonky.embedded-postgres.version>2.1.0</zonky.embedded-postgres.version>
         <jjwt.version>0.11.5</jjwt.version>
         <firebase-admin.version>9.5.0</firebase-admin.version>
+        <openapi-generator-plugin.version>7.8.0</openapi-generator-plugin.version>
+        <jacoco-plugin.version>0.8.12</jacoco-plugin.version>
     </properties>
 
     <dependencies>
@@ -102,30 +101,6 @@
         </dependency>
 
         <dependency>
-            <groupId>net.minidev</groupId>
-            <artifactId>json-smart</artifactId>
-            <version>${json-smart.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.tomcat.embed</groupId>
-            <artifactId>tomcat-embed-core</artifactId>
-            <version>${tomcat-embed-core.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-core</artifactId>
-            <version>${spring-security.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-crypto</artifactId>
-            <version>${spring-security.version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-api</artifactId>
             <version>${jjwt.version}</version>
@@ -194,7 +169,7 @@
             <plugin>
                 <groupId>org.openapitools</groupId>
                 <artifactId>openapi-generator-maven-plugin</artifactId>
-                <version>7.8.0</version>
+                <version>${openapi-generator-plugin.version}</version>
                 <executions>
                     <execution>
                         <goals>
@@ -215,6 +190,58 @@
                                 <openApiNullable>false</openApiNullable>
                                 <serializableModel>true</serializableModel>
                             </configOptions>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco-plugin.version}</version>
+                <configuration>
+                    <excludes>
+                        <!-- exclude generated classes -->
+                        <exclude>ru/andryss/trousseau/generated/**</exclude>
+                        <!-- exclude configuration classes -->
+                        <exclude>ru/andryss/trousseau/config/**</exclude>
+                    </excludes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>jacoco-check</id>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <rule>
+                                    <element>BUNDLE</element>
+                                    <limits>
+                                        <limit>
+                                            <counter>INSTRUCTION</counter>
+                                            <value>COVEREDRATIO</value>
+                                            <minimum>0.50</minimum>
+                                        </limit>
+                                        <limit>
+                                            <counter>BRANCH</counter>
+                                            <value>COVEREDRATIO</value>
+                                            <minimum>0.40</minimum>
+                                        </limit>
+                                    </limits>
+                                </rule>
+                            </rules>
                         </configuration>
                     </execution>
                 </executions>
