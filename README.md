@@ -33,3 +33,5 @@ java -jar target/Trousseau-0.0.1-SNAPSHOT.jar
 ## О приложении
 
 Приложение создано при помощи [Spring Boot](https://spring.io/projects/spring-boot) и предоставляет HTTP REST API интерфейс, описанный в [trousseau.yaml](src/main/resources/api/trousseau.yaml).
+
+![Swagger UI](docs/swagger.png)
