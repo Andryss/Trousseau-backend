@@ -5,7 +5,6 @@ endpoints:
       operationId: signUp
       tags:
         - auth
-        - public
       requestBody:
         content:
           application/json:
@@ -36,7 +35,6 @@ endpoints:
       operationId: signIn
       tags:
         - auth
-        - public
       requestBody:
         content:
           application/json:
@@ -67,7 +65,6 @@ endpoints:
       operationId: signOut
       tags:
         - auth
-        - public
       responses:
         200:
           description: Успешный выход из аккаунта
@@ -89,7 +86,6 @@ endpoints:
       operationId: getProfileInfo
       tags:
         - auth
-        - public
       responses:
         200:
           description: Успешное получение

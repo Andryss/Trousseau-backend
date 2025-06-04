@@ -5,7 +5,6 @@ endpoints:
       operationId: changeFavourite
       tags:
         - favourites
-        - public
       parameters:
         - $ref: "../common.yaml#/components/parameters/itemId"
       requestBody:
@@ -34,7 +33,6 @@ endpoints:
       operationId: getFavourites
       tags:
         - favourites
-        - public
       responses:
         200:
           description: Успешное добавление или удаление из избранного

@@ -5,7 +5,6 @@ endpoints:
       operationId: getNotifications
       tags:
         - notifications
-        - public
       responses:
         200:
           description: Успешное получение уведомлений
@@ -25,7 +24,6 @@ endpoints:
       operationId: getUnreadNotificationsCount
       tags:
         - notifications
-        - public
       responses:
         200:
           description: Успешное получение количества непрочитанных уведомлений
@@ -45,7 +43,6 @@ endpoints:
       operationId: markNotificationRead
       tags:
         - notifications
-        - public
       parameters:
         - $ref: "#/components/parameters/notificationId"
       responses:
@@ -63,7 +60,6 @@ endpoints:
       operationId: updateNotificationsToken
       tags:
         - notifications
-        - public
       requestBody:
         content:
           application/json:

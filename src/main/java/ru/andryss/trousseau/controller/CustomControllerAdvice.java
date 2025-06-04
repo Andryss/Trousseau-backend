@@ -1,5 +1,6 @@
 package ru.andryss.trousseau.controller;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -9,6 +10,7 @@ import ru.andryss.trousseau.exception.TrousseauException;
 import ru.andryss.trousseau.generated.model.ErrorObject;
 
 @Slf4j
+@Hidden
 @RestControllerAdvice
 public class CustomControllerAdvice {
     @ExceptionHandler(TrousseauException.class)

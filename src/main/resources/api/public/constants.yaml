@@ -5,7 +5,6 @@ endpoints:
       operationId: getCategoryTree
       tags:
         - constants
-        - public
       responses:
         200:
           description: Успешное получение дерева категорий

@@ -315,7 +315,6 @@ paths:
       operationId: createSubscription
       tags:
         - subscription
-        - public
       requestBody:
         content:
           application/json:
@@ -345,7 +344,6 @@ paths:
       operationId: getSubscriptions
       tags:
         - subscription
-        - public
       responses:
         200:
           description: Успешное получение подписок
@@ -365,7 +363,6 @@ paths:
       operationId: updateSubscription
       tags:
         - subscription
-        - public
       parameters:
         - $ref: "./common.yaml#/components/parameters/subscriptionId"
       requestBody:
@@ -397,7 +394,6 @@ paths:
       operationId: deleteSubscription
       tags:
         - subscription
-        - public
       parameters:
         - $ref: "./common.yaml#/components/parameters/subscriptionId"
       responses:
